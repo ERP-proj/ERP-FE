@@ -5,6 +5,7 @@ import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import styled from "styled-components";
 import MiniCalendar from "./MiniCalendar";
+import resourceTimeGridDay from "@fullcalendar/resource-timegrid";
 
 function TimeTable() {
   const calendarRef = useRef<HTMLDivElement | null>(null);
@@ -17,9 +18,10 @@ function TimeTable() {
 
     if (calendarRef.current) {
       calendar = new Calendar(calendarRef.current, {
-        timeZone: "UTC",
+        timeZone: "local",
         plugins: [resourceTimeGridPlugin, dayGridPlugin],
         initialView: "resourceTimeGridDay",
+        nowIndicator: true,
         headerToolbar: {
           left: "today",
           center: "prev, customTitle, next",
@@ -29,6 +31,7 @@ function TimeTable() {
           month: "2-digit",
           day: "2-digit",
         },
+        contentHeight: 1000,
         customButtons: {
           customTitle: {
             text: "",

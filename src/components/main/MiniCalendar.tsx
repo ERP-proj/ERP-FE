@@ -17,7 +17,7 @@ function MiniCalendar({ onDateClick }: MiniCalendarProps) {
 
     if (calendarRef.current) {
       calendar = new Calendar(calendarRef.current, {
-        timeZone: "UTC",
+        timeZone: "local",
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: "dayGridMonth",
         selectable: true,
