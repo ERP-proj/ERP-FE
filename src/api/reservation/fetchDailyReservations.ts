@@ -27,7 +27,6 @@ export async function fetchDailyReservations(day: string) {
     return response.data;
   } catch (error: unknown) {
     const errorMessage = handleError(error);
-    console.log(errorMessage);
     throw new Error(errorMessage);
   }
 }
