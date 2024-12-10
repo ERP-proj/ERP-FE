@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import styled from "styled-components";
 import { initializeCalendar } from "../../utils/calendar/calendarSetup";
-import { useReservations } from "@/hooks/Calendar/useReservations";
-import MiniCalendarPopup from "../Calendar/MiniCalendarPopup";
+import { useReservations } from "@/hooks/calendar/useReservations";
+import MiniCalendarPopup from "../calendar/MiniCalendarPopup";
 
 function TimeTable() {
   const calendarRef = useRef<HTMLDivElement | null>(null);
@@ -30,16 +30,19 @@ function TimeTable() {
     };
   }, []);
 
+  const handleMiniCalendarDateClick = (date: string) => {
+    if (calendarInstance.current) {
+      calendarInstance.current.gotoDate(date);
+    }
+    setClickedDate(date);
+    setShowMiniCalendar(false);
+  };
+
   return (
     <TimeTableWrapper>
       <div ref={calendarRef} id="calendar" />
       {showMiniCalendar && (
-        <MiniCalendarPopup
-          onDateClick={(date) => {
-            setClickedDate(date);
-            setShowMiniCalendar(false);
-          }}
-        />
+        <MiniCalendarPopup onDateClick={handleMiniCalendarDateClick} />
       )}
       {error && <p style={{ color: "red" }}>{error}</p>}
     </TimeTableWrapper>

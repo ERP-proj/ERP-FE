@@ -41,12 +41,23 @@ export const initializeCalendar = (
         ?.getDate()
         ?.toISOString()
         ?.slice(0, 10);
+
+      if (currentDate) {
+        setClickedDate(currentDate);
+      }
+
       const customTitleButton = calendarRef.current?.querySelector(
         ".fc-customTitle-button.fc-button.fc-button-primary"
       );
 
+      console.log("calendarRef.current:", calendarRef.current);
+      console.log("customTitleButton:", customTitleButton);
+
       if (customTitleButton) {
         customTitleButton.textContent = currentDate;
+        console.log(currentDate);
+      } else {
+        console.log("eslslsle");
       }
 
       if (currentDate) {
