@@ -1,12 +1,16 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import styled from "styled-components";
+import MiniCalendar from "./MiniCalendar";
 
 function TimeTable() {
   const calendarRef = useRef<HTMLDivElement | null>(null);
+
+  const [showMiniCalendar, setShowMiniCalendar] = useState(false);
+  const [clickedDate, setClickedDate] = useState<string>("");
 
   useEffect(() => {
     let calendar: Calendar | null = null;
@@ -27,9 +31,9 @@ function TimeTable() {
         },
         customButtons: {
           customTitle: {
-            text: "temp",
+            text: "",
             click: () => {
-              console.log("customTitle is clicked");
+              setShowMiniCalendar((prev) => !prev);
             },
           },
         },
@@ -47,8 +51,6 @@ function TimeTable() {
           const customTitleButton = calendarRef.current?.querySelector(
             ".fc-customTitle-button.fc-button.fc-button-primary"
           );
-          console.log("customTitleButton", customTitleButton);
-          console.log("currentDate", currentDate);
           if (customTitleButton) {
             customTitleButton.textContent = currentDate;
           }
@@ -56,6 +58,10 @@ function TimeTable() {
       });
 
       calendar.render();
+
+      if (clickedDate && calendarRef.current) {
+        calendar.gotoDate(clickedDate);
+      }
     }
 
     return () => {
@@ -63,18 +69,39 @@ function TimeTable() {
         calendar.destroy();
       }
     };
-  }, []);
+  }, [clickedDate]);
 
   return (
     <TimeTableWrapper>
       <div ref={calendarRef} id="calendar" />
+      {showMiniCalendar && (
+        <MiniCalendarPopup>
+          <MiniCalendar
+            onDateClick={(date) => {
+              setClickedDate(date);
+              setShowMiniCalendar(false);
+            }}
+          />
+        </MiniCalendarPopup>
+      )}
     </TimeTableWrapper>
   );
 }
 
 export default TimeTable;
 
+const MiniCalendarPopup = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+`;
+
 const TimeTableWrapper = styled.div`
+  position: relative;
+
   .fc .fc-toolbar {
     display: flex;
     justify-content: space-between;
