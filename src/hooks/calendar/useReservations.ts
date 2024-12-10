@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchDailyReservations } from "@/api/reservation/fetchDailyReservations";
-import transformReservationsToEvents from "../../../utils/reservation/transformReservationsToEvents ";
+import transformReservationsToEvents from "../../utils/calendar/transformReservationsToEvents ";
 
 export const useReservations = (date: string, calendarInstance: any) => {
   const [error, setError] = useState<string | null>(null);

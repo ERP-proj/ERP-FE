@@ -2,8 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import styled from "styled-components";
-import { initializeCalendar } from "../../../utils/reservation/calendarSetup";
-import { useReservations } from "@/hooks/reservation/useReservations";
+import { initializeCalendar } from "../../utils/calendar/calendarSetup";
+import { useReservations } from "@/hooks/Calendar/useReservations";
 import MiniCalendarPopup from "../Calendar/MiniCalendarPopup";
 
 function TimeTable() {
