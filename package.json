@@ -2,6 +2,7 @@
   "name": "erp",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://52.79.44.29:8080",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -19,8 +20,10 @@
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@types/styled-components": "^5.1.34",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dayjs": "^1.11.13",
     "lucide-react": "^0.456.0",
     "next": "14.2.17",
     "react": "^18",

@@ -1,106 +1,52 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
-import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-import dayGridPlugin from "@fullcalendar/daygrid";
 import styled from "styled-components";
-import MiniCalendar from "./MiniCalendar";
-import resourceTimeGridDay from "@fullcalendar/resource-timegrid";
+import { initializeCalendar } from "../../../utils/reservation/calendarSetup";
+import { useReservations } from "@/hooks/reservation/useReservations";
+import MiniCalendarPopup from "../Calendar/MiniCalendarPopup";
 
 function TimeTable() {
   const calendarRef = useRef<HTMLDivElement | null>(null);
+  const calendarInstance = useRef<Calendar | null>(null);
 
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
   const [clickedDate, setClickedDate] = useState<string>("");
 
+  const { error } = useReservations(clickedDate, calendarInstance);
+
   useEffect(() => {
-    let calendar: Calendar | null = null;
-
-    if (calendarRef.current) {
-      calendar = new Calendar(calendarRef.current, {
-        timeZone: "local",
-        plugins: [resourceTimeGridPlugin, dayGridPlugin],
-        initialView: "resourceTimeGridDay",
-        nowIndicator: true,
-        headerToolbar: {
-          left: "today",
-          center: "prev, customTitle, next",
-          right: "resourceTimeGridDay, timeGridWeek, dayGridMonth",
-        },
-        titleFormat: {
-          month: "2-digit",
-          day: "2-digit",
-        },
-        contentHeight: 1000,
-        customButtons: {
-          customTitle: {
-            text: "",
-            click: () => {
-              setShowMiniCalendar((prev) => !prev);
-            },
-          },
-        },
-        resources: [
-          { id: "column1", title: "Student1" },
-          { id: "column2", title: "Student2" },
-          { id: "column3", title: "Student3" },
-          { id: "column4", title: "Student4" },
-        ],
-        datesSet: function (info) {
-          const currentDate = info.view.calendar
-            ?.getDate()
-            ?.toISOString()
-            ?.slice(0, 10);
-          const customTitleButton = calendarRef.current?.querySelector(
-            ".fc-customTitle-button.fc-button.fc-button-primary"
-          );
-          if (customTitleButton) {
-            customTitleButton.textContent = currentDate;
-          }
-        },
-      });
-
-      calendar.render();
-
-      if (clickedDate && calendarRef.current) {
-        calendar.gotoDate(clickedDate);
-      }
-    }
+    calendarInstance.current = initializeCalendar(
+      calendarRef,
+      setClickedDate,
+      setShowMiniCalendar
+    );
 
     return () => {
-      if (calendar) {
-        calendar.destroy();
+      if (calendarInstance.current) {
+        calendarInstance.current.destroy();
+        calendarInstance.current = null;
       }
     };
-  }, [clickedDate]);
+  }, []);
 
   return (
     <TimeTableWrapper>
       <div ref={calendarRef} id="calendar" />
       {showMiniCalendar && (
-        <MiniCalendarPopup>
-          <MiniCalendar
-            onDateClick={(date) => {
-              setClickedDate(date);
-              setShowMiniCalendar(false);
-            }}
-          />
-        </MiniCalendarPopup>
+        <MiniCalendarPopup
+          onDateClick={(date) => {
+            setClickedDate(date);
+            setShowMiniCalendar(false);
+          }}
+        />
       )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </TimeTableWrapper>
   );
 }
 
 export default TimeTable;
-
-const MiniCalendarPopup = styled.div`
-  position: absolute;
-  top: 50px;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-`;
 
 const TimeTableWrapper = styled.div`
   position: relative;
