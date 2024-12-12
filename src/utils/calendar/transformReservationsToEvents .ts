@@ -5,28 +5,21 @@ dayjs.extend(utc);
 
 const transformReservationsToEvents = (reservations: any[], date: string) => {
   return reservations.map((res) => {
-    console.log("Processing reservation:", res);
+    const startTime = res?.startTime;
+    const isoStartTime = new Date(`2024-12-02T${startTime}:00Z`)?.toISOString();
 
-    const startTime = dayjs(date)
-      .hour(res.startTime?.hour || 0)
-      .minute(res.startTime?.minute || 0)
-      .second(res.startTime?.second || 0)
-      .toISOString();
+    const endTime = res?.endTime;
+    const isoEndTime = new Date(`2024-12-02T${endTime}:00Z`)?.toISOString();
 
-    const endTime = dayjs(date)
-      .hour(res.endTime?.hour || 0)
-      .minute(res.endTime?.minute || 0)
-      .second(res.endTime?.second || 0)
-      .toISOString();
-
-    console.log("Start Time:", startTime);
-    console.log("End Time:", endTime);
+    // console.log("******************");
+    // console.log("TimeAPI", startTime, "~~", endTime);
+    // console.log("isoString", isoStartTime, "~~", isoEndTime);
 
     return {
-      id: res.reservationsId,
-      title: `${res.name} - Seat ${res.seatNumber}`,
-      start: startTime,
-      end: endTime,
+      resourceId: res.reservationsId,
+      title: `${res.name}`,
+      start: isoStartTime,
+      end: isoEndTime,
     };
   });
 };

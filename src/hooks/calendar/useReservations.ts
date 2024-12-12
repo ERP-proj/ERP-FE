@@ -10,27 +10,28 @@ export const useReservations = (date: string, calendarInstance: any) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("--------Date changed----------:", date);
-    console.log("calendarInstance current:", calendarInstance.current);
-
     if (!date || !calendarInstance.current) return;
 
     const loadReservation = async () => {
       try {
+        // response 받아오기
         const response = await fetchDailyReservations(date);
         console.log("API response:", response);
 
+        // 데이터 Transform 실시
         const reservationEvents = transformReservationsToEvents(
-          response.data || [],
+          response?.data || [],
           date
         );
-        console.log("Transformed reservation events:", reservationEvents);
-
-        if (reservationEvents.length === 0) {
-          console.log("No events found for the given date.");
-        }
 
         if (calendarInstance.current) {
+          console.log("remove 실시---------------");
+          calendarInstance.current.getEventSources().forEach((source: any) => {
+            source.remove();
+          });
+
+          console.log("calendarInstance.current", calendarInstance?.current);
+
           calendarInstance.current.addEventSource(reservationEvents);
         }
       } catch (err: unknown) {

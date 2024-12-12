@@ -31,11 +31,12 @@ export const initializeCalendar = (
       },
     },
     resources: [
-      { id: "column1", title: "Student1" },
-      { id: "column2", title: "Student2" },
-      { id: "column3", title: "Student3" },
-      { id: "column4", title: "Student4" },
+      { id: "1", title: "회원1" },
+      { id: "2", title: "회원2" },
+      { id: "3", title: "회원3" },
+      { id: "4", title: "회원4" },
     ],
+
     datesSet: (info) => {
       const currentDate = info.view.calendar
         ?.getDate()
