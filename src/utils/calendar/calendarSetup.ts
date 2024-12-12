@@ -10,9 +10,36 @@ export const initializeCalendar = (
   if (!calendarRef.current) return null;
 
   const calendar = new Calendar(calendarRef.current, {
-    timeZone: "local",
+    // Set library plugins and initial View
     plugins: [resourceTimeGridPlugin, dayGridPlugin],
     initialView: "resourceTimeGridDay",
+
+    // default basic setting
+    timeZone: "local",
+
+    // Set calendar resources
+    resources: [
+      { id: "1", title: "회원1" },
+      { id: "2", title: "회원2" },
+      { id: "3", title: "회원3" },
+      { id: "4", title: "회원4" },
+    ],
+
+    // Set event items
+    events: [],
+    eventBackgroundColor: "#FBD288",
+    eventTextColor: "#000000",
+    eventClick: function (info) {
+      console.log("---------info", info);
+      const eventObj = info.event;
+      const user = eventObj?.title;
+      const startDate = eventObj?.start;
+      const endDate = eventObj?.end;
+
+      setClickedEvent({ user, startDate, endDate });
+    },
+
+    // default design setting
     nowIndicator: true,
     headerToolbar: {
       left: "today",
@@ -30,13 +57,8 @@ export const initializeCalendar = (
         click: () => setShowMiniCalendar((prev) => !prev),
       },
     },
-    resources: [
-      { id: "1", title: "회원1" },
-      { id: "2", title: "회원2" },
-      { id: "3", title: "회원3" },
-      { id: "4", title: "회원4" },
-    ],
 
+    // Set customTitle button based on currentDate
     datesSet: (info) => {
       const currentDate = info.view.calendar
         ?.getDate()
