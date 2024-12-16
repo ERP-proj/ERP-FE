@@ -12,6 +12,7 @@ const transformReservationsToEvents = (reservations: any[], date: string) => {
     const isoEndTime = new Date(`2024-12-02T${endTime}:00Z`)?.toISOString();
 
     // console.log("******************");
+    console.log("date", date);
     // console.log("TimeAPI", startTime, "~~", endTime);
     // console.log("isoString", isoStartTime, "~~", isoEndTime);
 
