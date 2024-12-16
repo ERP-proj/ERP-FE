@@ -3,7 +3,7 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
-const transformReservationsToEvents = (reservations: any[]) => {
+export default function transformReservationsToEvents(reservations: any[]) {
   return reservations.map((res) => {
     const startTime = res?.startTime;
     const endTime = res?.endTime;
@@ -15,6 +15,4 @@ const transformReservationsToEvents = (reservations: any[]) => {
       end: endTime,
     };
   });
-};
-
-export default transformReservationsToEvents;
+}

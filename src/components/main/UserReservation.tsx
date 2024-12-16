@@ -1,31 +1,55 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import noUser from "../../assets/noUser.png";
+import { useNextReservation } from "@/hooks/reservation/useNextReservation";
 
-export function ReservationInfo() {
-  const reservations = [1, 2, 3, 4, 5];
+function UserReservation() {
+  const { nextReservation, error } = useNextReservation();
+
+  if (error) {
+    return <div className="text-red-500">`Error 발생 {error}`</div>;
+  }
+
   return (
     <>
+      {/* 다음 예약 / 자동 배치 */}
       <div className="h-[2.25rem] flex justify-center items-center relative mb-4">
-        <div className="flex-grow text-center">다음 예약</div>
-        <Button>자동배치</Button>
+        <div className="flex-grow text-center text-base font-medium">
+          다음 예약
+        </div>
+        <Button className="bg-yellow-200 hover:bg-yellow-300 text-black font-semibold">
+          자동배치
+        </Button>
       </div>
 
+      {/* 예약 리스트 */}
       <div className="flex flex-col gap-4">
         <ScrollArea className="h-[calc(50vh-60px)]">
-          {reservations.map((el, i) => (
-            <div key={i} className="h-32 bg-slate-200 mt-2 first:mt-0">
-              <div className="flex justify-between px-4 py-2">
-                <div>홍길동</div>
-                <div>010-1234-1234</div>
+          {nextReservation.length > 0 ? (
+            nextReservation.map((reservation: any) => (
+              <div
+                key={reservation.reservationsId}
+                className="bg-yellow-100 hover:bg-yellow-200 text-black font-medium  h-32 bg-slate-200 mt-2 first:mt-0 flex justify-between px-4 py-2 flex-col rounded-xl"
+              >
+                <div className="flex-1 font-semibold"> {reservation.name}</div>
+                <div className="flex-1">
+                  {reservation.startTime}
+                  {"~"}
+                  {reservation.endTime}
+                </div>
+                <div className="flex-1">저번 시간 진도</div>
               </div>
-              <div>저번 시간 진도</div>
+            ))
+          ) : (
+            <div className="text-center text-gray-500">
+              예약 정보가 없습니다.
             </div>
-          ))}
+          )}
         </ScrollArea>
-
         <ScrollArea className="h-[calc(50vh-60px)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-grow text-center">예약 시간 11:00 ~ 12:00</div>
@@ -56,3 +80,5 @@ export function ReservationInfo() {
     </>
   );
 }
+
+export default UserReservation;
