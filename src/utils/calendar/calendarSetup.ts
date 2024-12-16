@@ -36,7 +36,8 @@ export const initializeCalendar = (
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
 
-      setClickedEvent({ user, startDate, endDate });
+      // setClickedEvent({ user, startDate, endDate });
+      console.log("user/startDate/endDate", user, startDate, endDate);
     },
 
     // default design setting
