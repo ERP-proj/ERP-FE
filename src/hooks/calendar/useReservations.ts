@@ -20,8 +20,7 @@ export const useReservations = (date: string, calendarInstance: any) => {
 
         // 데이터 Transform 실시
         const reservationEvents = transformReservationsToEvents(
-          response?.data || [],
-          date
+          response?.data || []
         );
 
         if (calendarInstance.current) {

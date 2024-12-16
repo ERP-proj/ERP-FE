@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import styled from "styled-components";
-import { initializeCalendar } from "../../utils/calendar/calendarSetup";
+import { calendarSetup } from "../../utils/calendar/calendarSetup";
 import { useReservations } from "@/hooks/calendar/useReservations";
 import MiniCalendarPopup from "../calendar/MiniCalendarPopup";
 
@@ -16,7 +16,7 @@ function TimeTable() {
   const { error } = useReservations(clickedDate, calendarInstance);
 
   useEffect(() => {
-    calendarInstance.current = initializeCalendar(
+    calendarInstance.current = calendarSetup(
       calendarRef,
       setClickedDate,
       setShowMiniCalendar
