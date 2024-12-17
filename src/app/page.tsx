@@ -5,7 +5,7 @@ import NextReservation from "@/components/main/NextReservation";
 
 export default function Home() {
   return (
-    <div className="flex  gap-4">
+    <div className="flex gap-4 justify-center align-middle h-screen">
       <div className="flex-[2_0_0] max-w-96">
         <SideBar />
       </div>

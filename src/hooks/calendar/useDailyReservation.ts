@@ -16,7 +16,7 @@ export const useReservations = (date: string, calendarInstance: any) => {
       try {
         // response 받아오기
         const response = await fetchDailyReservations(date);
-        console.log("API response:", response);
+        console.log("API response fetchDailyReservations:", response);
 
         // 데이터 Transform 실시
         const reservationEvents = transformReservationsToEvents(

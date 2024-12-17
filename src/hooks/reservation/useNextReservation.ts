@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { fetchNextTimeReservations } from "@/api/reservation/fetchNextTimeReservations";
 import transformNextTimeReservation from "@/utils/reservation/transformNextTimeReservation";
-import dayjs from "dayjs";
+// import dayjs from "dayjs";
 
 export const useNextReservation = () => {
   const [nextReservation, setNextReservation] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const currentTime = dayjs();
+  // const currentTime = dayjs();
 
   // const nextStartTime = currentTime
   //   .add(1, "hour")
@@ -25,15 +25,15 @@ export const useNextReservation = () => {
   const nextStartTime = "2024-12-02T10:00:00.000";
   const nextEndTime = "2024-12-02T10:59:59.000";
 
-  console.log("currentTime", currentTime);
-  console.log("nextStart", nextStartTime);
-  console.log("nextEnd", nextEndTime);
+  // console.log("currentTime", currentTime);
+  // console.log("nextStart", nextStartTime);
+  // console.log("nextEnd", nextEndTime);
 
   useEffect(() => {
     const loadNextTimeReservation = async () => {
       try {
         const response = await fetchNextTimeReservations(nextStartTime);
-        console.log("API response:", response);
+        console.log("API response fetchNextTimeReservations:", response);
 
         const transformedData = transformNextTimeReservation(
           nextStartTime,
