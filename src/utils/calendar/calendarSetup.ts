@@ -2,7 +2,7 @@ import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 
-export const initializeCalendar = (
+export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
   setClickedDate: React.Dispatch<React.SetStateAction<string>>,
   setShowMiniCalendar: React.Dispatch<React.SetStateAction<boolean>>
