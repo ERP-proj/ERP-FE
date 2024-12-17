@@ -1,6 +1,7 @@
 import SideBar from "@/components/main/SideBar";
 import TimeTable from "@/components/main/TimeTable";
-import UserReservation from "@/components/main/UserReservation";
+import UserReservationInfo from "@/components/main/UserReservationInfo";
+import NextReservation from "@/components/main/NextReservation";
 
 export default function Home() {
   return (
@@ -12,7 +13,8 @@ export default function Home() {
         <TimeTable />
       </div>
       <div className="flex-[4_0_0] max-w-96 flex-col">
-        <UserReservation />
+        <NextReservation />
+        <UserReservationInfo />
       </div>
     </div>
   );
