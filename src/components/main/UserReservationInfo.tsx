@@ -17,11 +17,13 @@ function UserReservation() {
   return (
     <>
       {/* 유저 예약 정보*/}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 p-5 rounded-xl bg-yellow-200">
         <ScrollArea className="h-[calc(50vh-60px)]">
           <div className="flex items-center justify-between mb-4">
             <div className="flex-grow text-center">예약 시간 11:00 ~ 12:00</div>
-            <Button>저장</Button>
+            <Button className=" bg-white text-black hover:bg-black hover:text-white font-semibold">
+              저장
+            </Button>
           </div>
           <div className="flex mb-4">
             <div className="flex-1 mr-4">
