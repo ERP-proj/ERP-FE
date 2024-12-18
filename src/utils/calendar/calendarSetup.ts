@@ -5,7 +5,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
   setClickedDate: React.Dispatch<React.SetStateAction<string>>,
-  setShowMiniCalendar: React.Dispatch<React.SetStateAction<boolean>>
+  setShowMiniCalendar: React.Dispatch<React.SetStateAction<boolean>>,
+  setSelectedEvent: React.Dispatch<React.SetStateAction<any>>
 ) => {
   if (!calendarRef.current) return null;
 
@@ -27,17 +28,25 @@ export const calendarSetup = (
 
     // Set event items
     events: [],
-    eventBackgroundColor: "#FBD288",
+    eventBackgroundColor: "#fcf596",
     eventTextColor: "#000000",
+    eventBorderColor: "#fcf596",
+
+    // Set event click
     eventClick: function (info) {
-      console.log("---------info", info);
       const eventObj = info.event;
       const user = eventObj?.title;
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
 
-      // setClickedEvent({ user, startDate, endDate });
+      console.log("---------info", info);
       console.log("user/startDate/endDate", user, startDate, endDate);
+
+      setSelectedEvent({
+        user,
+        startDate,
+        endDate,
+      });
     },
 
     // default design setting

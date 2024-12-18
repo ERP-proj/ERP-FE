@@ -6,7 +6,11 @@ import { calendarSetup } from "../../utils/calendar/calendarSetup";
 import { useReservations } from "@/hooks/calendar/useDailyReservation";
 import MiniCalendarPopup from "../calendar/MiniCalendarPopup";
 
-function TimeTable() {
+function TimeTable({
+  setSelectedEvent,
+}: {
+  setSelectedEvent: (event: any) => void;
+}) {
   const calendarRef = useRef<HTMLDivElement | null>(null);
   const calendarInstance = useRef<Calendar | null>(null);
 
@@ -20,7 +24,8 @@ function TimeTable() {
       calendarInstance.current = calendarSetup(
         calendarRef,
         setClickedDate,
-        setShowMiniCalendar
+        setShowMiniCalendar,
+        setSelectedEvent
       );
     }
 
@@ -30,7 +35,7 @@ function TimeTable() {
         calendarInstance.current = null;
       }
     };
-  }, []);
+  }, [setSelectedEvent]);
 
   const handleMiniCalendarDateClick = (date: string) => {
     if (calendarInstance.current) {
