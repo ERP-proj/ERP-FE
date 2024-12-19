@@ -10,10 +10,19 @@ export const calendarSetup = (
 ) => {
   if (!calendarRef.current) return null;
 
+  const now = new Date();
+  const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
+    now.getMinutes()
+  ).padStart(2, "0")}:00`;
+
   const calendar = new Calendar(calendarRef.current, {
     // Set library plugins and initial View
     plugins: [resourceTimeGridPlugin, dayGridPlugin],
     initialView: "resourceTimeGridDay",
+    slotMinTime: "07:00:00",
+    slotMaxTime: "23:00:00",
+    slotDuration: "00:30:00",
+    scrollTime: currentTime,
 
     // default basic setting
     timeZone: "local",
@@ -31,6 +40,12 @@ export const calendarSetup = (
     eventBackgroundColor: "#fcf596",
     eventTextColor: "#000000",
     eventBorderColor: "#fcf596",
+    eventMouseEnter: function (info) {
+      info.el.style.backgroundColor = "rgb(250, 204, 21)";
+    },
+    eventMouseLeave: function (info) {
+      info.el.style.backgroundColor = "rgb(254, 240, 138)";
+    },
 
     // Set event click
     eventClick: function (info) {
