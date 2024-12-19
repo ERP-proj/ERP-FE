@@ -11,6 +11,7 @@ export const calendarSetup = (
 ) => {
   if (!calendarRef.current) return null;
 
+  // Declare now time
   const now = new Date();
   const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
     now.getMinutes()

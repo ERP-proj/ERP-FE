@@ -64,33 +64,3 @@ function TimeTable({
 }
 
 export default TimeTable;
-
-// const TimeTableWrapper = styled.div`
-//   .fc .fc-toolbar {
-//     display: flex;
-//     justify-content: space-between;
-//     align-items: center;
-//   }
-
-//   .fc-toolbar-chunk {
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//   }
-
-//   .fc .fc-button-primary {
-//     background-color: #fcf596;
-//     border-color: #fcf596;
-//     color: #000000;
-//   }
-
-//   .fc-button-primary:not(:disabled).fc-button-active {
-//     background-color: #fbd288;
-//     border-color: #fbd288;
-//     color: #000000;
-//   }
-
-//   .fc-button:empty {
-//     display: none;
-//   }
-// `;
