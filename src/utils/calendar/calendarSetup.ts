@@ -1,6 +1,7 @@
 import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
 export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
@@ -17,12 +18,15 @@ export const calendarSetup = (
 
   const calendar = new Calendar(calendarRef.current, {
     // Set library plugins and initial View
-    plugins: [resourceTimeGridPlugin, dayGridPlugin],
+    plugins: [resourceTimeGridPlugin, dayGridPlugin, interactionPlugin],
     initialView: "resourceTimeGridDay",
     slotMinTime: "07:00:00",
     slotMaxTime: "23:00:00",
     slotDuration: "00:30:00",
     scrollTime: currentTime,
+
+    // Set drag available
+    selectable: true,
 
     // default basic setting
     timeZone: "local",
@@ -47,14 +51,14 @@ export const calendarSetup = (
       info.el.style.backgroundColor = "rgb(254, 240, 138)";
     },
 
-    // Set event click
+    // Set event click Callback
     eventClick: function (info) {
       const eventObj = info.event;
       const user = eventObj?.title;
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
 
-      console.log("---------info", info);
+      console.log("---------Set event click Callback", info);
       console.log("user/startDate/endDate", user, startDate, endDate);
 
       setSelectedEvent({
@@ -62,6 +66,42 @@ export const calendarSetup = (
         startDate,
         endDate,
       });
+    },
+
+    // Set drag Callback
+    select: function (info) {
+      const start = info.start;
+      const end = info.end;
+
+      const overlappingEvents = calendar.getEvents().filter((event) => {
+        if (event.start && event.end) {
+          return (
+            (event.start >= start && event.start < end) ||
+            (event.end > start && event.end <= end) ||
+            (event.start <= start && event.end >= end)
+          );
+        }
+        return false;
+      });
+
+      if (overlappingEvents.length > 0) {
+        alert(
+          `Selected Time: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\n` +
+            `Overlapping Events:\n` +
+            overlappingEvents
+              .map(
+                (e) =>
+                  `- ${
+                    e.title
+                  } (${e.start?.toLocaleTimeString()} - ${e.end?.toLocaleTimeString()})`
+              )
+              .join("\n")
+        );
+      } else {
+        alert(
+          `Selected Time: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\nNo overlapping events.`
+        );
+      }
     },
 
     // default design setting
