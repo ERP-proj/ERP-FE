@@ -31,7 +31,7 @@ function NextReservation() {
             nextReservation.map((reservation: any) => (
               <div
                 key={reservation.reservationsId}
-                className="bg-yellow-100 hover:bg-yellow-200 text-black font-medium h-24 mt-3 flex flex-col justify-around align-middle bg-slate-200 px-4 py-2 flex-col rounded-xl"
+                className="bg-yellow-300 hover:bg-yellow-400 text-black font-medium h-24 mt-3 flex flex-col justify-around align-middle bg-slate-200 px-4 py-2 flex-col rounded-xl"
               >
                 <div className="flex justify-between font-semibold">
                   <span>{reservation.name}</span>
