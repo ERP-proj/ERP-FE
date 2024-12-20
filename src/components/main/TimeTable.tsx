@@ -48,7 +48,6 @@ function TimeTable({
 
   return (
     <div className="relative">
-      {/* <TimeTableWrapper> */}
       <div ref={calendarRef} id="calendar" />
 
       {/* 미니 캘린더 팝업 */}
@@ -58,7 +57,6 @@ function TimeTable({
 
       {/* 에러 확인 메시지 */}
       {error && <p style={{ color: "red" }}>{error}</p>}
-      {/* </TimeTableWrapper> */}
     </div>
   );
 }

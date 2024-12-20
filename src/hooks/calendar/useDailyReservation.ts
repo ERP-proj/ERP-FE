@@ -23,14 +23,19 @@ export const useReservations = (date: string, calendarInstance: any) => {
           response?.data || []
         );
 
+        // 회원 이름으로 구성된 열 생성
+        const uniqueNameColumns = [
+          ...new Set(reservationEvents.map((item) => item.title)),
+        ];
+
+        const resources = uniqueNameColumns.map((name, index) => ({
+          id: `resource-${index}`,
+          title: name,
+        }));
+
+        calendarInstance.current.setOption("resources", resources);
+
         if (calendarInstance.current) {
-          console.log("remove 실시---------------");
-          calendarInstance.current.getEventSources().forEach((source: any) => {
-            source.remove();
-          });
-
-          console.log("calendarInstance.current", calendarInstance?.current);
-
           calendarInstance.current.addEventSource(reservationEvents);
         }
       } catch (err: unknown) {
