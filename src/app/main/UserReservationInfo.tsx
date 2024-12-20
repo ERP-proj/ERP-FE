@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
+import { Button } from "../components/ui/button";
 
 interface EventProps {
   event: {
