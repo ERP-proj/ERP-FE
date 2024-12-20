@@ -1,6 +1,34 @@
 import SideBar from "@/app/components/SideBar";
 import TopControls from "@/app/components/member/TopControls";
+import MemberList from "@/app/components/member/MemberList";
 import React from "react";
+
+const mockData = [
+  {
+    photoUrl: null,
+    name: "고객1",
+    gender: "MALE",
+    phone: "010-2412-1452",
+    plans: "A 이용권",
+    remainingTime: 5,
+    usedTime: 10,
+    registrationDate: "2024-12-20T02:12:51.678",
+    tardinessCount: 2,
+    absenceCount: 1,
+  },
+  {
+    photoUrl: null,
+    name: "고객2",
+    gender: "FEMALE",
+    phone: "010-1234-5678",
+    plans: "B 이용권",
+    remainingTime: 3,
+    usedTime: 7,
+    registrationDate: "2024-11-10T02:12:51.678",
+    tardinessCount: 1,
+    absenceCount: 0,
+  },
+];
 
 export default function Page() {
   return (
@@ -8,41 +36,11 @@ export default function Page() {
       <div className="w-1/6 h-full bg-gray-200">
         <SideBar />
       </div>
-      <div className="flex-[9_0_0] bg-gray-500">
+      <div className="flex-[9_0_0] bg-gray-500 p-4">
         {/* Top Controls */}
         <TopControls />
-
-        {/* List */}
-        <div className="grid grid-cols-1 gap-4">
-          {/* Row */}
-          {[...Array(5)].map((_, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between p-4 bg-white border rounded shadow-sm"
-            >
-              {/* 프로필 */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-gray-300 rounded-full"></div>
-                <div>
-                  <p className="font-bold">이름</p>
-                  <p>전화번호</p>
-                </div>
-              </div>
-
-              {/* 이용권 정보 */}
-              <div className="text-center">
-                <p className="font-bold">1/2 중</p>
-                <p>이용권</p>
-              </div>
-
-              {/* 기타 정보 */}
-              <div className="text-right">
-                <p>등록한 날짜</p>
-                <p className="text-gray-500">2024-12-20</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Member List */}
+        <MemberList members={mockData} />
       </div>
     </div>
   );
