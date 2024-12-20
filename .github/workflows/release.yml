@@ -14,11 +14,16 @@ jobs:
       - name: Get latest tag
         id: get-latest-tag
         run: |
-latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-echo "Latest tag is: $latest_tag"
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "Latest tag is: $latest_tag"
           next_tag=$(echo $latest_tag | awk -F. -v OFS=. '{$NF++; print}')
           echo "Next tag: $next_tag"
           echo "TAG=$next_tag" >> $GITHUB_ENV
+
+      - name: Create new tag locally
+        run: |
+          git tag ${{ env.TAG }}
+          git push origin ${{ env.TAG }}
 
       - name: Create Release and Tag
         uses: actions/create-release@v1
