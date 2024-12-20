@@ -9,7 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Fetch tags
+        run: git fetch --tags
 
       - name: Get latest tag
         id: get-latest-tag
@@ -23,6 +26,7 @@ jobs:
       - name: Create new tag locally
         run: |
           git tag ${{ env.TAG }}
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git push origin ${{ env.TAG }}
 
       - name: Create Release and Tag
