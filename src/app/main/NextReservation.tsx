@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNextReservation } from "@/hooks/reservation/useNextReservation";
+import { Button } from "../components/ui/button";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function NextReservation() {
   const { nextReservation, error } = useNextReservation();
