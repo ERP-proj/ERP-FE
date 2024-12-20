@@ -17,10 +17,20 @@ jobs:
       - name: Get latest tag
         id: get-latest-tag
         run: |
+          git fetch --tags
+
           latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           echo "Latest tag is: $latest_tag"
+
           next_tag=$(echo $latest_tag | awk -F. -v OFS=. '{$NF++; print}')
           echo "Next tag: $next_tag"
+
+          while git rev-parse -q --verify "refs/tags/$next_tag" >/dev/null; do
+            echo "Tag $next_tag already exists. Incrementing further."
+            next_tag=$(echo $next_tag | awk -F. -v OFS=. '{$NF++; print}')
+          done
+
+          echo "Final tag: $next_tag"
           echo "TAG=$next_tag" >> $GITHUB_ENV
 
       - name: Create new tag locally
