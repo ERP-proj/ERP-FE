@@ -1,8 +1,7 @@
 import SideBar from "@/app/components/SideBar";
 import TopControls from "@/app/components/member/TopControls";
-import MemberList from "@/app/components/member/memberList";
-
 import React from "react";
+import MemberList from "@/app/components/member/MemberList";
 
 const mockData = [
   {
