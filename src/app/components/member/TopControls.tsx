@@ -1,14 +1,16 @@
 import React from "react";
+import { FiSearch } from "react-icons/fi";
 
 export default function TopControls() {
   return (
     <div className="flex justify-between items-center mb-4 h-20 bg-gray-300 p-4">
       {/* 검색 */}
-      <div className="flex-1">
+      <div className="relative flex-1">
+        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
         <input
           type="text"
           placeholder="회원 검색"
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 pl-10 w-full" // pl-10으로 아이콘 공간 확보
         />
       </div>
       {/* 정렬 */}
