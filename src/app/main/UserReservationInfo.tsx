@@ -53,7 +53,7 @@ const UserReservationInfo: React.FC<EventProps> = ({ event }) => {
 
           {/* 회원명 */}
           <div className="flex-grow text-start my-4 py-2 px-4 font-semibold bg-yellow-300 rounded-xl">
-            {event?.user ? event?.user : "회원 이름"}
+            {event?.user ? event?.user : "더미회원이름"}
           </div>
           <div className="flex mb-4 group">
             <div className="flex-1 mr-4">

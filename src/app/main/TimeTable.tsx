@@ -47,7 +47,7 @@ function TimeTable({
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-white py-2 px-5 rounded-3xl ">
       <div ref={calendarRef} id="calendar" />
 
       {/* 미니 캘린더 팝업 */}
