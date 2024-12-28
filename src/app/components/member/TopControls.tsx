@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { FiSearch } from "react-icons/fi";
 import Dropdown from "../ui/Dropdown";
 
