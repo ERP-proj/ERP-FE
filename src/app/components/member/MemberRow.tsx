@@ -15,7 +15,7 @@ export default function MemberRow({ member }: { member: any }) {
           )}
         </div>
         <div>
-          <div className="flex items-center gap-2 w-30 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="text-gray-800 font-bold text-sm sm:text-[16px]">
               {member.name}
             </div>
@@ -52,18 +52,41 @@ export default function MemberRow({ member }: { member: any }) {
       </div>
 
       {/* 이용권 종류 */}
-      <div className="flex items-center font-[500] justify-center flex-1 min-w-[150px]">
+      <div className="flex items-center justify-center font-medium flex-1 min-w-[150px]">
         <div className="text-xs sm:text-sm bg-[#f6f6f6] border border-[#d1d1d1] px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[#3a3a3a]">
           {member.planName}
         </div>
       </div>
 
       {/* 남은 시간 */}
-      <div className="flex flex-col items-center flex-1 min-w-[120px]">
-        <div className="text-red-600 font-semibold text-base sm:text-lg">
-          {member.remainingTime}
+      <div className="flex flex-1 items-center justify-center gap-2 min-w-[180px]">
+        {/* 사용시간 */}
+        <div className="flex flex-col items-center justify-center bg-white border border-[#DB5461] rounded-lg w-[80px] h-[70px]">
+          <span className="text-[#DB5461] font-semibold text-sm">사용시간</span>
+          <span className="text-[#DB5461] font-bold text-lg">
+            {member.usedTime}H
+          </span>
         </div>
-        <div className="text-xs sm:text-sm text-gray-600">{member.usage}</div>
+
+        {/* 잔여시간 */}
+        {member?.planType === "시간제" && (
+          <div className="flex flex-col items-center justify-center bg-white border border-[#DB5461] rounded-lg w-[80px] h-[70px]">
+            <span className="text-[#DB5461] font-semibold text-sm">
+              잔여시간
+            </span>
+            <span className="text-[#DB5461] font-bold text-lg">
+              {member.remainingTime}H
+            </span>
+          </div>
+        )}
+
+        {/* 잔여기간 */}
+        <div className="flex flex-col items-center justify-center bg-white border border-[#DB5461] rounded-lg w-[80px] h-[70px]">
+          <span className="text-[#DB5461] font-semibold text-sm">잔여기간</span>
+          <span className="text-[#DB5461] font-bold text-lg">
+            {member.remainingPeriod}D
+          </span>
+        </div>
       </div>
 
       {/* 지각/결석 */}

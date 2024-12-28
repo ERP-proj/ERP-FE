@@ -1,7 +1,7 @@
-import SideBar from "@/app/components/SideBar";
-import TopControls from "@/app/components/member/TopControls";
 import React from "react";
-import MemberList from "@/app/components/member/MemberList";
+import SideBar from "../../components/SideBar";
+import TopControls from "../../components/member/TopControls";
+import MemberList from "../../components/member/MemberList";
 
 const mockData = [
   {
@@ -12,7 +12,6 @@ const mockData = [
     licenseType: "1종",
     planName: "5시간 이용권",
     planType: "기간제",
-    remainingTime: 0,
     remainingPeriod: 0,
     usedTime: 0,
     registrationDate: "2024-12-25T12:29:09.944",
@@ -72,7 +71,6 @@ const mockData = [
     licenseType: "1종",
     planName: "5시간 이용권",
     planType: "기간제",
-    remainingTime: 0,
     remainingPeriod: 0,
     usedTime: 0,
     registrationDate: "2024-12-25T12:29:09.944",
@@ -87,7 +85,6 @@ const mockData = [
     licenseType: "2종",
     planName: "5시간 이용권",
     planType: "기간제",
-    remainingTime: 0,
     remainingPeriod: 0,
     usedTime: 0,
     registrationDate: "2024-12-25T12:29:09.944",
