@@ -5,7 +5,7 @@ interface DropdownProps {
   options: string[]; // 드롭다운에 표시할 옵션
   placeholder?: string; // 초기 상태의 플레이스홀더
   defaultValue?: string; // 초기 선택 값
-  onChange?: (value: string) => void; // 선택 시 호출되는 콜백
+  onChange?: (value: string) => void;
   className?: string;
 }
 
@@ -26,6 +26,22 @@ const Dropdown: React.FC<DropdownProps> = ({
     }
   }, [defaultValue, options]);
 
+  // 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".dropdown")) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleSelect = (value: string) => {
     setSelected(value);
     setIsOpen(false);
@@ -33,15 +49,15 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative dropdown ${className}`}>
       {/* 드롭다운 선택 영역 */}
       <div
         className={`w-full font-size-4 px-3 py-1.5 border-[1px] rounded-lg cursor-pointer flex items-center justify-between 
-            ${
-              selected
-                ? "border-[#3c6229] text-[#3c6229]"
-                : "border-[#d1d1d1] text-[#d1d1d1]"
-            }`}
+          ${
+            selected
+              ? "border-[#3c6229] text-[#3c6229]"
+              : "border-[#d1d1d1] text-[#d1d1d1]"
+          }`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>{selected || placeholder}</span>
