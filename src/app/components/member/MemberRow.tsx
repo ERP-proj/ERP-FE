@@ -1,9 +1,9 @@
 export default function MemberRow({ member }: { member: any }) {
   return (
-    <div className="flex items-center justify-between p-4 bg-[#F2F8ED] border border-gray-300 rounded-lg shadow-sm">
+    <div className="flex items-center justify-between p-4 bg-[#F2F8ED] rounded-lg ">
       {/* 프로필 사진 및 기본 정보 */}
       <div className="flex items-center gap-4 flex-1">
-        <div className="w-[100px] h-[100px] bg-[#fff] rounded-full flex justify-center items-center text-white text-lg">
+        <div className="w-24 h-24 bg-[#fff] rounded-full flex justify-center items-center text-white text-lg">
           {member.photoUrl ? (
             <img
               src={member.photoUrl}

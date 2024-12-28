@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import { FaCheck } from "react-icons/fa";
 import Dropdown from "../ui/Dropdown";
 
 export default function TopControls() {
@@ -21,7 +20,7 @@ export default function TopControls() {
         options={["최신순", "이용 시간이 많은 순", "이용 시간이 적은 순"]}
         placeholder="정렬 기준 선택"
         defaultValue=""
-        className="w-[180px]"
+        className="ml-4 w-[180px]"
       />
       <Dropdown
         options={[
@@ -32,7 +31,7 @@ export default function TopControls() {
         ]}
         placeholder="정렬 기준 선택"
         defaultValue=""
-        className="w-[200px]"
+        className="ml-4 w-[200px]"
       />
 
       {/* 등록 버튼 */}
