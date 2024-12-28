@@ -69,9 +69,7 @@ const mockData = [
 export default function Page() {
   return (
     <div className="flex gap-4 justify-center align-middle h-screen">
-      <div className="w-1/6 h-full bg-gray-200">
-        <SideBar />
-      </div>
+      <SideBar />
       <div className="flex-[9_0_0] bg-gray-500 p-4">
         {/* Top Controls */}
         <TopControls />

@@ -19,7 +19,7 @@ function SideBar() {
     router.push("/");
   };
   return (
-    <div className="flex flex-col h-full justify-center gap-4">
+    <div className="flex flex-col w-20 h-full justify-center gap-4">
       <Button className="py-6" onClick={hadleNavigate}>
         <Image src={userIcon} alt="userIcon" width="28" height="28" />
       </Button>
