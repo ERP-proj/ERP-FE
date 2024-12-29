@@ -19,8 +19,8 @@ const BasicButton: React.FC<BasicButtonProps> = ({
 }) => {
   const sizeStyles = {
     small: "w-[58px] h-[34px] rounded-lg px-4 py-2 gap-2 text-sm",
-    medium: "w-[114.67px] h-[34px] rounded-lg px-4 py-2 gap-2 text-base",
-    large: "w-[176px] h-[34px] rounded-lg px-4 py-2 gap-2 text-lg",
+    medium: "w-[114.67px] h-[38px] rounded-lg px-4 py-2 gap-2 text-lg",
+    large: "w-[176px] h-[38px] rounded-lg px-4 py-2 gap-2 text-lg",
   };
 
   const colorStyles = {
