@@ -99,7 +99,7 @@ export default function Page() {
       <div className="flex">
         <SideBar />
       </div>
-      <div className="relative h-[900px] flex-[8_0_0] bg-white rounded-3xl p-4 max-w-[1600px] w-full">
+      <div className="relative h-[900px] flex-[8_0_0] bg-white rounded-3xl p-4 max-w-[1500px] w-full">
         <TopControls />
         <div className="relative h-[790px]">
           <MemberList members={mockData} />
