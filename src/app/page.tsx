@@ -9,7 +9,7 @@ export default function Home() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   return (
-    <div className="flex justify-center align-middle h-screen ">
+    <div className="flex justify-center align-middle h-screen items-center">
       <div className="flex-[4_0_0] h-full">
         <SideBar />
       </div>

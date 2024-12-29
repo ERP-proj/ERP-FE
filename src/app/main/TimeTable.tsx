@@ -4,8 +4,8 @@ import "../../app/globals.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import { calendarSetup } from "../../utils/calendar/calendarSetup";
-import { useReservations } from "@/hooks/calendar/useDailyReservation";
 import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
+import { useReservations } from "../../hooks/calendar/useDailyReservation";
 
 function TimeTable({
   setSelectedEvent,
