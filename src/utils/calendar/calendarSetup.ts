@@ -21,16 +21,21 @@ export const calendarSetup = (
     // Set library plugins and initial View
     plugins: [resourceTimeGridPlugin, dayGridPlugin, interactionPlugin],
     initialView: "resourceTimeGridDay",
-    slotMinTime: "07:00:00",
-    slotMaxTime: "23:00:00",
+    slotMinTime: "08:00:00",
+    slotMaxTime: "22:59:59",
     slotDuration: "00:30:00",
     scrollTime: currentTime,
+    expandRows: true,
 
     // Set drag available
     selectable: true,
 
     // default basic setting
     timeZone: "local",
+    allDaySlot: false,
+    slotMinWidth: 30,
+    contentHeight: "auto",
+    height: 80,
 
     // Set calendar resources
     resources: [
@@ -108,19 +113,20 @@ export const calendarSetup = (
     // default design setting
     nowIndicator: true,
     headerToolbar: {
-      left: "today",
+      left: "",
       center: "prev, customTitle, next",
-      right: "resourceTimeGridDay, timeGridWeek, dayGridMonth",
+      right: "nextReservation",
     },
-    titleFormat: {
-      month: "2-digit",
-      day: "2-digit",
-    },
-    contentHeight: 1000,
     customButtons: {
+      // customButton : customTitle
       customTitle: {
         text: "",
         click: () => setShowMiniCalendar((prev) => !prev),
+      },
+
+      // customButton : nextReservation
+      nextReservation: {
+        text: "다음 예약",
       },
     },
 
@@ -131,6 +137,16 @@ export const calendarSetup = (
         ?.toISOString()
         ?.slice(0, 10);
 
+      const currentDateDate = new Date(currentDate);
+
+      const options: Intl.DateTimeFormatOptions = {
+        month: "long",
+        day: "numeric",
+      };
+      const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
+        currentDateDate
+      );
+
       if (currentDate) {
         setClickedDate(currentDate);
       }
@@ -139,8 +155,9 @@ export const calendarSetup = (
         ".fc-customTitle-button.fc-button.fc-button-primary"
       );
 
+      // customTitle에 들어갈 제목 포맷팅
       if (customTitleButton) {
-        customTitleButton.textContent = currentDate;
+        customTitleButton.textContent = formattedDate;
       }
 
       if (currentDate) {

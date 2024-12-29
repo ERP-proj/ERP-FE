@@ -1,46 +1,109 @@
-import SideBar from "@/app/components/SideBar";
-import TopControls from "@/app/components/member/TopControls";
 import React from "react";
-import MemberList from "@/app/components/member/MemberList";
+import SideBar from "../../components/SideBar";
+import TopControls from "../../components/member/TopControls";
+import MemberList from "../../components/member/MemberList";
 
 const mockData = [
   {
     photoUrl: null,
-    name: "고객1",
-    gender: "MALE",
-    phone: "010-2412-1452",
-    plans: "A 이용권",
-    remainingTime: 5,
-    usedTime: 10,
-    registrationDate: "2024-12-20T02:12:51.678",
-    tardinessCount: 2,
-    absenceCount: 1,
+    name: "김미정",
+    gender: "여",
+    phone: "010-0000-0000",
+    licenseType: "1종",
+    planName: "5시간 이용권",
+    planType: "기간제",
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
+    absenceCount: 0,
   },
   {
     photoUrl: null,
-    name: "고객2",
-    gender: "FEMALE",
-    phone: "010-1234-5678",
-    plans: "B 이용권",
-    remainingTime: 3,
-    usedTime: 7,
-    registrationDate: "2024-11-10T02:12:51.678",
-    tardinessCount: 1,
+    name: "이민수",
+    gender: "남",
+    phone: "010-0000-0000",
+    licenseType: "1종",
+    planName: "5시간 이용권",
+    planType: "시간제",
+    remainingTime: 0,
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
+    absenceCount: 0,
+  },
+  {
+    photoUrl: null,
+    name: "김민찬",
+    gender: "남",
+    phone: "010-0000-0000",
+    licenseType: "2종",
+    planName: "5시간 이용권",
+    planType: "시간제",
+    remainingTime: 0,
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
+    absenceCount: 0,
+  },
+  {
+    photoUrl: null,
+    name: "이지은",
+    gender: "여",
+    phone: "010-0000-0000",
+    licenseType: "2종",
+    planName: "5시간 이용권",
+    planType: "시간제",
+    remainingTime: 0,
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
+    absenceCount: 0,
+  },
+  {
+    photoUrl: null,
+    name: "김민",
+    gender: "남",
+    phone: "010-0000-0000",
+    licenseType: "1종",
+    planName: "5시간 이용권",
+    planType: "기간제",
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
+    absenceCount: 0,
+  },
+  {
+    photoUrl: null,
+    name: "김찬",
+    gender: "남",
+    phone: "010-0000-0000",
+    licenseType: "2종",
+    planName: "5시간 이용권",
+    planType: "기간제",
+    remainingPeriod: 0,
+    usedTime: 0,
+    registrationDate: "2024-12-25T12:29:09.944",
+    tardinessCount: 0,
     absenceCount: 0,
   },
 ];
 
 export default function Page() {
   return (
-    <div className="flex gap-4 justify-center align-middle h-screen">
-      <div className="w-1/6 h-full bg-gray-200">
+    <div className="flex items-center h-screen">
+      <div className="flex">
         <SideBar />
       </div>
-      <div className="flex-[9_0_0] bg-gray-500 p-4">
-        {/* Top Controls */}
+      <div className="relative h-[900px] flex-[8_0_0] bg-white rounded-3xl p-4 max-w-[1600px] w-full">
         <TopControls />
-        {/* Member List */}
-        <MemberList members={mockData} />
+        <div className="relative h-[790px]">
+          <MemberList members={mockData} />
+        </div>
       </div>
     </div>
   );

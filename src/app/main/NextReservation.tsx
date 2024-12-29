@@ -1,7 +1,6 @@
 "use client";
 
 import { useNextReservation } from "@/hooks/reservation/useNextReservation";
-import { Button } from "../components/ui/button";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function NextReservation() {
@@ -14,39 +13,68 @@ function NextReservation() {
   return (
     <div className="m-4">
       {/* 다음 예약 / 자동 배치 */}
-      <div className="h-[2.25rem] flex justify-center items-center relative mb-3">
-        <div className="flex-grow text-center text-base font-semibold">
-          다음 예약
-        </div>
-        <Button className="bg-yellow-200 hover:bg-yellow-300 text-black font-semibold">
-          자동배치
-        </Button>
+      <div className="h-[2.25rem] flex justify-start items-center p-2 m-2 relative text-left text-base font-semibold">
+        다음 예약
       </div>
 
       {/* 예약 리스트 */}
-      <div className="flex flex-col gap-4">
-        <ScrollArea className="h-[calc(50vh-60px)]">
+      <div className="flex flex-col gap-4 bg-[#F2F8ED] rounded-lg">
+        <ScrollArea className="h-[calc(50vh-60px)] flex-col content-start">
           {nextReservation.length > 0 ? (
             (console.log("nextReservation((((((((((", nextReservation),
             nextReservation.map((reservation: any) => (
               <div
                 key={reservation.reservationsId}
-                className="bg-yellow-300 hover:bg-yellow-400 text-black font-medium h-24 mt-3 flex flex-col justify-around align-middle bg-slate-200 px-4 py-2 flex-col rounded-xl"
+                className="bg-white text-black font-medium h-18 min-h-14 flex flex-col justify-around align-middle p-4 rounded-xl m-3 rounded-none"
               >
-                <div className="flex justify-between font-semibold">
+                <div className="flex justify-between align-middle font-semibold text-sm">
                   <span>{reservation.name}</span>
-                  <span>
+                  <span className="flex font-normal text-xs text-[#888888]">
                     {reservation.startTime}
                     {"~"}
                     {reservation.endTime}
                   </span>
                 </div>
-                <div className="flex">저번 시간 진도</div>
+                <div className="flex font-light text-base text-[#3A3A3A]">
+                  {"저번 시간 진도"}
+                </div>
               </div>
             )))
           ) : (
-            <div className="text-center text-gray-500">
-              예약 정보가 없습니다.
+            // <div className="text-center text-gray-500 m-4 bg-white">
+            //   예약 정보가 없습니다.
+            // </div>
+
+            // dummy data
+            <div>
+              {/* 홍길동1 */}
+              <div className="bg-white text-black font-medium h-18 min-h-14 flex flex-col justify-around align-middle p-4 rounded-xl m-3 rounded-none">
+                <div className="flex justify-between align-middle font-semibold text-sm">
+                  <span>{"홍길동1"}</span>
+                  <span className="flex font-normal text-xs text-[#888888]">
+                    {"11:00"}
+                    {"~"}
+                    {"12:30"}
+                  </span>
+                </div>
+                <div className="flex font-light text-base text-[#3A3A3A]">
+                  {"저번 시간 진도"}
+                </div>
+              </div>
+              {/* 홍길동1 */}
+              <div className="bg-white text-black font-medium h-18 min-h-14 flex flex-col justify-around align-middle p-4 rounded-xl m-3 rounded-none">
+                <div className="flex justify-between align-middle font-semibold text-sm">
+                  <span>{"홍길동1"}</span>
+                  <span className="flex font-normal text-xs text-[#888888]">
+                    {"11:00"}
+                    {"~"}
+                    {"12:30"}
+                  </span>
+                </div>
+                <div className="flex font-light text-base text-[#3A3A3A]">
+                  {"저번 시간 진도"}
+                </div>
+              </div>
             </div>
           )}
         </ScrollArea>

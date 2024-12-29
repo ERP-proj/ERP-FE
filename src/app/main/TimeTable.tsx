@@ -4,8 +4,8 @@ import "../../app/globals.css";
 import React, { useEffect, useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import { calendarSetup } from "../../utils/calendar/calendarSetup";
-import { useReservations } from "@/hooks/calendar/useDailyReservation";
 import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
+import { useReservations } from "../../hooks/calendar/useDailyReservation";
 
 function TimeTable({
   setSelectedEvent,
@@ -47,7 +47,7 @@ function TimeTable({
   };
 
   return (
-    <div className="relative">
+    <div className="relative bg-white py-2 px-5 rounded-3xl ">
       <div ref={calendarRef} id="calendar" />
 
       {/* 미니 캘린더 팝업 */}

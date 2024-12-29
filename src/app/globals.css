@@ -9,6 +9,15 @@
 }
 
 @layer utilities {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #3c6229;
+    border-radius: 25px;
+  }
+
   .text-balance {
     text-wrap: balance;
   }
@@ -19,27 +28,48 @@
 }
 
 @layer components {
-  .fc-toolbar-chunk .fc-today-button .fc-button .fc-button-primary {
-    @apply bg-black;
-  }
-
-  .fc .fc-button-primary {
-    @apply bg-yellow-300 border-none text-black font-semibold hover:bg-yellow-400 hover:text-black;
+  .fc .fc-toolbar-ltr {
+    @apply m-0 !important;
   }
 
   .fc .fc-button-group .fc-button-active {
-    @apply bg-white border-none text-black font-semibold hover:bg-yellow-400 hover:text-black;
+    @apply bg-white border-none text-black font-semibold;
+  }
+
+  .fc .fc-button-primary {
+    @apply bg-white border-0 rounded-lg text-2xl text-black font-semibold hover:bg-white hover:text-black active:bg-white active:text-black focus:bg-white focus:text-black focus:outline-none;
+  }
+
+  .fc .fc-nextReservation-button {
+    @apply bg-white border rounded-lg text-base text-black font-semibold hover:bg-white hover:text-black active:bg-white active:text-black focus:bg-white focus:text-black focus:outline-none;
   }
 
   .fc-button:empty {
     @apply hidden;
   }
+
+  .fc .fc-scrollgrid-sync-inner {
+    @apply bg-[#F2F8ED];
+  }
+
+  .fc .fc-timegrid-axis {
+    @apply bg-[#F2F8ED];
+  }
+
+  .fc .fc-timegrid-slot-lane {
+    @apply bg-white;
+  }
+
+  .fc .fc-prev-button,
+  .fc .fc-next-button {
+    @apply text-[12px];
+  }
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    --background: 96, 43%, 73%;
+    --foreground: 0 0% 0%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
@@ -66,7 +96,7 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 96, 43%, 73%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;

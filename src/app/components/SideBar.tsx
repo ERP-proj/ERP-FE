@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
@@ -7,21 +9,38 @@ import { Button } from "./ui/button";
 function SideBar() {
   const router = useRouter();
 
-  const hadleNavigate = () => {
+  const handleNavigate = () => {
     router.push("/members/list");
   };
-  const hadleNavigate2 = () => {
+  const handleNavigate2 = () => {
     router.push("/");
   };
   return (
-    <div className="flex flex-col h-full justify-center px-4 gap-4">
-      <Button className="py-6" onClick={hadleNavigate}>
-        회원 관리
+    <div className="flex flex-col h-full justify-center gap-4">
+      <Button className="py-6" onClick={handleNavigate}>
+        <Image
+          src="/sidebar/userIcon.png"
+          alt="userIcon"
+          width="28"
+          height="28"
+        />
       </Button>
-      <Button className="py-6" onClick={hadleNavigate2}>
-        예약 관리
+      <Button className="py-6" onClick={handleNavigate2}>
+        <Image
+          src="/sidebar/calendarIcon.png"
+          alt="calendarIcon"
+          width="28"
+          height="28"
+        />
       </Button>
-      <Button className="py-6">합격 관리</Button>
+      <Button className="py-6">
+        <Image
+          src="/sidebar/passedIcon.png"
+          alt="passedIcon"
+          width="28"
+          height="28"
+        />
+      </Button>
     </div>
   );
 }
