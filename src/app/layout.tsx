@@ -14,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased overflow-hidden h-screen m-0 flex items-center justify-center w-full">
-        <main className="flex-1 mx-0 w-full max-w-[1820px] h-full">
-          {children}
-        </main>
+        <main className="flex-1 w-full max-w-[1820px] h-fit">{children}</main>
       </body>
     </html>
   );

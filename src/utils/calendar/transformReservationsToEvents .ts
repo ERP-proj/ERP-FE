@@ -9,7 +9,7 @@ export default function transformReservationsToEvents(reservations: any[]) {
     const endTime = res?.endTime;
 
     return {
-      resourceId: res.reservationsId,
+      resourceId: `${res.name}`,
       title: `${res.name}`,
       start: startTime,
       end: endTime,
