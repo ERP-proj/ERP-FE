@@ -4,6 +4,7 @@ import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import styled from "styled-components";
 import interactionPlugin from "@fullcalendar/interaction";
+import koLocale from "@fullcalendar/core/locales/ko";
 
 interface MiniCalendarProps {
   onDateClick: (date: string) => void;
@@ -21,6 +22,10 @@ function MiniCalendar({ onDateClick }: MiniCalendarProps) {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: "dayGridMonth",
         selectable: true,
+        aspectRatio: 1,
+        fixedWeekCount: false,
+        locale: koLocale,
+
         dateClick: function (info) {
           const clickedDate = info.dateStr;
           onDateClick(clickedDate);
@@ -31,6 +36,7 @@ function MiniCalendar({ onDateClick }: MiniCalendarProps) {
           right: "",
         },
         titleFormat: {
+          year: "numeric",
           month: "long",
         },
         dayCellClassNames: "dateCell",
@@ -51,11 +57,12 @@ export default MiniCalendar;
 
 const MiniCalendarWrapper = styled.div`
   #calendar {
+    max-width: 100%;
+    background-color: #f6f6f6;
+    font-size: 10px;
+    padding: 0px;
     width: 300px;
     height: 300px;
-    max-width: 100%;
-    background-color: #fcf596;
-    font-size: 1rem;
   }
 
   .fc-theme-standard {
@@ -69,6 +76,7 @@ const MiniCalendarWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
   }
 
   .fc-toolbar-chunk {
@@ -78,18 +86,12 @@ const MiniCalendarWrapper = styled.div`
   }
 
   .fc-toolbar-title {
-    font-size: 1rem;
+    font-size: 12px;
   }
 
   .fc .fc-button-primary {
-    background-color: #fcf596;
-    border-color: #fcf596;
-    color: #000000;
-  }
-
-  .fc-button-primary:not(:disabled).fc-button-active {
-    background-color: #fbd288;
-    border-color: #fbd288;
+    background-color: #f6f6f6;
+    border-color: None;
     color: #000000;
   }
 
@@ -97,7 +99,20 @@ const MiniCalendarWrapper = styled.div`
     display: none;
   }
 
+  .fc .fc-scrollgrid-sync-inner {
+    background-color: #ffffff;
+  }
+
   .dateCell {
     background-color: #ffffff !important;
+  }
+
+  .fc-theme-standard td,
+  .fc-theme-standard th {
+    border: None;
+  }
+
+  .fc .fc-view-harness-active {
+    border: None;
   }
 `;

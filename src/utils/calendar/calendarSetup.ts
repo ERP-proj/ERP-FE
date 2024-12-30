@@ -34,41 +34,41 @@ export const calendarSetup = (
     timeZone: "local",
     allDaySlot: false,
     slotMinWidth: 30,
-    contentHeight: "auto",
-    height: 80,
+    contentHeight: 700,
 
     // Set calendar resources
     resources: [
-      { id: "1", title: "회원1" },
-      { id: "2", title: "회원2" },
-      { id: "3", title: "회원3" },
-      { id: "4", title: "회원4" },
+      { id: "1", title: "더미1" },
+      { id: "2", title: "더미2" },
+      { id: "3", title: "더미3" },
+      { id: "4", title: "더미4" },
     ],
 
     // Set event items
     events: [],
-    eventBackgroundColor: "#fcf596",
     eventTextColor: "#000000",
-    eventBorderColor: "#fcf596",
-    eventMouseEnter: function (info) {
-      info.el.style.backgroundColor = "rgb(250, 204, 21)";
-    },
-    eventMouseLeave: function (info) {
-      info.el.style.backgroundColor = "rgb(254, 240, 138)";
-    },
+    // eventMouseEnter: function (info) {
+    //   info.el.style.backgroundColor = "rgb(250, 204, 21)";
+    // },
+    // eventMouseLeave: function (info) {
+    //   info.el.style.backgroundColor = "rgb(254, 240, 138)";
+    // },
 
     // Set event click Callback
     eventClick: function (info) {
       const eventObj = info.event;
-      const user = eventObj?.title;
+      const userName = eventObj?.title;
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
+      // be 수정 후 수정 필요
+      const userId = eventObj?.id;
 
       console.log("---------Set event click Callback", info);
-      console.log("user/startDate/endDate", user, startDate, endDate);
+      console.log("userName/startDate/endDate", userName, startDate, endDate);
 
       setSelectedEvent({
-        user,
+        userName,
+        userId,
         startDate,
         endDate,
       });
@@ -78,6 +78,7 @@ export const calendarSetup = (
     select: function (info) {
       const start = info.start;
       const end = info.end;
+      const resourceId = info.resource?.id;
 
       const overlappingEvents = calendar.getEvents().filter((event) => {
         if (event.start && event.end) {
@@ -92,8 +93,8 @@ export const calendarSetup = (
 
       if (overlappingEvents.length > 0) {
         alert(
-          `Selected Time: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\n` +
-            `Overlapping Events:\n` +
+          `선택한 시간이 겹칩니다: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\n` +
+            `겹치는 이벤트:\n` +
             overlappingEvents
               .map(
                 (e) =>
@@ -104,9 +105,19 @@ export const calendarSetup = (
               .join("\n")
         );
       } else {
-        alert(
-          `Selected Time: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\nNo overlapping events.`
-        );
+        const title = prompt("새로운 예약");
+        if (title) {
+          calendar.addEvent({
+            title,
+            start,
+            end,
+            resourceId,
+          });
+
+          alert(
+            `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
+          );
+        }
       }
     },
 
@@ -143,6 +154,8 @@ export const calendarSetup = (
         month: "long",
         day: "numeric",
       };
+
+      // 사용자 local 시간에서 KR 시간으로 변경 및 날짜 00월 00일 포맷팅팅
       const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
         currentDateDate
       );
