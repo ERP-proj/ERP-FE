@@ -51,7 +51,7 @@ const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* 오른쪽 섹션 */}
-        <div className="flex-[0.4] p-4">{rightChildren}</div>
+        <div className="flex-[0.4] ">{rightChildren}</div>
       </div>
     </div>
   );

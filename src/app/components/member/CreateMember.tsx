@@ -5,10 +5,22 @@ import BasicButton from "../ui/BasicButton";
 import Modal from "../ui/Modal";
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
 import Dropdown from "../ui/Dropdown";
+import Accordion from "../ui/Accordion";
 
 const CreateMember = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [accordionStates, setAccordionStates] = useState<{
+    [key: string]: boolean;
+  }>({
+    이용권결제: true,
+    기타결제: false,
+  });
+  const toggleAccordion = (key: string) => {
+    setAccordionStates((prevState) => ({
+      ...prevState,
+      [key]: !prevState[key],
+    }));
+  };
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -127,6 +139,13 @@ const CreateMember = () => {
                   className="input-content w-full"
                 ></textarea>
               </div>
+              <div className="col-span-2">
+                <label className="block text-sm text-gray-600 mb-1">약관</label>
+                <textarea
+                  placeholder="약관내용입니다."
+                  className="input-content w-full"
+                ></textarea>
+              </div>
             </div>
 
             {/* 진도표 */}
@@ -164,20 +183,30 @@ const CreateMember = () => {
             </div>
           </div>
         }
+        // 오른쪽섹션
         rightChildren={
-          <div className="space-y-6 p-6">
-            {/* 이용권 결제 */}
-            <div>
-              <h3 className="font-bold text-lg mb-2">이용권 결제</h3>
-              <div className="bg-gray-100 h-32 rounded-lg"></div>
-            </div>
-            {/* 기타 결제 */}
-            <div>
-              <h3 className="font-bold text-lg mb-2">기타 결제</h3>
-              <div className="bg-gray-100 h-32 rounded-lg"></div>
-            </div>
-            {/* 하단 버튼 */}
-            <div className="mt-6 flex justify-end gap-4">
+          <div className="">
+            <Accordion
+              title="이용권 결제"
+              isOpen={accordionStates["이용권결제"]}
+              toggleOpen={() => toggleAccordion("이용권결제")}
+            >
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h3 className="font-bold text-lg mb-2">이용권 정보</h3>
+                <p>이용권 관련 정보를 입력하세요.</p>
+              </div>
+            </Accordion>
+            <Accordion
+              title="기타 결제"
+              isOpen={accordionStates["기타결제"]}
+              toggleOpen={() => toggleAccordion("기타결제")}
+            >
+              <div className="bg-gray-100 p-4 rounded-lg">
+                <h3 className="font-bold text-lg mb-2">기타 결제 정보</h3>
+                <p>기타 결제 관련 정보를 입력하세요.</p>
+              </div>
+            </Accordion>
+            <div className="m-2 flex justify-end gap-4">
               <BasicButton
                 size="large"
                 color="secondary"
