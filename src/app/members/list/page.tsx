@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import SideBar from "../../components/SideBar";
 import TopControls from "../../components/member/TopControls";

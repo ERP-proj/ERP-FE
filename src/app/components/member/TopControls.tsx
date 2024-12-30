@@ -6,12 +6,6 @@ import Dropdown from "../ui/Dropdown";
 import BasicButton from "../ui/BasicButton";
 
 export default function TopControls() {
-  const [ModalOpen, setModalOpen] = useState(false);
-
-  const openModal = () => {
-    setModalOpen(true);
-  };
-
   return (
     <div className="flex items-center mb-4 h-16 bg-[#f6f6f6] p-4 rounded-lg shadow">
       {/* 검색 */}
@@ -42,14 +36,14 @@ export default function TopControls() {
       />
 
       {/* 등록 버튼 */}
-      <BasicButton
+      {/* <BasicButton
         size="medium"
         color="primary"
         border={false}
         onClick={openModal}
       >
         회원 등록
-      </BasicButton>
+      </BasicButton> */}
     </div>
   );
 }

@@ -1,12 +1,20 @@
+"use client";
+
 import React, { useEffect, useRef } from "react";
 
 interface ModalProps {
   isOpen: boolean; // 모달 표시 여부
   onClose: () => void; // 모달 닫기 함수
-  children: React.ReactNode;
+  leftChildren?: React.ReactNode; // 왼쪽 섹션 콘텐츠
+  rightChildren?: React.ReactNode; // 오른쪽 섹션 콘텐츠
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  leftChildren,
+  rightChildren,
+}) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   // 모달 외부 클릭 감지
@@ -22,19 +30,29 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      {/* 모달 내용 */}
-      <div className="overflow-y-auto max-h-[80vh]">{children}</div>
+      <div
+        ref={modalRef}
+        className="bg-white w-[100%] max-w-[900px] h-[80%] rounded-xl shadow-lg flex"
+      >
+        {/* 왼쪽 섹션 */}
+        <div className="flex-1 overflow-y-auto rounded-l-lg bg-[#F6F6F6] p-4 max-h-full">
+          {leftChildren}
+        </div>
+
+        {/* 오른쪽 섹션 */}
+        <div className="flex-[0.4] p-4">{rightChildren}</div>
+      </div>
     </div>
   );
 };
