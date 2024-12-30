@@ -43,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
       <div
         ref={modalRef}
-        className="bg-white w-[100%] max-w-[900px] h-[80%] rounded-xl shadow-lg flex"
+        className="bg-white w-[100%] max-w-[1100px] h-[80%] rounded-xl shadow-lg flex"
       >
         {/* 왼쪽 섹션 */}
         <div className="flex-1 overflow-y-auto rounded-l-lg bg-[#F6F6F6] p-4 max-h-full">

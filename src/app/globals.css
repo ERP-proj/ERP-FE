@@ -131,3 +131,27 @@
     @apply bg-background text-foreground;
   }
 }
+
+.image-selector {
+  @apply cursor-pointer w-36 h-36 rounded-full border border-gray-300 flex flex-col items-center justify-center bg-gray-100 relative overflow-hidden;
+}
+
+.image-selector-background {
+  @apply absolute inset-0 bg-[length:20px_20px] bg-[linear-gradient(45deg,#e0e0e0_25%,transparent_25%),linear-gradient(-45deg,#e0e0e0_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e0e0e0_75%),linear-gradient(-45deg,transparent_75%,#e0e0e0_75%)];
+}
+
+.image-selector-content {
+  @apply relative z-10 flex flex-col items-center;
+}
+
+.image-selector-icon {
+  @apply text-gray-600 text-3xl;
+}
+
+.image-selector-text {
+  @apply text-gray-600 text-sm;
+}
+
+.input-content {
+  @apply focus:outline-none cursor-pointer w-full p-2 bg-[#fff] border border-[#D1D1D1] text-[#3A3A3A] focus:bg-[#F2F8ED] focus:border-[#B4D89C] rounded-md text-sm;
+}

@@ -3,9 +3,14 @@
 import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import Dropdown from "../ui/Dropdown";
-import BasicButton from "../ui/BasicButton";
+import CreateMember from "./CreateMember";
 
 export default function TopControls() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
   return (
     <div className="flex items-center mb-4 h-16 bg-[#f6f6f6] p-4 rounded-lg shadow">
       {/* 검색 */}
@@ -35,15 +40,7 @@ export default function TopControls() {
         className="ml-4 w-[200px]"
       />
 
-      {/* 등록 버튼 */}
-      {/* <BasicButton
-        size="medium"
-        color="primary"
-        border={false}
-        onClick={openModal}
-      >
-        회원 등록
-      </BasicButton> */}
+      <CreateMember />
     </div>
   );
 }

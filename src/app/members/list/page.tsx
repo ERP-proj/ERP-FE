@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import SideBar from "../../components/SideBar";
 import TopControls from "../../components/member/TopControls";
 import MemberList from "../../components/member/MemberList";
-import Modal from "@/app/components/ui/Modal";
 
 const mockData = [
   {
@@ -97,11 +96,6 @@ const mockData = [
 ];
 
 export default function Page() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
   return (
     <div className="flex items-center h-screen">
       {/* 사이드바 */}
@@ -115,7 +109,6 @@ export default function Page() {
           <MemberList members={mockData} />
         </div>
       </div>
-      {/* 모달 */}
     </div>
   );
 }
