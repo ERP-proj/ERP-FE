@@ -3,6 +3,7 @@
 import React from "react";
 import { FiSearch } from "react-icons/fi";
 import Dropdown from "../ui/Dropdown";
+import BasicButton from "../ui/BasicButton";
 
 export default function TopControls() {
   return (
@@ -35,9 +36,14 @@ export default function TopControls() {
       />
 
       {/* 등록 버튼 */}
-      <button className="ml-auto bg-[#3c6229] text-white rounded-lg px-4 py-2 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+      <BasicButton
+        size="medium"
+        color="primary"
+        border={false}
+        onClick={() => alert("Clicked!")}
+      >
         회원 등록
-      </button>
+      </BasicButton>
     </div>
   );
 }

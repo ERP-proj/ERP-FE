@@ -34,7 +34,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`flex justify-center items-center rounded-[8px] font-bold ${
+      className={`flex ml-auto justify-center items-center rounded-[8px] font-[600] ${
         sizeStyles[size]
       } ${colorStyles[color]} ${
         border ? "border" : "border-none"
