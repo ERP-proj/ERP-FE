@@ -23,7 +23,7 @@ const Accordion: React.FC<Props> = ({
         {title}
         <span>{isOpen ? <SlArrowUp /> : <SlArrowDown />}</span>
       </button>
-      {isOpen && <div className="">{children}</div>}
+      {isOpen && <div className="m-auto">{children}</div>}
     </div>
   );
 };
