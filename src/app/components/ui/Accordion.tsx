@@ -31,9 +31,7 @@ const Accordion: React.FC<Props> = ({
       {isOpen && (
         <div className="relative">
           <div className="overflow-y-auto h-[570px] px-3 ">{children}</div>
-
-          {/* 하단 그라데이션 고정 박스 */}
-          <div className="absolute bottom-0 left-0 right-0  bg-white h-[120px] p-4 flex justify-between items-center">
+          <div className="absolute bottom-0 bg-white left-0 right-0 h-[130px] px-4 border-t border-t-1 flex justify-between items-center">
             {children2}
           </div>
         </div>

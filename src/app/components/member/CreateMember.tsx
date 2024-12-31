@@ -4,10 +4,13 @@ import React, { useState } from "react";
 import BasicButton from "../ui/BasicButton";
 import Modal from "../ui/Modal";
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
+import { FaRegCircleCheck } from "react-icons/fa6";
 import Dropdown from "../ui/Dropdown";
 import Accordion from "../ui/Accordion";
+import Toggle from "../ui/Toggle";
 
 const CreateMember = () => {
+  const [isUnpaid, setIsUnpaid] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accordionStates, setAccordionStates] = useState<{
     [key: string]: boolean;
@@ -23,6 +26,17 @@ const CreateMember = () => {
   };
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const toggleUnpaidStatus = () => {
+    setIsUnpaid((prev) => !prev);
+  };
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   return (
     <div>
@@ -191,7 +205,7 @@ const CreateMember = () => {
               isOpen={accordionStates["이용권결제"]}
               toggleOpen={() => toggleAccordion("이용권결제")}
               children={
-                <div className="bg-white rounded-lg h-[900px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[950px] overflow-y-scroll">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     이용권 정보
                   </h3>
@@ -296,7 +310,7 @@ const CreateMember = () => {
                         <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
                         <input
                           type="date"
-                          defaultValue="2024-12-01"
+                          defaultValue={getCurrentDate()}
                           className="input-content"
                         />
                       </div>
@@ -305,30 +319,16 @@ const CreateMember = () => {
                 </div>
               }
               children2={
-                <div className="flex flex-col w-full">
+                <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
                   {/* 총금액 */}
-                  <div className="flex justify-between items-center border-t border-[#dfdfdf] p-4">
+                  <div className="flex justify-between items-center">
                     <h4 className="text-sm font-bold">총 금액</h4>
-                    <p className="text-2xl font-bold text-red-500">215,000</p>
+                    <p className="text-2xl font-bold text-[#DB5461]">215,000</p>
                   </div>
 
-                  {/* 하단 버튼 */}
-                  <div className="flex justify-between items-center px-4">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" className="w-4 h-4" />
-                      미납 여부
-                    </label>
-                    <div className="flex gap-2">
-                      <BasicButton size="small" color="danger" border={false}>
-                        삭제
-                      </BasicButton>
-                      <BasicButton size="small" color="secondary" border={true}>
-                        취소
-                      </BasicButton>
-                      <BasicButton size="small" color="primary" border={false}>
-                        저장
-                      </BasicButton>
-                    </div>
+                  {/* 미납 여부 */}
+                  <div className="flex items-center gap-2">
+                    <Toggle />
                   </div>
                 </div>
               }
@@ -342,7 +342,7 @@ const CreateMember = () => {
                 <h3 className="text-md">기타 결제 정보</h3>
               </div>
             </Accordion>
-            <div className="m-2 flex justify-end gap-4">
+            <div className="m-2 flex justify-end gap-4 ">
               <BasicButton
                 size="large"
                 color="secondary"
