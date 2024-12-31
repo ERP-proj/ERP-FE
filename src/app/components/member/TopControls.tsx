@@ -39,8 +39,9 @@ export default function TopControls() {
         defaultValue=""
         className="ml-4 w-[200px]"
       />
-
-      <CreateMember />
+      <div className="ml-auto">
+        <CreateMember />
+      </div>
     </div>
   );
 }

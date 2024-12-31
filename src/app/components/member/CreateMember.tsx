@@ -283,7 +283,6 @@ const CreateMember = () => {
                         결제 정보
                       </h3>
                       <div className="p-4">
-                        <h4 className="text-sm font-bold mb-2">결제 방법</h4>
                         <Pay />
 
                         {/* 등록일 */}
@@ -338,13 +337,12 @@ const CreateMember = () => {
                       />
                     </div>
 
-                    {/* 결제 정보 */}
+                    {/* 결제 방법 */}
                     <div className="mb-4">
                       <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                         결제 정보
                       </h3>
                       <div className="p-4">
-                        <h4 className="text-sm font-bold mb-2">결제 방법</h4>
                         <Pay />
 
                         {/* 등록일 */}

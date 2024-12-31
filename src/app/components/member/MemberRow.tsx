@@ -1,4 +1,20 @@
+"use client";
+import { useState } from "react";
+import { GoEye, GoEyeClosed } from "react-icons/go";
+
 export default function MemberRow({ member }: { member: any }) {
+  const [isPhoneHidden, setIsPhoneHidden] = useState<boolean>(true);
+
+  // 전화번호 숨김/표시 토글 함수
+  const togglePhoneVisibility = () => setIsPhoneHidden(!isPhoneHidden);
+
+  // 전화번호 마스킹 처리
+  const getMaskedPhone = (phone: string) => {
+    if (isPhoneHidden) {
+      return phone.replace(/(\d{3})-\d{4}-(\d{4})/, "$1-****-$2");
+    }
+    return phone;
+  };
   return (
     <div className="flex flex-wrap items-center justify-between p-4 bg-[#F2F8ED] rounded-lg gap-4">
       {/* 프로필 사진 및 기본 정보 */}
@@ -38,7 +54,14 @@ export default function MemberRow({ member }: { member: any }) {
               {member.licenseType}
             </div>
           </div>
-          <div className="text-gray-600 text-xs sm:text-sm">{member.phone}</div>
+          <div className="flex items-center gap-2">
+            <div className="text-gray-600 text-xs sm:text-sm">
+              {getMaskedPhone(member.phone)}
+            </div>
+            <div onClick={togglePhoneVisibility} className="cursor-pointer">
+              {isPhoneHidden ? <GoEye /> : <GoEyeClosed />}
+            </div>
+          </div>
           <div
             className={`px-2 w-12 sm:w-14 py-1 justify-center text-xs sm:text-sm rounded-full ${
               member.planType === "시간제"
