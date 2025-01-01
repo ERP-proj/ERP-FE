@@ -16,7 +16,7 @@ function SideBar() {
     router.push("/");
   };
   return (
-    <div className="flex flex-col h-full justify-center gap-4">
+    <div className="flex w-[130px] flex-col h-full justify-center gap-4">
       <Button className="py-6" onClick={handleNavigate}>
         <Image
           src="/sidebar/userIcon.png"
@@ -41,6 +41,7 @@ function SideBar() {
           height="28"
         />
       </Button>
+      {/* <button/> */}
     </div>
   );
 }
