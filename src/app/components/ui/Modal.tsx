@@ -3,7 +3,6 @@
 import React, { useEffect, useRef } from "react";
 
 interface ModalProps {
-  className?: string;
   isOpen: boolean; // 모달 표시 여부
   onClose: () => void; // 모달 닫기 함수
   leftChildren?: React.ReactNode; // 왼쪽 섹션 콘텐츠
@@ -13,7 +12,6 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-  className,
   leftChildren,
   rightChildren,
 }) => {

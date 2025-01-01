@@ -1,9 +1,7 @@
 import React from "react";
 
-interface Props {}
-
-const DetailMember: React.FC<Props> = ({}) => {
-  return <div></div>;
+const DetailMember: React.FC = ({}) => {
+  return <div>test</div>;
 };
 
 export default DetailMember;

@@ -3,9 +3,7 @@ import BasicButton from "../ui/BasicButton";
 import Dropdown from "../ui/Dropdown";
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
 
-interface Props {}
-
-const RegisterForm: React.FC<Props> = () => {
+const RegisterForm: React.FC = () => {
   const [rows, setRows] = useState([
     { id: 1, date: "", content: "" }, // 기본 1회차
   ]);

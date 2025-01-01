@@ -2,12 +2,11 @@
 
 import CreateMember from "@/app/components/member/CreateMember";
 import BasicButton from "@/app/components/ui/BasicButton";
-import Modal from "@/app/components/ui/Modal";
-import React, { useState } from "react";
+import React from "react";
 
 export default function page() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  false;
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // false;
 
   return (
     <div className="space-y-4">
@@ -36,7 +35,7 @@ export default function page() {
         size="medium"
         color="primary"
         border={false}
-        onClick={() => setIsModalOpen(true)}
+        // onClick={() => setIsModalOpen(true)}
       >
         회원 등록
       </BasicButton>

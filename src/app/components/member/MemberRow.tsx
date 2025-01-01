@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { GoEye, GoEyeClosed } from "react-icons/go";
+import Image from "next/image";
 
 export default function MemberRow({ member }: { member: any }) {
   const [isPhoneHidden, setIsPhoneHidden] = useState<boolean>(true);
@@ -21,9 +22,11 @@ export default function MemberRow({ member }: { member: any }) {
       <div className="flex items-center gap-4 flex-1 min-w-[250px]">
         <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#fff] rounded-full flex justify-center items-center text-white text-lg">
           {member.photoUrl ? (
-            <img
+            <Image
               src={member.photoUrl}
               alt={`${member.name}의 프로필`}
+              width={96}
+              height={96}
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
