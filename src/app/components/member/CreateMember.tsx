@@ -10,7 +10,7 @@ import Pay from "./Pay";
 import RegisterForm from "./RegisterForm";
 import { member } from "@/api/member";
 import { FormData } from "@/types/memberType";
-import Plan from "./GroupButtons";
+import Plan from "./Plan";
 
 const CreateMember = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import Image from "next/image";
 
-export default function MemberRow({ member }: { member: any }) {
+const MemberRow = ({ member }: { member: any }) => {
   const [isPhoneHidden, setIsPhoneHidden] = useState<boolean>(true);
 
   // 전화번호 숨김/표시 토글 함수
@@ -62,7 +62,7 @@ export default function MemberRow({ member }: { member: any }) {
               {getMaskedPhone(member.phone)}
             </div>
             <div onClick={togglePhoneVisibility} className="cursor-pointer">
-              {isPhoneHidden ? <GoEye /> : <GoEyeClosed />}
+              {isPhoneHidden ? <GoEyeClosed /> : <GoEye />}
             </div>
           </div>
           <div
@@ -138,4 +138,6 @@ export default function MemberRow({ member }: { member: any }) {
       </div>
     </div>
   );
-}
+};
+
+export default MemberRow;
