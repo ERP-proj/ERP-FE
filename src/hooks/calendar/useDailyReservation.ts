@@ -10,6 +10,8 @@ dayjs.extend(utc);
 export const useReservations = (date: string, calendarInstance: any) => {
   const [error, setError] = useState<string | null>(null);
 
+  const resourceColorMap: { [key: string]: string } = {};
+
   useEffect(() => {
     if (!date || !calendarInstance.current) return;
 
@@ -25,29 +27,26 @@ export const useReservations = (date: string, calendarInstance: any) => {
         );
 
         // 이벤트에 랜덤 색상 추가
-        const eventWithRandomColors = reservationEvents.map((event) => {
-          const randomColor =
-            colorList[Math.floor(Math.random() * colorList.length)];
+        const eventWithColors = reservationEvents.map((event) => {
+          // resourceId가 없으면 색상 할당
+          if (!resourceColorMap[event.resourceId]) {
+            // 색상 목록에서 랜덤 색상 선택
+            const randomColor =
+              colorList[Math.floor(Math.random() * colorList.length)];
+            resourceColorMap[event.resourceId] = randomColor;
+          }
+
+          // resourceId에 매핑된 색상을 사용
+          const color = resourceColorMap[event.resourceId];
+
           return {
             ...event,
-            backgroundColor: randomColor,
-            borderColor: randomColor,
+            backgroundColor: color,
+            borderColor: color,
           };
         });
 
-        // 회원 이름으로 구성된 열 생성
-        const uniqueNameColumns = [
-          ...new Set(reservationEvents.map((item) => item.title)),
-        ];
-
-        // resources의 id와 event의 resourceId를 회원 이름으로 매핑
-        // fullCalendar 라이브러리가 알아볼 수 있도록 함.
-
-        // unique한 회원 이름으로 구성된 columnList 생성
-        const columnList = uniqueNameColumns.map((name) => ({
-          id: name,
-          title: name,
-        }));
+        console.log("reservationEvents--------------", reservationEvents);
 
         console.log(calendarInstance.current);
         console.log(Object.getOwnPropertyNames(calendarInstance.current));
@@ -55,8 +54,7 @@ export const useReservations = (date: string, calendarInstance: any) => {
         if (calendarInstance.current) {
           // 기존 이벤트 삭제 및 리소스 정의 및 새로운 이벤트 추가
           calendarInstance.current.removeAllEvents();
-          calendarInstance.current.setOption("resources", columnList);
-          calendarInstance.current.addEventSource(eventWithRandomColors);
+          calendarInstance.current.addEventSource(eventWithColors);
         }
       } catch (err: unknown) {
         if (err instanceof Error) {

@@ -38,21 +38,19 @@ export const calendarSetup = (
 
     // Set calendar resources
     resources: [
-      { id: "1", title: "더미1" },
-      { id: "2", title: "더미2" },
-      { id: "3", title: "더미3" },
-      { id: "4", title: "더미4" },
+      { id: "SeatNumber1", title: "1" },
+      { id: "SeatNumber2", title: "2" },
+      { id: "SeatNumber3", title: "3" },
+      { id: "SeatNumber4", title: "4" },
+      { id: "SeatNumber5", title: "5" },
+      { id: "SeatNumber6", title: "6" },
+      { id: "SeatNumber7", title: "7" },
+      { id: "SeatNumber8", title: "8" },
     ],
 
     // Set event items
     events: [],
     eventTextColor: "#000000",
-    // eventMouseEnter: function (info) {
-    //   info.el.style.backgroundColor = "rgb(250, 204, 21)";
-    // },
-    // eventMouseLeave: function (info) {
-    //   info.el.style.backgroundColor = "rgb(254, 240, 138)";
-    // },
 
     // Set event click Callback
     eventClick: function (info) {
