@@ -16,7 +16,7 @@ export default function Home() {
       <div className="flex-[50_0_0]">
         <TimeTable setSelectedEvent={setSelectedEvent} />
       </div>
-      <div className="flex-[4_0_0] max-w-96 min-w-72 text-center flex-col">
+      <div className="flex-[50_0_0] max-w-screen-md min-w-72 text-center flex-col">
         <NextReservation />
         {selectedEvent ? (
           <UserReservationInfo event={selectedEvent} />

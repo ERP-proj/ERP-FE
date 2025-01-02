@@ -14,6 +14,7 @@ export default function transformReservationsToEvents(reservations: any[]) {
       start: startTime,
       end: endTime,
       resourceId: `SeatNumber${res.seatNumber}`,
+      id: `SeatNumber${res.seatNumber}`,
     };
   });
 }

@@ -10,9 +10,9 @@ dayjs.extend(utc);
 export const useReservations = (date: string, calendarInstance: any) => {
   const [error, setError] = useState<string | null>(null);
 
-  const resourceColorMap: { [key: string]: string } = {};
-
   useEffect(() => {
+    const resourceColorMap: { [key: string]: string } = {};
+
     if (!date || !calendarInstance.current) return;
 
     const loadReservation = async () => {

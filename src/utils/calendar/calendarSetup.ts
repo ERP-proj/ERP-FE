@@ -58,15 +58,21 @@ export const calendarSetup = (
       const userName = eventObj?.title;
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
-      // be 수정 후 수정 필요
-      const userId = eventObj?.id;
+      const seatNumber = eventObj?.id;
 
       console.log("---------Set event click Callback", info);
-      console.log("userName/startDate/endDate", userName, startDate, endDate);
+      console.log(
+        "userName/startDate/endDate/userId/eventObj",
+        userName,
+        startDate,
+        endDate,
+        seatNumber,
+        eventObj
+      );
 
       setSelectedEvent({
         userName,
-        userId,
+        seatNumber,
         startDate,
         endDate,
       });
@@ -78,44 +84,22 @@ export const calendarSetup = (
       const end = info.end;
       const resourceId = info.resource?.id;
 
-      const overlappingEvents = calendar.getEvents().filter((event) => {
-        if (event.start && event.end) {
-          return (
-            (event.start >= start && event.start < end) ||
-            (event.end > start && event.end <= end) ||
-            (event.start <= start && event.end >= end)
-          );
-        }
-        return false;
-      });
+      console.log("infoooo", info);
+      const title = prompt("새로운 예약");
+      if (title) {
+        calendar.addEvent({
+          title,
+          start,
+          end,
+          resourceId,
+          extendedProps: {
+            seatNumber: resourceId,
+          },
+        });
 
-      if (overlappingEvents.length > 0) {
         alert(
-          `선택한 시간이 겹칩니다: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\n` +
-            `겹치는 이벤트:\n` +
-            overlappingEvents
-              .map(
-                (e) =>
-                  `- ${
-                    e.title
-                  } (${e.start?.toLocaleTimeString()} - ${e.end?.toLocaleTimeString()})`
-              )
-              .join("\n")
+          `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
         );
-      } else {
-        const title = prompt("새로운 예약");
-        if (title) {
-          calendar.addEvent({
-            title,
-            start,
-            end,
-            resourceId,
-          });
-
-          alert(
-            `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
-          );
-        }
       }
     },
 
