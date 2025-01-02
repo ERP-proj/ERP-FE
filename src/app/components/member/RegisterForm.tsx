@@ -2,8 +2,19 @@ import React, { useState } from "react";
 import BasicButton from "../ui/BasicButton";
 import Dropdown from "../ui/Dropdown";
 import { CiCirclePlus, CiCamera } from "react-icons/ci";
+import { FormData } from "@/types/memberType";
+export interface RegisterFormProps {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+}
 
-const RegisterForm: React.FC = () => {
+const RegisterForm: React.FC<RegisterFormProps> = ({
+  formData,
+  setFormData,
+}) => {
+  const handleInputChange = (key: string, value: any) => {
+    setFormData((prevData) => ({ ...prevData, [key]: value }));
+  };
   const [rows, setRows] = useState([
     { id: 1, date: "", content: "" }, // 기본 1회차
   ]);
@@ -56,6 +67,8 @@ const RegisterForm: React.FC = () => {
             type="text"
             placeholder="이름"
             className="input-content w-full"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
           />
         </div>
         <div>
@@ -63,8 +76,13 @@ const RegisterForm: React.FC = () => {
           <Dropdown
             options={["여", "남"]}
             placeholder="성별"
-            defaultValue="여"
+            defaultValue={formData.gender === "MALE" ? "남" : "여"}
             className="w-full"
+            onChange={(value) => {
+              // 한국어 -> 서버 요구 형식으로 변환
+              const mappedGender = value === "남" ? "MALE" : "FEMALE";
+              handleInputChange("gender", mappedGender);
+            }}
           />
         </div>
         <div>
@@ -75,6 +93,8 @@ const RegisterForm: React.FC = () => {
             type="date"
             placeholder="생년월일"
             className="input-content w-full"
+            value={formData.birthDate}
+            onChange={(e) => handleInputChange("birthDate", e.target.value)}
           />
         </div>
         <div>
@@ -83,6 +103,8 @@ const RegisterForm: React.FC = () => {
             type="text"
             placeholder="01012341234"
             className="input-content w-full"
+            value={formData.phone}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -91,6 +113,8 @@ const RegisterForm: React.FC = () => {
             type="text"
             placeholder="주소를 입력해주세요."
             className="input-content w-full"
+            value={formData.address}
+            onChange={(e) => handleInputChange("address", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -105,14 +129,13 @@ const RegisterForm: React.FC = () => {
           <textarea
             placeholder="메모할 내용을 입력해주세요."
             className="input-content w-full"
+            value={formData.memo}
+            onChange={(e) => handleInputChange("memo", e.target.value)}
           ></textarea>
         </div>
         <div className="col-span-2">
           <label className="block text-sm text-gray-600 mb-1">약관</label>
-          <textarea
-            placeholder="약관내용입니다."
-            className="input-content w-full"
-          ></textarea>
+          <p>약관약관약관약관약관약관</p>
         </div>
       </div>
 

@@ -8,6 +8,9 @@ import Accordion from "../ui/Accordion";
 import Toggle from "../ui/Toggle";
 import Pay from "./Pay";
 import RegisterForm from "./RegisterForm";
+import { member } from "@/api/member";
+import { FormData } from "@/types/memberType";
+import Plan from "./Plan";
 
 const CreateMember = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +19,23 @@ const CreateMember = () => {
   }>({
     이용권결제: false,
     기타결제: false,
+  });
+
+  const [formData, setFormData] = useState<FormData>({
+    planId: 1,
+    name: "",
+    gender: "MALE",
+    phone: "",
+    address: "",
+    birthDate: "",
+    memo: "",
+    paymentsMethod: "CARD",
+    planPayment: {
+      registrationAt: new Date().toISOString(),
+      discount: 0,
+      status: true,
+    },
+    otherPayment: [],
   });
 
   const toggleAccordion = (key: string) => {
@@ -36,6 +56,20 @@ const CreateMember = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // 회원 등록 API 호출
+  const handleRegister = async () => {
+    try {
+      const response = await member.registMember(formData);
+      console.log("Registering member with data:", formData); // formData 확인
+      console.log("회원 등록 성공:", response);
+      alert("회원 등록이 성공적으로 완료되었습니다!");
+      closeModal();
+    } catch (error) {
+      console.error("회원 등록 실패:", error);
+      alert("회원 등록에 실패했습니다.");
+    }
+  };
+
   return (
     <div>
       {/* 회원 등록 버튼 */}
@@ -53,7 +87,9 @@ const CreateMember = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        leftChildren={<RegisterForm />}
+        leftChildren={
+          <RegisterForm formData={formData} setFormData={setFormData} />
+        }
         rightChildren={
           <div className="relative h-full flex flex-col">
             <div className="flex-grow">
@@ -79,38 +115,14 @@ const CreateMember = () => {
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[950px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[1100px] ">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     이용권 정보
                   </h3>
 
-                  {/* 구분 */}
-                  <div className="mb-4 p-4">
-                    <h4 className="text-sm font-bold mb-2">구분</h4>
-                    <div className="flex gap-2">
-                      <button className="w-1/2 py-2 rounded-md bg-[#3C6229] text-white text-sm font-semibold">
-                        1종
-                      </button>
-                      <button className="w-1/2 py-2 rounded-md bg-gray-200 text-gray-600 text-sm font-semibold">
-                        2종
-                      </button>
-                    </div>
-                  </div>
-
                   {/* 이용권 */}
-                  <div className="mb-4 px-4">
-                    <h4 className="text-sm font-bold mb-2">이용권</h4>
-                    <Dropdown
-                      options={[
-                        "10시간 이용권",
-                        "15시간 이용권",
-                        "20시간 이용권",
-                        "1개월 이용권",
-                      ]}
-                      placeholder="이용권 선택"
-                      defaultValue="10시간 이용권"
-                      className="w-full p-2"
-                    />
+                  <div className="mb-4">
+                    <Plan />
                   </div>
 
                   {/* 할인 */}
@@ -244,7 +256,12 @@ const CreateMember = () => {
               >
                 취소
               </BasicButton>
-              <BasicButton size="large" color="primary" border={false}>
+              <BasicButton
+                size="large"
+                color="primary"
+                border={false}
+                onClick={handleRegister}
+              >
                 저장
               </BasicButton>
             </div>
