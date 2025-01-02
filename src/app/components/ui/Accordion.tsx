@@ -13,7 +13,7 @@ const Accordion: React.FC<Props> = ({
   title,
   isOpen,
   toggleOpen,
-  footer,
+  footer = null,
   children,
 }) => {
   return (

@@ -8,6 +8,8 @@ import Accordion from "../ui/Accordion";
 import Toggle from "../ui/Toggle";
 import Pay from "./Pay";
 import RegisterForm from "./RegisterForm";
+import { member } from "@/api/member";
+import { FormData } from "@/types/memberType";
 
 const CreateMember = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +18,23 @@ const CreateMember = () => {
   }>({
     이용권결제: false,
     기타결제: false,
+  });
+
+  const [formData, setFormData] = useState<FormData>({
+    planId: 1,
+    name: "",
+    gender: "MALE",
+    phone: "",
+    address: "",
+    birthDate: "",
+    memo: "",
+    paymentsMethod: "CARD",
+    planPayment: {
+      registrationAt: new Date().toISOString(),
+      discount: 0,
+      status: true,
+    },
+    otherPayment: [],
   });
 
   const toggleAccordion = (key: string) => {
@@ -36,6 +55,19 @@ const CreateMember = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // 회원 등록 API 호출
+  const handleRegister = async () => {
+    try {
+      const response = await member.registMember(formData);
+      console.log("회원 등록 성공:", response);
+      alert("회원 등록이 성공적으로 완료되었습니다!");
+      closeModal();
+    } catch (error) {
+      console.error("회원 등록 실패:", error);
+      alert("회원 등록에 실패했습니다.");
+    }
+  };
+
   return (
     <div>
       {/* 회원 등록 버튼 */}
@@ -53,7 +85,9 @@ const CreateMember = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        leftChildren={<RegisterForm />}
+        leftChildren={
+          <RegisterForm formData={formData} setFormData={setFormData} />
+        }
         rightChildren={
           <div className="relative h-full flex flex-col">
             <div className="flex-grow">
@@ -244,7 +278,12 @@ const CreateMember = () => {
               >
                 취소
               </BasicButton>
-              <BasicButton size="large" color="primary" border={false}>
+              <BasicButton
+                size="large"
+                color="primary"
+                border={false}
+                onClick={handleRegister}
+              >
                 저장
               </BasicButton>
             </div>

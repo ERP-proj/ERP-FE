@@ -10,7 +10,7 @@ function SideBar() {
   const router = useRouter();
 
   const handleNavigate = () => {
-    router.push("/members/list");
+    router.push("/members/");
   };
   const handleNavigate2 = () => {
     router.push("/");
