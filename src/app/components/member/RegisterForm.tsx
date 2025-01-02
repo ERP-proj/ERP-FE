@@ -76,9 +76,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <Dropdown
             options={["여", "남"]}
             placeholder="성별"
-            defaultValue="여"
+            defaultValue={formData.gender === "MALE" ? "남" : "여"}
             className="w-full"
-            onChange={(value) => handleInputChange("gender", value)}
+            onChange={(value) => {
+              // 한국어 -> 서버 요구 형식으로 변환
+              const mappedGender = value === "남" ? "MALE" : "FEMALE";
+              handleInputChange("gender", mappedGender);
+            }}
           />
         </div>
         <div>
@@ -131,10 +135,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         </div>
         <div className="col-span-2">
           <label className="block text-sm text-gray-600 mb-1">약관</label>
-          <textarea
-            placeholder="약관내용입니다."
-            className="input-content w-full"
-          ></textarea>
+          <p>약관약관약관약관약관약관</p>
         </div>
       </div>
 

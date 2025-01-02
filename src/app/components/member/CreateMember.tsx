@@ -59,6 +59,7 @@ const CreateMember = () => {
   const handleRegister = async () => {
     try {
       const response = await member.registMember(formData);
+      console.log("Registering member with data:", formData); // formData 확인
       console.log("회원 등록 성공:", response);
       alert("회원 등록이 성공적으로 완료되었습니다!");
       closeModal();
