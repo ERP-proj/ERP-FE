@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import Image from "next/image";
+import { formatDate } from "@/utils/formatDate";
 
 const MemberRow = ({ member }: { member: any }) => {
   const [isPhoneHidden, setIsPhoneHidden] = useState<boolean>(true);
@@ -83,6 +84,59 @@ const MemberRow = ({ member }: { member: any }) => {
       <div className="flex items-center justify-center font-medium flex-1 min-w-[150px]">
         <div className="text-xs sm:text-sm bg-[#f6f6f6] border border-[#d1d1d1] px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[#3a3a3a]">
           {member.planName}
+        </div>
+      </div>
+
+      {/* 남은 시간 */}
+      <div className="flex flex-1 items-center justify-center gap-4 min-w-[300px]">
+        {/* 사용시간 */}
+        <div className="square">
+          <span className="text-gray-600 text-sm">사용시간</span>
+          <span className="text-red-600 font-bold text-lg">
+            {member.usedTime}H
+          </span>
+        </div>
+
+        {/* 잔여시간 */}
+        {member.planType === "PERIOD_BASED" ? null : (
+          <div className="square">
+            <span className="text-gray-600 text-sm">잔여시간</span>
+            <span className="text-red-600 font-bold text-lg">
+              {member.remainingTime}H
+            </span>
+          </div>
+        )}
+
+        {/* 잔여기간 */}
+        <div className="square">
+          <span className="text-gray-600 text-sm">잔여기간</span>
+          <span className="text-red-600 font-bold text-lg">
+            {member.remainingPeriod}D
+          </span>
+        </div>
+      </div>
+
+      {/* 지각/결석 */}
+      <div className="flex flex-col items-center justify-center bg-white border border-[#B4D89C] rounded-lg w-[70px] sm:w-[86px] h-[60px] sm:h-[70px]">
+        <span className="text-gray-500 text-xs sm:text-sm leading-tight">
+          지각/결석
+        </span>
+        <span className="text-gray-800 font-bold text-sm sm:text-lg">
+          {member.tardinessCount}/{member.absenceCount}
+        </span>
+      </div>
+
+      {/* 등록일 및 기타 결제 */}
+      <div className="flex flex-col items-end flex-1 min-w-[150px]">
+        <div className="text-gray-500 text-xs sm:text-sm">
+          {formatDate(member.registrationDate)}
+        </div>
+        <div
+          className={`text-xs sm:text-sm font-bold ${
+            member.payment > 0 ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {member.payment > 0 ? `+${member.payment}` : `${member.payment}`}
         </div>
       </div>
     </div>
