@@ -1,24 +1,34 @@
-import UserReservationInfo from "@/app/main/UserReservationInfo";
-import { Dialog, DialogContent, DialogOverlay } from "@radix-ui/react-dialog";
+import SelectedEventModal from "@/app/main/SelectedEventModal";
+import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-interface ResrvationModalProps {
+interface ReservationModalProps {
   selectedEvent: any;
   onClose: () => void;
 }
 
-const ReservationModal: React.FC<ResrvationModalProps> = ({
+const ReservationModal: React.FC<ReservationModalProps> = ({
   selectedEvent,
   onClose,
 }) => {
+  if (!selectedEvent) return null;
+
+  const { position } = selectedEvent;
+
   return (
-    <Dialog open={!!selectedEvent} onOpenChange={onClose}>
-      <DialogOverlay className="fixed inset-0 bg-black bg-opacity-30" />
-      <DialogContent className="flex inset-0 m-auto max-w-lg p-4 bg-white rounded-lg shadow-lg">
-        {selectedEvent ? (
-          <UserReservationInfo event={selectedEvent} />
-        ) : (
-          "선택된 이벤트가 없습니다."
-        )}
+    <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        className="absolute z-50 bg-white p-6 rounded-xl shadow-lg"
+        style={{
+          top: position?.top || "50%",
+          left: position?.left || "50%",
+          transform: position ? "none" : "translate(-50%, -50%)",
+        }}
+      >
+        <DialogTitle>
+          <VisuallyHidden>숨겨진 제목</VisuallyHidden>
+        </DialogTitle>
+        <SelectedEventModal event={selectedEvent} onClose={onClose} />
       </DialogContent>
     </Dialog>
   );

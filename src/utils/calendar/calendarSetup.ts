@@ -59,23 +59,34 @@ export const calendarSetup = (
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
       const seatNumber = eventObj?.id;
+      const target = info.jsEvent.target as HTMLElement | null;
 
-      console.log("---------Set event click Callback", info);
-      console.log(
-        "userName/startDate/endDate/userId/eventObj",
-        userName,
-        startDate,
-        endDate,
-        seatNumber,
-        eventObj
-      );
+      if (target && target.getBoundingClientRect) {
+        const rect = target.getBoundingClientRect();
+        const position = {
+          top: rect.top + window.scrollY + rect.height / 4,
+          left: rect.left + window.scrollX + rect.width * 1.2,
+        };
 
-      setSelectedEvent({
-        userName,
-        seatNumber,
-        startDate,
-        endDate,
-      });
+        console.log("클릭한 이벤트 위치:", position);
+
+        console.log(
+          "userName/startDate/endDate/userId/eventObj",
+          userName,
+          startDate,
+          endDate,
+          seatNumber,
+          eventObj
+        );
+
+        setSelectedEvent({
+          userName,
+          seatNumber,
+          startDate,
+          endDate,
+          position,
+        });
+      }
     },
 
     // Set drag Callback
