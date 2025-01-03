@@ -53,4 +53,17 @@ export const member = {
       throw error;
     }
   },
+
+  //검색api
+  async searchCustomerName(keyword: string) {
+    try {
+      const response = await defaultApi.get(
+        `/customer/searchCustomerName/${encodeURIComponent(keyword)}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("고객 검색 API 호출 오류:", error);
+      throw new Error("고객 검색 API 호출 실패");
+    }
+  },
 };
