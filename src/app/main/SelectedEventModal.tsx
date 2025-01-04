@@ -48,16 +48,16 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        {/* 모달 제목 */}
+        {/* Modal title */}
         <div className="text-lg font-semibold">예약 수정</div>
-        {/* 모달 close 버튼 */}
+        {/* Modal close button */}
         <Button className="size-12" onClick={onClose}>
           <Image src={closeIcon} alt="closeIcon" />
         </Button>
       </div>
 
       <div className="flex">
-        {/* 회원 사진 */}
+        {/* User photo */}
         <div className="flex justify-center items-center size-32 mx-2">
           {userData?.photoUrl ? (
             <Image
@@ -70,9 +70,9 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           )}
         </div>
 
-        {/* 기본 정보 */}
+        {/* basic info */}
         <div className="flex w-5/12 flex-col mx-2">
-          {/* 예약 시간 */}
+          {/* reservation time */}
           <div className="flex text-left m-2 font-semibold">예약 시간</div>
           <div>
             <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
@@ -84,19 +84,19 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             </span>
           </div>
 
-          {/* 회원명 */}
+          {/* User name */}
           <div className="text-left m-2 font-semibold">성함</div>
           <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
             {event?.userName ? event?.userName : "더미회원이름"}
           </div>
 
-          {/* 전화 번호 */}
+          {/* User mobile number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
           <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
             {userData?.phone ? userData?.phone : "010-0000-0000"}
           </div>
 
-          {/* 이벤트 종료 기간 */}
+          {/* Event termination period */}
           <div className="text-left m-2 font-semibold">
             <span>이벤트 종료 기간</span>
             <span>남은 기간</span>
@@ -118,7 +118,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             </p>
           </div>
 
-          {/* 지각/결석 */}
+          {/* Late/absent check */}
           <div className="text-left m-2 font-semibold">지각/결석</div>
           <div className="flex flex-row gap-3 align-center justify-center">
             <span className="flex gap-1">
