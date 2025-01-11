@@ -38,21 +38,19 @@ export const calendarSetup = (
 
     // Set calendar resources
     resources: [
-      { id: "1", title: "더미1" },
-      { id: "2", title: "더미2" },
-      { id: "3", title: "더미3" },
-      { id: "4", title: "더미4" },
+      { id: "SeatNumber1", title: "1" },
+      { id: "SeatNumber2", title: "2" },
+      { id: "SeatNumber3", title: "3" },
+      { id: "SeatNumber4", title: "4" },
+      { id: "SeatNumber5", title: "5" },
+      { id: "SeatNumber6", title: "6" },
+      { id: "SeatNumber7", title: "7" },
+      { id: "SeatNumber8", title: "8" },
     ],
 
     // Set event items
     events: [],
     eventTextColor: "#000000",
-    // eventMouseEnter: function (info) {
-    //   info.el.style.backgroundColor = "rgb(250, 204, 21)";
-    // },
-    // eventMouseLeave: function (info) {
-    //   info.el.style.backgroundColor = "rgb(254, 240, 138)";
-    // },
 
     // Set event click Callback
     eventClick: function (info) {
@@ -60,18 +58,35 @@ export const calendarSetup = (
       const userName = eventObj?.title;
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
-      // be 수정 후 수정 필요
-      const userId = eventObj?.id;
+      const seatNumber = eventObj?.id;
+      const target = info.jsEvent.target as HTMLElement | null;
 
-      console.log("---------Set event click Callback", info);
-      console.log("userName/startDate/endDate", userName, startDate, endDate);
+      if (target && target.getBoundingClientRect) {
+        const rect = target.getBoundingClientRect();
+        const position = {
+          top: rect.top + window.scrollY + rect.height / 4,
+          left: rect.left + window.scrollX + rect.width * 1.2,
+        };
 
-      setSelectedEvent({
-        userName,
-        userId,
-        startDate,
-        endDate,
-      });
+        console.log("클릭한 이벤트 위치:", position);
+
+        console.log(
+          "userName/startDate/endDate/userId/eventObj",
+          userName,
+          startDate,
+          endDate,
+          seatNumber,
+          eventObj
+        );
+
+        setSelectedEvent({
+          userName,
+          seatNumber,
+          startDate,
+          endDate,
+          position,
+        });
+      }
     },
 
     // Set drag Callback
@@ -80,44 +95,22 @@ export const calendarSetup = (
       const end = info.end;
       const resourceId = info.resource?.id;
 
-      const overlappingEvents = calendar.getEvents().filter((event) => {
-        if (event.start && event.end) {
-          return (
-            (event.start >= start && event.start < end) ||
-            (event.end > start && event.end <= end) ||
-            (event.start <= start && event.end >= end)
-          );
-        }
-        return false;
-      });
+      console.log("infoooo", info);
+      const title = prompt("새로운 예약");
+      if (title) {
+        calendar.addEvent({
+          title,
+          start,
+          end,
+          resourceId,
+          extendedProps: {
+            seatNumber: resourceId,
+          },
+        });
 
-      if (overlappingEvents.length > 0) {
         alert(
-          `선택한 시간이 겹칩니다: \nStart: ${info.startStr}\nEnd: ${info.endStr}\n\n` +
-            `겹치는 이벤트:\n` +
-            overlappingEvents
-              .map(
-                (e) =>
-                  `- ${
-                    e.title
-                  } (${e.start?.toLocaleTimeString()} - ${e.end?.toLocaleTimeString()})`
-              )
-              .join("\n")
+          `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
         );
-      } else {
-        const title = prompt("새로운 예약");
-        if (title) {
-          calendar.addEvent({
-            title,
-            start,
-            end,
-            resourceId,
-          });
-
-          alert(
-            `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
-          );
-        }
       }
     },
 

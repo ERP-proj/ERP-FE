@@ -9,10 +9,12 @@ export default function transformReservationsToEvents(reservations: any[]) {
     const endTime = res?.endTime;
 
     return {
-      resourceId: `${res.name}`,
+      // resourceId: `${res.name}`,
       title: `${res.name}`,
       start: startTime,
       end: endTime,
+      resourceId: `SeatNumber${res.seatNumber}`,
+      id: `SeatNumber${res.seatNumber}`,
     };
   });
 }
