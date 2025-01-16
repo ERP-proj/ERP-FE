@@ -11,3 +11,11 @@ export const formatDate = (dateString: string): string => {
 
   return `${year}/${month}/${day}`; // yyyy/MM/dd 형식으로 반환
 };
+
+export const getCurrentDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};

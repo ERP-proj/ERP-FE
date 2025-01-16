@@ -1,22 +1,17 @@
 "use client";
+
 import React, { useState } from "react";
+import { CiCamera, CiCirclePlus } from "react-icons/ci";
 import BasicButton from "../ui/BasicButton";
+import { CustomerDetailData } from "@/types/memberType";
 import Dropdown from "../ui/Dropdown";
-import { CiCirclePlus, CiCamera } from "react-icons/ci";
-import { FormData } from "@/types/memberType";
-export interface RegisterFormProps {
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+
+interface DetailFormProps {
+  member: CustomerDetailData;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({
-  formData,
-  setFormData,
-}) => {
-  console.log("setFormData:", setFormData);
-  const handleInputChange = (key: string, value: any) => {
-    setFormData((prevData) => ({ ...prevData, [key]: value }));
-  };
+const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
+  const [accordionOpenKey, setAccordionOpenKey] = useState<string>("");
   const [rows, setRows] = useState([
     { id: 1, date: "", content: "" }, // 기본 1회차
   ]);
@@ -28,6 +23,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
     ]);
   };
 
+  const toggleAccordion = (key: string) => {
+    setAccordionOpenKey((prev) => (prev === key ? "" : key));
+  };
+
   return (
     <div className="space-y-6 p-6">
       {/* 이미지 선택 */}
@@ -35,10 +34,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
         <div className="image-selector">
           <div className="image-selector-background"></div>
           <div className="image-selector-content">
-            <span className="image-selector-icon">
-              <CiCamera />
-            </span>
-            <span className="image-selector-text">이미지 선택</span>
+            {member.photoUrl ? (
+              <img
+                src={member.photoUrl}
+                alt={`${member.name}의 프로필`}
+                className="w-full h-full rounded-full object-cover"
+              />
+            ) : (
+              <span>
+                <CiCamera />
+              </span>
+            )}
           </div>
         </div>
         <div className="flex gap-2">
@@ -69,8 +75,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="text"
             placeholder="이름"
             className="input-content w-full"
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
+            value={member.name}
+            // onChange={(e) => handleInputChange("name", e.target.value)}
           />
         </div>
         <div>
@@ -78,12 +84,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <Dropdown
             options={["여", "남"]}
             placeholder="성별"
-            defaultValue={formData.gender === "MALE" ? "남" : "여"}
+            defaultValue={member.gender === "MALE" ? "남" : "여"}
             className="w-full"
-            onChange={(value) => {
-              const mappedGender = value === "남" ? "MALE" : "FEMALE";
-              handleInputChange("gender", mappedGender);
-            }}
+            // onChange={(value) => {
+            //   const mappedGender = value === "남" ? "MALE" : "FEMALE";
+            //   handleInputChange("gender", mappedGender);
+            // }}
           />
         </div>
         <div>
@@ -94,8 +100,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="date"
             placeholder="생년월일"
             className="input-content w-full"
-            value={formData.birthDate}
-            onChange={(e) => handleInputChange("birthDate", e.target.value)}
+            // value={member.birthDate}
+            // onChange={(e) => handleInputChange("birthDate", e.target.value)}
           />
         </div>
         <div>
@@ -104,8 +110,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="text"
             placeholder="01012341234"
             className="input-content w-full"
-            value={formData.phone}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
+            value={member.phone}
+            // onChange={(e) => handleInputChange("phone", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -114,8 +120,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             type="text"
             placeholder="주소를 입력해주세요."
             className="input-content w-full"
-            value={formData.address}
-            onChange={(e) => handleInputChange("address", e.target.value)}
+            value={member.address}
+            // onChange={(e) => handleInputChange("address", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -123,8 +129,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <textarea
             placeholder="방문 경로를 입력해주세요."
             className="input-content w-full"
-            value={formData.visitPath}
-            onChange={(e) => handleInputChange("visitPath", e.target.value)}
+            value={member.visitPath || ""}
+            // onChange={(e) => handleInputChange("visitPath", e.target.value)}
           ></textarea>
         </div>
         <div className="col-span-2">
@@ -132,13 +138,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <textarea
             placeholder="메모할 내용을 입력해주세요."
             className="input-content w-full"
-            value={formData.memo}
-            onChange={(e) => handleInputChange("memo", e.target.value)}
+            value={member.memo || ""}
+            // onChange={(e) => handleInputChange("memo", e.target.value)}
           ></textarea>
-        </div>
-        <div className="col-span-2">
-          <label className="block text-sm text-gray-600 mb-1">약관</label>
-          <p>약관약관약관약관약관약관</p>
         </div>
       </div>
 
@@ -205,4 +207,4 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   );
 };
 
-export default RegisterForm;
+export default DetailForm;

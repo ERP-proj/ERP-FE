@@ -6,62 +6,89 @@ import Modal from "../ui/Modal";
 import Dropdown from "../ui/Dropdown";
 import Accordion from "../ui/Accordion";
 import Toggle from "../ui/Toggle";
-import Pay from "./Pay";
 import RegisterForm from "./RegisterForm";
-import { member } from "@/api/member";
-import { FormData } from "@/types/memberType";
+import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
+import { FormData } from "@/types/memberType";
+import { getCurrentDate } from "@/utils/formatDate";
 
-const CreateMember = () => {
+const initialFormData: FormData = {
+  planId: 0,
+  name: "",
+  gender: "MALE",
+  phone: "",
+  address: "",
+  visitPath: "",
+  birthDate: "",
+  memo: "",
+  planPayment: {
+    paymentsMethod: "CARD", // 기본값 설정
+    registrationAt: new Date().toISOString().split("T")[0],
+    discountRate: 0,
+    status: false,
+    licenseType: "",
+    planName: "",
+    planPrice: 0,
+    discountPrice: 0,
+    paymentTotal: 0,
+  },
+  otherPayment: {
+    paymentsMethod: "CARD", // 기본값 설정
+    registrationAt: new Date().toISOString().split("T")[0],
+    content: "",
+    price: 0,
+    status: false,
+  },
+};
+const CreateMember: React.FC<{
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+}> = ({ formData = initialFormData, setFormData }) => {
+  const handleInputChange = (
+    key: string,
+    value: string | number | undefined
+  ) => {
+    const keys = key.split(".");
+    setFormData((prevData) => {
+      const newData: FormData = { ...prevData };
+      let obj: any = newData;
+
+      keys.forEach((k, index) => {
+        if (index === keys.length - 1) {
+          obj[k] = value;
+        } else {
+          obj[k] = obj[k] || {};
+          obj = obj[k];
+        }
+      });
+
+      return newData;
+    });
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [accordionStates, setAccordionStates] = useState<{
-    [key: string]: boolean;
-  }>({
-    이용권결제: false,
-    기타결제: false,
-  });
-
-  const [formData, setFormData] = useState<FormData>({
-    planId: 1,
-    name: "",
-    gender: "MALE",
-    phone: "",
-    address: "",
-    birthDate: "",
-    memo: "",
-    paymentsMethod: "CARD",
-    planPayment: {
-      registrationAt: new Date().toISOString(),
-      discount: 0,
-      status: true,
-    },
-    otherPayment: [],
-  });
-
+  const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
+  const [selectedPlanMethod, setSelectedPlanMethod] = useState<string>("");
+  const [selectedOtherMethod, setSelectedOtherMethod] = useState<string>("");
   const toggleAccordion = (key: string) => {
-    setAccordionStates((prevState) => ({
-      ...prevState,
-      [key]: !prevState[key],
-    }));
+    setAccordionOpenKey((prevKey) => (prevKey === key ? null : key));
+  };
+  const handleMethodClick = (method: string) => {
+    setSelectedPlanMethod(method === selectedPlanMethod ? "" : method);
+  };
+
+  const handleMethodClick2 = (method: string) => {
+    setSelectedOtherMethod(method === selectedOtherMethod ? "" : method);
   };
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  // 회원 등록 API 호출
   const handleRegister = async () => {
     try {
-      const response = await member.registMember(formData);
-      console.log("Registering member with data:", formData); // formData 확인
-      console.log("회원 등록 성공:", response);
+      const response = await memberAPI.registMember(formData);
+      console.info("회원 등록 요청 데이터:", formData);
+      console.info("회원 등록 성공:", response);
       alert("회원 등록이 성공적으로 완료되었습니다!");
       closeModal();
     } catch (error) {
@@ -72,7 +99,6 @@ const CreateMember = () => {
 
   return (
     <div>
-      {/* 회원 등록 버튼 */}
       <BasicButton
         size="medium"
         color="primary"
@@ -83,7 +109,6 @@ const CreateMember = () => {
         회원 등록
       </BasicButton>
 
-      {/* 모달 */}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -93,24 +118,24 @@ const CreateMember = () => {
         rightChildren={
           <div className="relative h-full flex flex-col">
             <div className="flex-grow">
-              {/* 이용권 결제 */}
               <Accordion
                 title="이용권 결제"
-                isOpen={accordionStates["이용권결제"]}
+                isOpen={accordionOpenKey === "이용권결제"}
                 toggleOpen={() => toggleAccordion("이용권결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
-                    {/* 총금액 */}
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
                         215,000
                       </p>
                     </div>
-
-                    {/* 미납 여부 */}
                     <div className="flex items-center gap-2">
-                      <Toggle />
+                      <Toggle
+                        formData={formData}
+                        setFormData={setFormData}
+                        keyPath="planPayment"
+                      />
                     </div>
                   </div>
                 }
@@ -120,12 +145,10 @@ const CreateMember = () => {
                     이용권 정보
                   </h3>
 
-                  {/* 이용권 */}
                   <div className="mb-4">
                     <Plan />
                   </div>
 
-                  {/* 할인 */}
                   <div className="mb-4">
                     <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                       할인
@@ -149,6 +172,13 @@ const CreateMember = () => {
                           type="text"
                           placeholder="할인율 입력"
                           className="w-full input-content"
+                          value={formData.planPayment?.discountRate}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "planPayment.discountRate",
+                              e.target.value
+                            )
+                          }
                         />
                       </div>
                       <div className="w-1/2">
@@ -164,20 +194,53 @@ const CreateMember = () => {
                     </div>
                   </div>
 
-                  {/* 결제 정보 */}
                   <div className="mb-4">
                     <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                       결제 정보
                     </h3>
                     <div className="p-4">
-                      <Pay />
+                      <div>
+                        <h4 className="text-sm font-bold mb-2">결제 방법</h4>
+                        <div className="grid grid-cols-2 gap-2 py-2">
+                          {["현금", "카드", "계좌이체", "기타"].map(
+                            (method, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleMethodClick(method)}
+                                className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border ${
+                                  selectedPlanMethod === method
+                                    ? "bg-[#3C6229] text-white border-[#3C6229]"
+                                    : "bg-white text-gray-600 border-gray-300"
+                                }`}
+                              >
+                                {method}
+                              </button>
+                            )
+                          )}
+                        </div>
 
-                      {/* 등록일 */}
+                        {selectedPlanMethod === "기타" && (
+                          <input
+                            type="text"
+                            placeholder="기타 입력"
+                            className="w-full mt-2 p-2 rounded-md border border-gray-300 placeholder-gray-400 text-sm"
+                          />
+                        )}
+                      </div>
                       <div className="mb-4">
                         <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
                         <input
                           type="date"
-                          defaultValue={getCurrentDate()}
+                          value={
+                            formData.planPayment?.registrationAt ||
+                            getCurrentDate()
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "planPayment.registrationAt",
+                              e.target.value
+                            )
+                          }
                           className="input-content"
                         />
                       </div>
@@ -186,24 +249,24 @@ const CreateMember = () => {
                 </div>
               </Accordion>
 
-              {/* 기타 결제 */}
               <Accordion
                 title="기타 결제"
-                isOpen={accordionStates["기타결제"]}
+                isOpen={accordionOpenKey === "기타결제"}
                 toggleOpen={() => toggleAccordion("기타결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
-                    {/* 총금액 */}
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
                         215,000
                       </p>
                     </div>
-
-                    {/* 미납 여부 */}
                     <div className="flex items-center gap-2">
-                      <Toggle />
+                      <Toggle
+                        formData={formData}
+                        setFormData={setFormData}
+                        keyPath="otherPayment"
+                      />
                     </div>
                   </div>
                 }
@@ -213,30 +276,70 @@ const CreateMember = () => {
                     결제 정보
                   </h3>
 
-                  {/* 이용권 */}
                   <div className="mb-4 px-4">
                     <h4 className="text-sm font-bold my-2">결제 내용</h4>
                     <input
                       type="text"
                       placeholder="결제내용 입력"
                       className="p-4 mb-4 input-content"
+                      value={formData.otherPayment?.content}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "otherPayment.content",
+                          e.target.value
+                        )
+                      }
                     />
                   </div>
 
-                  {/* 결제 방법 */}
                   <div className="mb-7">
                     <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
-                      결제 정보
+                      결제 방법
                     </h3>
                     <div className="p-4">
-                      <Pay />
+                      <div>
+                        <h4 className="text-sm font-bold mb-2">결제 방법</h4>
+                        <div className="grid grid-cols-2 gap-2 py-2">
+                          {["현금", "카드", "계좌이체", "기타"].map(
+                            (method, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleMethodClick2(method)}
+                                className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border ${
+                                  selectedOtherMethod === method
+                                    ? "bg-[#3C6229] text-white border-[#3C6229]"
+                                    : "bg-white text-gray-600 border-gray-300"
+                                }`}
+                              >
+                                {method}
+                              </button>
+                            )
+                          )}
+                        </div>
 
-                      {/* 등록일 */}
+                        {selectedOtherMethod === "기타" && (
+                          <input
+                            type="text"
+                            placeholder="기타 입력"
+                            className="w-full mt-2 p-2 rounded-md border border-gray-300 placeholder-gray-400 text-sm"
+                          />
+                        )}
+                      </div>
+
                       <div className="mb-4">
                         <h4 className="text-sm font-bold mb-3 pt-4">등록일</h4>
                         <input
                           type="date"
-                          defaultValue={getCurrentDate()}
+                          value={
+                            formData.otherPayment?.registrationAt ||
+                            getCurrentDate()
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              "otherPayment.registrationAt",
+                              e.target.value
+                            )
+                          }
                           className="input-content"
                         />
                       </div>
@@ -246,7 +349,6 @@ const CreateMember = () => {
               </Accordion>
             </div>
 
-            {/* 하단 버튼 */}
             <div className="sticky bottom-0 left-0 bg-white p-4 shadow-md flex justify-end gap-4 z-10">
               <BasicButton
                 size="large"

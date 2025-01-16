@@ -4,15 +4,35 @@ import React, { useState, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import Dropdown from "../ui/Dropdown";
 import CreateMember from "./CreateMember";
-import { member } from "@/api/member";
+import { memberAPI } from "@/api/member";
 import debounce from "lodash/debounce";
+import { FormData } from "@/types/memberType";
 
-export default function TopControls({
-  setSearchResults,
-}: {
-  setSearchResults: any;
-}) {
+const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
   const [keyword, setKeyword] = useState("");
+  const [formData, setFormData] = useState<FormData>({
+    planId: 0,
+    name: "",
+    gender: "MALE",
+    phone: "",
+    address: "",
+    visitPath: "",
+    birthDate: "",
+    memo: "",
+    planPayment: {
+      paymentsMethod: "CARD",
+      registrationAt: "",
+      discountRate: 0,
+      status: false,
+    },
+    otherPayment: {
+      paymentsMethod: "CARD",
+      registrationAt: "",
+      content: "",
+      price: 0,
+      status: false,
+    },
+  });
 
   // 디바운싱된 검색 함수
   const debouncedSearch = useCallback(
@@ -22,7 +42,7 @@ export default function TopControls({
           setSearchResults([]); // 검색어가 없으면 결과 초기화
           return;
         }
-        const response = await member.searchCustomerName(searchKeyword);
+        const response = await memberAPI.searchCustomerName(searchKeyword);
         setSearchResults(response.data || []); // 결과 데이터를 부모 컴포넌트로 전달
       } catch (error) {
         console.error("검색 오류:", error);
@@ -69,8 +89,9 @@ export default function TopControls({
         className="ml-4 w-[200px]"
       />
       <div className="ml-auto">
-        <CreateMember />
+        <CreateMember formData={formData} setFormData={setFormData} />
       </div>
     </div>
   );
-}
+};
+export default TopControls;

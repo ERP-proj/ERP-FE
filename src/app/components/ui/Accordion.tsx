@@ -30,7 +30,7 @@ const Accordion: React.FC<Props> = ({
       {/* 아코디언 컨텐츠 */}
       {isOpen && (
         <div className="relative">
-          <div className="overflow-y-auto h-[570px] px-3">{children}</div>
+          <div className="overflow-y-auto h-[570px]">{children}</div>
           {footer && (
             <div className="absolute bottom-0 bg-white left-0 right-0 h-[130px] px-4 border-t border-t-1 flex justify-between items-center">
               {footer}
