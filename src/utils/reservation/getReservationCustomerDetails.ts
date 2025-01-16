@@ -1,7 +1,16 @@
-export default function getReservationCustomerDetails(
+import apiClient from "@/api/core/apiClient";
+import errorHandler from "@/api/core/errorHandler";
+
+export default async function getReservationCustomerDetails(
   reservationId: number
-): Promise<number> {
-  return fetch(
-    `/api/reservation/getReservationCustomerDetails/${reservationId}`
-  ).then((res) => res.json());
+) {
+  try {
+    const response = await apiClient.get(
+      `/api/reservation/getReservationCustomerDetails/${reservationId}`
+    );
+    return response.data;
+  } catch (error: unknown) {
+    const errorMessage = errorHandler(error);
+    throw new Error(errorMessage);
+  }
 }

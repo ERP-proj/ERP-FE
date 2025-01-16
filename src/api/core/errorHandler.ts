@@ -1,7 +1,6 @@
-import apiClient from "../core/apiClient";
 import axios from "axios";
 
-const handleError = (error: unknown): string => {
+export default function errorHandler(error: unknown): string {
   if (axios.isAxiosError(error)) {
     if (error.response) {
       return `Server responded with status ${error.response.status}: ${error.response.data.message}`;
@@ -14,19 +13,4 @@ const handleError = (error: unknown): string => {
     return `General error: ${error.message}`;
   }
   return "Unknown error occured";
-};
-
-export async function fetchNextTimeReservations(time: string) {
-  try {
-    const response = await apiClient.get(
-      "/api/reservation/getReservationByTime",
-      {
-        params: { time },
-      }
-    );
-    return response.data;
-  } catch (error: unknown) {
-    const errorMessage = handleError(error);
-    throw new Error(errorMessage);
-  }
 }

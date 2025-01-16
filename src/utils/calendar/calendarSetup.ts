@@ -59,6 +59,7 @@ export const calendarSetup = (
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
       const seatNumber = eventObj?.id;
+      const reservationId = eventObj.extendedProps?.reservationId;
       const target = info.jsEvent.target as HTMLElement | null;
 
       if (target && target.getBoundingClientRect) {
@@ -68,22 +69,15 @@ export const calendarSetup = (
           left: rect.left + window.scrollX + rect.width * 1.2,
         };
 
-        console.log("클릭한 이벤트 위치:", position);
-
-        console.log(
-          "userName/startDate/endDate/userId/eventObj",
-          userName,
-          startDate,
-          endDate,
-          seatNumber,
-          eventObj
-        );
+        console.log("clicked event info--------------------");
+        console.log(info);
 
         setSelectedEvent({
           userName,
           seatNumber,
           startDate,
           endDate,
+          reservationId,
           position,
         });
       }

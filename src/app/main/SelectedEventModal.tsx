@@ -5,45 +5,41 @@ import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 import noUser from "../../assets/noUser.png";
-import inactiveCheck from "../../../public/reservationModal/inactiveCheck.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
 
 interface EventProps {
   event: {
-    userName: string;
-    getReservationCustomerDetails: any;
-    userId: number;
-    startDate: string | null;
-    endDate: string | null;
+    reservationId: number;
   } | null;
   onClose: () => void;
 }
 
 const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
-  const [startDate, setStartDate] = useState<string | "N/A">("N/A");
-  const [endDate, setEndDate] = useState<string | "N/A">("N/A");
   const [userInfo, setUserInfo] = useState<any>(null);
-
-  console.log("eventttttdfdt", event);
 
   useEffect(() => {
     if (event) {
       const fetchUserInfo = async () => {
-        const data = await getReservationCustomerDetails(event.userId);
+        const data = await getReservationCustomerDetails(event.reservationId);
         setUserInfo(data);
       };
 
       fetchUserInfo();
-
-      setStartDate(
-        event.startDate ? dayjs(event.startDate).format("HH:mm") : "N/A"
-      );
-      setEndDate(event.endDate ? dayjs(event.endDate).format("HH:mm") : "N/A");
     }
   }, [event]);
 
   const userData = userInfo?.data;
+  console.log("****************************");
+  console.log(userData);
+
+  const formattedStartTime = userData?.startTime
+    ? dayjs(userData?.startTime).format("HH:mm")
+    : "N/A";
+
+  const formattedEndTime = userData?.endDate
+    ? dayjs(userData?.endTime).format("HH:mm")
+    : "N/A";
 
   return (
     <div>
@@ -58,12 +54,12 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
 
       <div className="flex">
         {/* User photo */}
-        <div className="flex justify-center items-center size-32 mx-2">
-          {userData?.photoUrl ? (
+        <div className="flex w-2/12 justify-center m-2">
+          {userData?.photoUrl !== undefined ? (
             <Image
-              src={userInfo.data.photoUrl || noUser}
+              src={userData.photoUrl || noUser}
               alt="User Photo"
-              className="w-32 h-32 object-cover rounded-xl"
+              className="w-fit h-fit object-cover rounded-xl"
             />
           ) : (
             <Image src={noUser} alt="noUser" />
@@ -71,29 +67,31 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
 
         {/* basic info */}
-        <div className="flex w-5/12 flex-col mx-2">
+        <div className="flex w-6/12 flex-col mx-2">
           {/* reservation time */}
-          <div className="flex text-left m-2 font-semibold">예약 시간</div>
-          <div>
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              {startDate !== "N/A" ? startDate : "N/A"}
+          <div className="flex justify-between text-left m-2 font-semibold">
+            예약 시간
+          </div>
+          <div className="flex justify-between">
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
+              {formattedStartTime !== undefined ? formattedStartTime : "N/A"}
             </span>
             <span className="font-light p-2 ">~</span>
-            <span className="font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              {endDate !== "N/A" ? endDate : "N/A"}
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
+              {formattedEndTime !== undefined ? formattedEndTime : "N/A"}
             </span>
           </div>
 
           {/* User name */}
           <div className="text-left m-2 font-semibold">성함</div>
-          <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
-            {event?.userName ? event?.userName : "더미회원이름"}
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userData?.name !== undefined ? userData?.name : "더미회원이름"}
           </div>
 
           {/* User mobile number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
-          <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
-            {userData?.phone ? userData?.phone : "010-0000-0000"}
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userData?.phone !== undefined ? userData?.phone : "N/A"}
           </div>
 
           {/* Event termination period */}
@@ -101,63 +99,38 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             <span>이벤트 종료 기간</span>
             <span>남은 기간</span>
           </div>
-          <div className="m-2">
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              2024.99.99
+          <div className="flex m-2">
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 mr-2 rounded-xl text-[#888888]">
+              {"N/A"}
             </span>
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              999
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
+              {userData?.remainingTime !== undefined
+                ? userData.remainingTime
+                : "N/A"}
             </span>
           </div>
 
           {/* Plan Info */}
-          <div className="m-2">
-            <h3 className="text-left font-semibold">이용권</h3>
-            <p className="px-4 py-2 bg-green-100 border-2 border-green-300 rounded-lg">
-              {userData?.planPayment?.licenseType || "이용권이 없습니다."}
-            </p>
-          </div>
-
-          {/* Late/absent check */}
-          <div className="text-left m-2 font-semibold">지각/결석</div>
-          <div className="flex flex-row gap-3 align-center justify-center">
-            <span className="flex gap-1">
-              <Image
-                src={inactiveCheck}
-                alt="inactiveCheck"
-                className="size-5"
-              />
-              <button>지각</button>
-            </span>
-            <span className="flex gap-1">
-              <Image
-                src={inactiveCheck}
-                alt="inactiveCheck"
-                className="size-5"
-              />
-              <button>결석</button>
-            </span>
+          <div className="text-left m-2 font-semibold">이용권</div>
+          <div className="font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userData?.planName !== undefined ? userData?.planName : "N/A"}
           </div>
         </div>
 
         {/* Additional Info */}
-        <div className="flex w-5/12 flex-col mx-2">
-          <div className="m-2">
-            <h3 className="text-left font-semibold">회원 메모</h3>
-            <p className="px-4 py-2 bg-green-100 border-2 border-green-300 rounded-lg">
-              {userData?.memo || "메모가 없습니다."}
-            </p>
+        <div className="flex w-6/12 flex-col mx-2">
+          {/* User memo */}
+          <div className="text-left m-2 font-semibold">회원 메모</div>
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userData?.memo !== undefined ? userData?.memo : "N/A"}
           </div>
 
           {/* Progress List */}
-          <div className="m-2">
-            <h3 className="text-left font-semibold">진도표</h3>
-            <p className="px-4 py-2 bg-gray-100 rounded-lg">
-              {userData?.progressList || "진도표가 없습니다."}
-            </p>
+          <div className="text-left m-2 font-semibold">진도표</div>
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userData?.progress !== undefined ? userData?.progress : "N/A"}
           </div>
         </div>
-        {/* User memo */}
       </div>
     </div>
   );
