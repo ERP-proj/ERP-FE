@@ -70,11 +70,11 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
               }
             >
               <div className="bg-white rounded-lg h-[1100px] ">
-                <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
+                <h3 className="text-md pl-4 bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                   이용권 정보
                 </h3>
                 <div className="mb-4">
-                  <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
+                  <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
                     할인
                   </h3>
                   <div className="gap-4 mt-4 px-4">
@@ -101,7 +101,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                   </div>
                 </div>
                 <div className="mb-4">
-                  <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
+                  <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
                     결제 정보
                   </h3>
                   <div className="p-4">
@@ -144,7 +144,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
               toggleOpen={() => toggleAccordion(1)}
             >
               <div className="bg-white rounded-lg h-[600px] overflow-y-scroll">
-                <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
+                <h3 className="text-md bg-[#F6F6F6] p-2 pl-4  m-0 text-[#0D0D0D] font-bold">
                   결제 정보
                 </h3>
                 {member.otherPayment.length > 0 ? (
@@ -199,29 +199,28 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                 )}
               </div>
             </Accordion>
+          </div>
 
-            {/* 하단 버튼 */}
-            <div className="flex justify-end gap-4 mt-6">
-              <BasicButton size="medium" color="danger" border={true}>
-                회원 삭제
-              </BasicButton>
-              <BasicButton size="medium" color="secondary" border={true}>
-                취소
-              </BasicButton>
-              <BasicButton
-                size="medium"
-                color="primary"
-                border={true}
-                onClick={onClose}
-              >
-                저장
-              </BasicButton>
-            </div>
+          {/* 하단 버튼 */}
+          <div className="sticky bottom-0 left-0 bg-white p-4 shadow-md flex justify-end gap-4 z-10">
+            <BasicButton size="medium" color="danger" border={true}>
+              회원 삭제
+            </BasicButton>
+            <BasicButton size="medium" color="secondary" border={true}>
+              취소
+            </BasicButton>
+            <BasicButton
+              size="medium"
+              color="primary"
+              border={true}
+              onClick={onClose}
+            >
+              저장
+            </BasicButton>
           </div>
         </div>
       }
     />
   );
 };
-
 export default DetailMember;
