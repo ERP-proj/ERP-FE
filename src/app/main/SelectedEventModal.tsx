@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 import noUser from "../../assets/noUser.png";
@@ -10,7 +9,11 @@ import closeIcon from "../../../public/reservationModal/closeIcon.png";
 
 interface EventProps {
   event: {
+    startTime: string;
+    endTime: string;
+    resourceId: string;
     reservationId: number;
+    mode: "add" | "edit";
   } | null;
   onClose: () => void;
 }
@@ -19,33 +22,75 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    if (event) {
+    console.log("~~~~~~~~~~~event", event);
+
+    // Case 1: add Mode
+    if (event?.mode == "add") {
+      setUserInfo(event);
+    }
+
+    // Case 2: Edit Mode
+    if (event?.reservationId) {
       const fetchUserInfo = async () => {
         const data = await getReservationCustomerDetails(event.reservationId);
-        setUserInfo(data);
+        setUserInfo(data?.data || null);
       };
 
       fetchUserInfo();
     }
   }, [event]);
 
-  const userData = userInfo?.data;
-  console.log("****************************");
-  console.log(userData);
+  console.log("response(userInfo)", userInfo);
 
-  const formattedStartTime = userData?.startTime
-    ? dayjs(userData?.startTime).format("HH:mm")
-    : "N/A";
+  const handleInputChange = (field: string, value: string) => {
+    setUserInfo((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
-  const formattedEndTime = userData?.endDate
-    ? dayjs(userData?.endTime).format("HH:mm")
-    : "N/A";
+  const handleSubmit = async () => {
+    if (userInfo?.mode == "add") {
+      console.log("------Submit ADD------");
+      const response = await fetch("/api/reservation/addReservation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: 0,
+          startTime: userInfo.startTime,
+          endTime: userInfo.endTime,
+          resourceId: userInfo.resourceId,
+          memo: userInfo.memo,
+          seatNumber: userInfo.resourceId,
+        }),
+      });
+      if (response.ok) {
+        console.log("예약 성공");
+      }
+    } else {
+      console.log("------Submit EDIT------");
+      const response = await fetch("/api/reservation/updatedReservation", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          reservationId: userInfo.reservationId,
+          startTime: userInfo.startTime,
+          endTime: userInfo.endTime,
+          memo: userInfo.memo,
+          seatNumber: userInfo.resourceId,
+        }),
+      });
+    }
+    onClose();
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         {/* Modal title */}
-        <div className="text-lg font-semibold">예약 수정</div>
+        <div className="text-lg font-semibold">
+          {event?.mode === "add" ? "예약 추가" : "예약 수정"}
+        </div>
         {/* Modal close button */}
         <Button className="size-12" onClick={onClose}>
           <Image src={closeIcon} alt="closeIcon" />
@@ -54,12 +99,12 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
 
       <div className="flex">
         {/* User photo */}
-        <div className="flex w-2/12 justify-center m-2">
-          {userData?.photoUrl !== undefined ? (
+        <div className="justify-center m-2 size-32">
+          {userInfo?.photoUrl !== undefined ? (
             <Image
-              src={userData.photoUrl || noUser}
+              src={userInfo.photoUrl || noUser}
               alt="User Photo"
-              className="w-fit h-fit object-cover rounded-xl"
+              className="object-cover rounded-lg"
             />
           ) : (
             <Image src={noUser} alt="noUser" />
@@ -73,26 +118,49 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             예약 시간
           </div>
           <div className="flex justify-between">
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
-              {formattedStartTime !== undefined ? formattedStartTime : "N/A"}
-            </span>
+            {/* Start Time */}
+            <input
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="time"
+              value={
+                userInfo?.formattedStartTime !== undefined
+                  ? userInfo?.formattedStartTime
+                  : ""
+              }
+              onChange={(e) => handleInputChange("startTime", e.target.value)}
+            ></input>
+            {/* ~ */}
             <span className="font-light p-2 ">~</span>
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
-              {formattedEndTime !== undefined ? formattedEndTime : "N/A"}
-            </span>
+            {/* End Time */}
+            <input
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="time"
+              value={
+                userInfo?.formattedEndTime !== undefined
+                  ? userInfo?.formattedEndTime
+                  : ""
+              }
+              onChange={(e) => handleInputChange("endTime", e.target.value)}
+            ></input>
           </div>
 
           {/* User name */}
           <div className="text-left m-2 font-semibold">성함</div>
-          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userData?.name !== undefined ? userData?.name : "더미회원이름"}
-          </div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            type="search"
+            value={userInfo?.name !== undefined ? userInfo?.name : ""}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+          ></input>
 
-          {/* User mobile number */}
+          {/* User phone number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
-          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userData?.phone !== undefined ? userData?.phone : "N/A"}
-          </div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            value={userInfo?.phone !== undefined ? userInfo?.phone : ""}
+            type="tel"
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+          ></input>
 
           {/* Event termination period */}
           <div className="text-left m-2 font-semibold">
@@ -100,20 +168,20 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             <span>남은 기간</span>
           </div>
           <div className="flex m-2">
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 mr-2 rounded-xl text-[#888888]">
-              {"N/A"}
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 mr-2 rounded-lg text-[#888888] min-h-7">
+              {""}
             </span>
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-xl text-[#888888]">
-              {userData?.remainingTime !== undefined
-                ? userData.remainingTime
-                : "N/A"}
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+              {userInfo?.remainingTime !== undefined
+                ? userInfo.remainingTime
+                : ""}
             </span>
           </div>
 
           {/* Plan Info */}
           <div className="text-left m-2 font-semibold">이용권</div>
-          <div className="font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userData?.planName !== undefined ? userData?.planName : "N/A"}
+          <div className="font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7">
+            {userInfo?.planName !== undefined ? userInfo?.planName : ""}
           </div>
         </div>
 
@@ -121,16 +189,29 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         <div className="flex w-6/12 flex-col mx-2">
           {/* User memo */}
           <div className="text-left m-2 font-semibold">회원 메모</div>
-          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userData?.memo !== undefined ? userData?.memo : "N/A"}
-          </div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]"
+            value={userInfo?.memo !== undefined ? userInfo?.memo : ""}
+            type="text"
+            onChange={(e) => handleInputChange("memo", e.target.value)}
+          ></input>
 
           {/* Progress List */}
           <div className="text-left m-2 font-semibold">진도표</div>
-          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-xl border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userData?.progress !== undefined ? userData?.progress : "N/A"}
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userInfo?.progress !== undefined ? userInfo?.progress : ""}
           </div>
         </div>
+      </div>
+
+      <div className="flex">
+        {/* Edit & Save button */}
+        <Button
+          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4"
+          onClick={handleSubmit}
+        >
+          {event?.mode === "add" ? "저장" : "수정 완료"}
+        </Button>
       </div>
     </div>
   );

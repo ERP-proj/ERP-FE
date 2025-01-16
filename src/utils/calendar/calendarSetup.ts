@@ -2,6 +2,7 @@ import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import dayjs from "dayjs";
 
 export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
@@ -38,14 +39,14 @@ export const calendarSetup = (
 
     // Set calendar resources
     resources: [
-      { id: "SeatNumber1", title: "1" },
-      { id: "SeatNumber2", title: "2" },
-      { id: "SeatNumber3", title: "3" },
-      { id: "SeatNumber4", title: "4" },
-      { id: "SeatNumber5", title: "5" },
-      { id: "SeatNumber6", title: "6" },
-      { id: "SeatNumber7", title: "7" },
-      { id: "SeatNumber8", title: "8" },
+      { id: "1", title: "1" },
+      { id: "2", title: "2" },
+      { id: "3", title: "3" },
+      { id: "4", title: "4" },
+      { id: "5", title: "5" },
+      { id: "6", title: "6" },
+      { id: "7", title: "7" },
+      { id: "8", title: "8" },
     ],
 
     // Set event items
@@ -85,27 +86,29 @@ export const calendarSetup = (
 
     // Set drag Callback
     select: function (info) {
-      const start = info.start;
-      const end = info.end;
       const resourceId = info.resource?.id;
 
       console.log("infoooo", info);
-      const title = prompt("새로운 예약");
-      if (title) {
-        calendar.addEvent({
-          title,
-          start,
-          end,
-          resourceId,
-          extendedProps: {
-            seatNumber: resourceId,
-          },
-        });
 
-        alert(
-          `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
-        );
-      }
+      const newEvent = {
+        start: info.start.toISOString(),
+        end: info.end.toISOString(),
+        formattedStartTime: dayjs(info.start).format("HH:mm"),
+        formattedEndTime: dayjs(info.end).format("HH:mm"),
+        resourceId,
+        extendedProps: {
+          seatNumber: resourceId,
+        },
+        mode: "add",
+      };
+
+      // if (info) {
+      //   calendar.addEvent(newEvent);
+      //   console.log("addEvent 발생");
+      // }
+
+      setSelectedEvent(newEvent);
+      console.log("newEvent", newEvent);
     },
 
     // default design setting

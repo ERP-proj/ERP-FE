@@ -12,8 +12,8 @@ export default function transformReservationsToEvents(reservations: any[]) {
       title: `${res.name}`,
       start: startTime,
       end: endTime,
-      resourceId: `SeatNumber${res.seatNumber}`,
-      id: `SeatNumber${res.seatNumber}`,
+      resourceId: `${res.seatNumber}`,
+      id: `${res.seatNumber}`,
       extendedProps: {
         reservationId: `${res.reservationId}`,
       },
