@@ -80,6 +80,9 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           seatNumber: userInfo.resourceId,
         }),
       });
+      if (response.ok) {
+        console.log("수정 성공");
+      }
     }
     onClose();
   };
