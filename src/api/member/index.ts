@@ -10,24 +10,24 @@ export const memberAPI = {
     planId: number;
     name: string;
     gender: "MALE" | "FEMALE";
-    phone?: string;
-    address?: string;
-    visitPath?: string;
-    birthDate?: string;
-    memo?: string;
-    planPayment?: {
+    phone: string;
+    address: string;
+    visitPath: string;
+    birthDate: string;
+    memo: string;
+    planPayment: {
       paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
       registrationAt: string;
       discountRate?: number;
       status: boolean;
     };
-    otherPayment?: {
+    otherPayment: Array<{
       paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
       registrationAt: string;
-      content?: string;
-      price?: number;
+      content: string;
+      price: number;
       status: boolean;
-    };
+    }>;
   }) => {
     try {
       const response = await defaultApi.post("/customer/addCustomer", data);
@@ -78,22 +78,6 @@ export const memberAPI = {
   },
 
   //회원 상세정보 가져오기
-  // getCustomerDetail: async (
-  //   customerId: number
-  // ): Promise<CustomerDetailResponse> => {
-  //   console.log("회원아이디:", customerId);
-  //   try {
-  //     const response = await defaultApi.get<CustomerDetailResponse>(
-  //       `/customer/getCustomerDetail/${customerId}`
-  //     );
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error("회원 상세 조회 오류:", error);
-  //     throw error;
-  //   }
-  // },
-
-  //회원 상세정보 가져오기
   getCustomerDetail: async (customerId: number) => {
     try {
       const response = await defaultApi.get(
@@ -112,24 +96,24 @@ export const memberAPI = {
    */
   updateCustomerDetail: async (data: {
     customerId: number;
-    photoUrl?: string;
+    photoUrl: string;
     name: string;
     gender: "MALE" | "FEMALE";
-    birthDate?: string;
-    phone?: string;
-    address?: string;
-    visitPath?: string;
-    memo?: string;
-    progress?: Array<{
-      date?: string;
-      content?: string;
+    birthDate: string;
+    phone: string;
+    address: string;
+    visitPath: string;
+    memo: string;
+    progressList: Array<{
+      date: string;
+      content: string;
     }>;
     planPaymentStatus: boolean;
-    otherPayment?: Array<{
+    otherPayment: Array<{
       paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
       registrationAt: string;
-      content?: string;
-      price?: number;
+      content: string;
+      price: number;
       status: boolean;
     }>;
   }) => {

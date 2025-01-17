@@ -1,17 +1,22 @@
 "use client";
-
 import React, { useState } from "react";
-import { CiCamera, CiCirclePlus } from "react-icons/ci";
-import BasicButton from "../ui/BasicButton";
-import { CustomerDetailData } from "@/types/memberType";
-import Dropdown from "../ui/Dropdown";
-
-interface DetailFormProps {
-  member: CustomerDetailData;
+import BasicButton from "../../ui/BasicButton";
+import Dropdown from "../../ui/Dropdown";
+import { CiCirclePlus, CiCamera } from "react-icons/ci";
+import { FormData } from "@/types/memberType";
+import Camera from "./Camera";
+export interface RegisterFormProps {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }
 
-const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
-  const [accordionOpenKey, setAccordionOpenKey] = useState<string>("");
+const RegisterForm: React.FC<RegisterFormProps> = ({
+  formData,
+  setFormData,
+}) => {
+  const handleInputChange = (key: string, value: any) => {
+    setFormData((prevData) => ({ ...prevData, [key]: value }));
+  };
   const [rows, setRows] = useState([
     { id: 1, date: "", content: "" }, // 기본 1회차
   ]);
@@ -23,50 +28,14 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
     ]);
   };
 
-  const toggleAccordion = (key: string) => {
-    setAccordionOpenKey((prev) => (prev === key ? "" : key));
+  const handleCapture = (imageData: string) => {
+    setFormData((prevData) => ({ ...prevData, photoUrl: imageData }));
   };
 
   return (
     <div className="space-y-6 p-6">
       {/* 이미지 선택 */}
-      <div className="flex flex-col items-center gap-4">
-        <div className="image-selector">
-          <div className="image-selector-background"></div>
-          <div className="image-selector-content">
-            {member.photoUrl ? (
-              <img
-                src={member.photoUrl}
-                alt={`${member.name}의 프로필`}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              <span>
-                <CiCamera />
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <BasicButton
-            size="small"
-            color="gray"
-            border={false}
-            onClick={() => alert("준비 클릭!")}
-          >
-            준비
-          </BasicButton>
-          <BasicButton
-            size="small"
-            color="primary"
-            border={false}
-            onClick={() => alert("준비 클릭!")}
-          >
-            촬영
-          </BasicButton>
-        </div>
-      </div>
-
+      <Camera onCapture={handleCapture} />
       {/* 입력 폼 */}
       <div className="grid grid-cols-2 gap-4">
         <div>
@@ -75,8 +44,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
             type="text"
             placeholder="이름"
             className="input-content w-full"
-            value={member.name}
-            // onChange={(e) => handleInputChange("name", e.target.value)}
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
           />
         </div>
         <div>
@@ -84,12 +53,12 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
           <Dropdown
             options={["여", "남"]}
             placeholder="성별"
-            defaultValue={member.gender === "MALE" ? "남" : "여"}
+            defaultValue={formData.gender === "MALE" ? "남" : "여"}
             className="w-full"
-            // onChange={(value) => {
-            //   const mappedGender = value === "남" ? "MALE" : "FEMALE";
-            //   handleInputChange("gender", mappedGender);
-            // }}
+            onChange={(value) => {
+              const mappedGender = value === "남" ? "MALE" : "FEMALE";
+              handleInputChange("gender", mappedGender);
+            }}
           />
         </div>
         <div>
@@ -100,8 +69,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
             type="date"
             placeholder="생년월일"
             className="input-content w-full"
-            // value={member.birthDate}
-            // onChange={(e) => handleInputChange("birthDate", e.target.value)}
+            value={formData.birthDate}
+            onChange={(e) => handleInputChange("birthDate", e.target.value)}
           />
         </div>
         <div>
@@ -110,8 +79,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
             type="text"
             placeholder="01012341234"
             className="input-content w-full"
-            value={member.phone}
-            // onChange={(e) => handleInputChange("phone", e.target.value)}
+            value={formData.phone}
+            onChange={(e) => handleInputChange("phone", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -120,8 +89,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
             type="text"
             placeholder="주소를 입력해주세요."
             className="input-content w-full"
-            value={member.address}
-            // onChange={(e) => handleInputChange("address", e.target.value)}
+            value={formData.address}
+            onChange={(e) => handleInputChange("address", e.target.value)}
           />
         </div>
         <div className="col-span-2">
@@ -129,8 +98,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
           <textarea
             placeholder="방문 경로를 입력해주세요."
             className="input-content w-full"
-            value={member.visitPath || ""}
-            // onChange={(e) => handleInputChange("visitPath", e.target.value)}
+            value={formData.visitPath}
+            onChange={(e) => handleInputChange("visitPath", e.target.value)}
           ></textarea>
         </div>
         <div className="col-span-2">
@@ -138,9 +107,13 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
           <textarea
             placeholder="메모할 내용을 입력해주세요."
             className="input-content w-full"
-            value={member.memo || ""}
-            // onChange={(e) => handleInputChange("memo", e.target.value)}
+            value={formData.memo}
+            onChange={(e) => handleInputChange("memo", e.target.value)}
           ></textarea>
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm text-gray-600 mb-1">약관</label>
+          <p>약관약관약관약관약관약관</p>
         </div>
       </div>
 
@@ -207,4 +180,4 @@ const DetailForm: React.FC<DetailFormProps> = ({ member }) => {
   );
 };
 
-export default DetailForm;
+export default RegisterForm;

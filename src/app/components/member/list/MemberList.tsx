@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import MemberRow from "./MemberRow";
 import { memberAPI } from "@/api/member";
 import { Member } from "@/types/memberType";
-import DetailMember from "./DetailMember";
+import DetailMember from "../detail/DetailMember";
 
 const MemberList = () => {
   const [members, setMembers] = useState<Member[]>([]);

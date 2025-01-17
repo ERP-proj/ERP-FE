@@ -2,8 +2,8 @@
 
 import React, { useState, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
-import Dropdown from "../ui/Dropdown";
-import CreateMember from "./CreateMember";
+import Dropdown from "../../ui/Dropdown";
+import CreateMember from "../create/CreateMember";
 import { memberAPI } from "@/api/member";
 import debounce from "lodash/debounce";
 import { FormData } from "@/types/memberType";

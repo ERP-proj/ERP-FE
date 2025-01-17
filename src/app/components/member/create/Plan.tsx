@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Dropdown from "../ui/Dropdown";
+import Dropdown from "../../ui/Dropdown";
 
 const Plan: React.FC = () => {
   const [selectedGroup1, setSelectedGroup1] = useState("1종");

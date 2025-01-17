@@ -3,21 +3,46 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import { PlanPayment, OtherPayment } from "@/types/memberType";
 
 interface ToggleProps {
-  formData: { planPayment: PlanPayment; otherPayment: OtherPayment };
+  formData: { planPayment: PlanPayment; otherPayment: OtherPayment[] };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   keyPath: "planPayment" | "otherPayment"; // 상태를 구분하기 위한 키
+  index?: number; // otherPayment 배열의 특정 항목을 식별하기 위한 인덱스
 }
 
-const Toggle: React.FC<ToggleProps> = ({ formData, setFormData, keyPath }) => {
+const Toggle: React.FC<ToggleProps> = ({
+  formData,
+  setFormData,
+  keyPath,
+  index,
+}) => {
   const handleToggleChange = () => {
-    setFormData((prevData: any) => ({
-      ...prevData,
-      [keyPath]: {
-        ...prevData[keyPath],
-        status: !prevData[keyPath].status, // 동적으로 상태 변경
-      },
-    }));
+    if (keyPath === "planPayment") {
+      // PlanPayment의 status 변경
+      setFormData((prevData: any) => ({
+        ...prevData,
+        planPayment: {
+          ...prevData.planPayment,
+          status: !prevData.planPayment.status,
+        },
+      }));
+    } else if (keyPath === "otherPayment" && typeof index === "number") {
+      // OtherPayment 배열의 특정 항목의 status 변경
+      setFormData((prevData: any) => ({
+        ...prevData,
+        otherPayment: prevData.otherPayment.map(
+          (payment: OtherPayment, idx: number) =>
+            idx === index ? { ...payment, status: !payment.status } : payment
+        ),
+      }));
+    }
   };
+
+  const status =
+    keyPath === "planPayment"
+      ? formData.planPayment.status
+      : keyPath === "otherPayment" && typeof index === "number"
+      ? formData.otherPayment[index]?.status
+      : false;
 
   return (
     <div
@@ -26,13 +51,11 @@ const Toggle: React.FC<ToggleProps> = ({ formData, setFormData, keyPath }) => {
     >
       <FaRegCircleCheck
         className={`w-5 h-5 ${
-          formData[keyPath].status ? "text-[#3C6229]" : "text-gray-300"
+          status ? "text-[#3C6229]" : "text-gray-300"
         } transition-colors duration-200`}
       />
       <span
-        className={`text-sm ${
-          formData[keyPath].status ? "text-[#3C6229]" : "text-gray-600"
-        }`}
+        className={`text-sm ${status ? "text-[#3C6229]" : "text-gray-600"}`}
       >
         미납여부
       </span>

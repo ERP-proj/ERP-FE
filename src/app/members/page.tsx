@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import SideBar from "../components/SideBar";
-import TopControls from "../components/member/TopControls";
-import MemberList from "../components/member/MemberList";
-import MemberRow from "../components/member/MemberRow";
+import TopControls from "../components/member/list/TopControls";
+import MemberList from "../components/member/list/MemberList";
+import MemberRow from "../components/member/list/MemberRow";
 
 export default function Page() {
   const [searchResults, setSearchResults] = useState<any[]>([]); // 검색 결과 상태

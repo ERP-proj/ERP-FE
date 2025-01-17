@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import Accordion from "../ui/Accordion";
-import BasicButton from "../ui/BasicButton";
+import Accordion from "../../ui/Accordion";
+import BasicButton from "../../ui/BasicButton";
 import { CustomerDetailData } from "@/types/memberType";
-import Dropdown from "../ui/Dropdown";
-import Modal from "../ui/Modal";
+// import Dropdown from "../ui/Dropdown";
+import Modal from "../../ui/Modal";
 import DetailForm from "./DetailForm";
-import Toggle from "../ui/Toggle";
 import { FaRegCircleCheck } from "react-icons/fa6";
+import { memberAPI } from "@/api/member";
 
 interface DetailMemberProps {
   member: CustomerDetailData | null;
@@ -18,6 +18,21 @@ interface DetailMemberProps {
 const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const [accordionOpenKey, setAccordionOpenKey] = useState<number | null>(null);
 
+  const handleSave = async (updatedMember: CustomerDetailData) => {
+    const requestData = {
+      ...updatedMember,
+      planPaymentStatus: true, // 항상 true로 설정
+    };
+
+    try {
+      const response = await memberAPI.updateCustomerDetail(requestData);
+      alert("회원 정보가 성공적으로 수정되었습니다.");
+      onClose();
+    } catch (error) {
+      console.error("회원 정보 수정 실패:", error);
+      alert("회원 정보 수정 중 오류가 발생했습니다.");
+    }
+  };
   const toggleAccordion = (key: number) => {
     setAccordionOpenKey((prev) => (prev === key ? null : key));
   };
@@ -30,7 +45,12 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     <Modal
       isOpen={!!member}
       onClose={onClose}
-      leftChildren={<DetailForm member={member} />}
+      leftChildren={
+        <DetailForm
+          member={member}
+          onSave={handleSave} // 저장 함수 전달
+        />
+      }
       rightChildren={
         <div className="relative h-full flex flex-col">
           <div className="flex-grow">
@@ -213,7 +233,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
               size="medium"
               color="primary"
               border={true}
-              onClick={onClose}
+              onClick={handleSave}
             >
               저장
             </BasicButton>

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import BasicButton from "../ui/BasicButton";
-import Modal from "../ui/Modal";
-import Dropdown from "../ui/Dropdown";
-import Accordion from "../ui/Accordion";
-import Toggle from "../ui/Toggle";
+import BasicButton from "../../ui/BasicButton";
+import Modal from "../../ui/Modal";
+import Dropdown from "../../ui/Dropdown";
+import Accordion from "../../ui/Accordion";
+import Toggle from "../../ui/Toggle";
 import RegisterForm from "./RegisterForm";
 import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
@@ -32,13 +32,15 @@ const initialFormData: FormData = {
     discountPrice: 0,
     paymentTotal: 0,
   },
-  otherPayment: {
-    paymentsMethod: "CARD", // 기본값 설정
-    registrationAt: new Date().toISOString().split("T")[0],
-    content: "",
-    price: 0,
-    status: false,
-  },
+  otherPayment: [
+    {
+      paymentsMethod: "CARD", // 기본값 설정
+      registrationAt: new Date().toISOString().split("T")[0],
+      content: "",
+      price: 0,
+      status: false,
+    },
+  ],
 };
 const CreateMember: React.FC<{
   formData: FormData;
@@ -127,7 +129,7 @@ const CreateMember: React.FC<{
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
-                        215,000
+                        {formData.planPayment.paymentTotal}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -257,15 +259,14 @@ const CreateMember: React.FC<{
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
-                      <p className="text-2xl font-bold text-[#DB5461]">
-                        215,000
-                      </p>
+                      <p className="text-2xl font-bold text-[#DB5461]">{}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Toggle
                         formData={formData}
                         setFormData={setFormData}
                         keyPath="otherPayment"
+                        index={0}
                       />
                     </div>
                   </div>
@@ -282,7 +283,7 @@ const CreateMember: React.FC<{
                       type="text"
                       placeholder="결제내용 입력"
                       className="p-4 mb-4 input-content"
-                      value={formData.otherPayment?.content}
+                      // value={formData.otherPayment?.content}
                       onChange={(e) =>
                         handleInputChange(
                           "otherPayment.content",
@@ -330,10 +331,10 @@ const CreateMember: React.FC<{
                         <h4 className="text-sm font-bold mb-3 pt-4">등록일</h4>
                         <input
                           type="date"
-                          value={
-                            formData.otherPayment?.registrationAt ||
-                            getCurrentDate()
-                          }
+                          // value={
+                          //   formData.otherPayment?.registrationAt ||
+                          //   getCurrentDate()
+                          // }
                           onChange={(e) =>
                             handleInputChange(
                               "otherPayment.registrationAt",
