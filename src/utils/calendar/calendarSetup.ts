@@ -91,8 +91,8 @@ export const calendarSetup = (
       console.log("infoooo", info);
 
       const newEvent = {
-        start: info.start.toISOString(),
-        end: info.end.toISOString(),
+        start: dayjs(info.start).format("YYYY-MM-DDTHH:mm:ss"),
+        end: dayjs(info.end).format("YYYY-MM-DDTHH:mm:ss"),
         formattedStartTime: dayjs(info.start).format("HH:mm"),
         formattedEndTime: dayjs(info.end).format("HH:mm"),
         resourceId,

@@ -6,6 +6,8 @@ import getReservationCustomerDetails from "@/utils/reservation/getReservationCus
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
+import apiClient from "@/api/core/apiClient";
+import errorHandler from "@/api/core/errorHandler";
 
 interface EventProps {
   event: {
@@ -52,36 +54,44 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   const handleSubmit = async () => {
     if (userInfo?.mode == "add") {
       console.log("------Submit ADD------");
-      const response = await fetch("/api/reservation/addReservation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customerId: 0,
-          startTime: userInfo.startTime,
-          endTime: userInfo.endTime,
-          resourceId: userInfo.resourceId,
-          memo: userInfo.memo,
-          seatNumber: userInfo.resourceId,
-        }),
-      });
-      if (response.ok) {
-        console.log("예약 성공");
+      try {
+        const response = await apiClient.post(
+          "/api/reservation/addReservation",
+          {
+            customerId: 1,
+            startTime: userInfo.start,
+            endTime: userInfo.end,
+            resourceId: userInfo.resourceId,
+            memo: userInfo.memo,
+            seatNumber: userInfo.resourceId,
+          }
+        );
+        if (response.status === 200) {
+          console.log("예약 성공", response);
+        }
+      } catch (error: unknown) {
+        const errorMessage = errorHandler(error);
+        throw new Error(errorMessage);
       }
     } else {
       console.log("------Submit EDIT------");
-      const response = await fetch("/api/reservation/updatedReservation", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reservationId: userInfo.reservationId,
-          startTime: userInfo.startTime,
-          endTime: userInfo.endTime,
-          memo: userInfo.memo,
-          seatNumber: userInfo.resourceId,
-        }),
-      });
-      if (response.ok) {
-        console.log("수정 성공");
+      try {
+        const response = await apiClient.put(
+          "/api/reservation/updatedReservation",
+          {
+            reservationId: userInfo.reservationId,
+            startTime: userInfo.startTime,
+            endTime: userInfo.endTime,
+            memo: userInfo.memo,
+            seatNumber: userInfo.resourceId,
+          }
+        );
+        if (response.status === 200) {
+          console.log("수정 성공");
+        }
+      } catch (error: unknown) {
+        const errorMessage = errorHandler(error);
+        throw new Error(errorMessage);
       }
     }
     onClose();
