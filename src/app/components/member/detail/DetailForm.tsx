@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { CiCamera, CiCirclePlus } from "react-icons/ci";
-import BasicButton from "../../ui/BasicButton";
 import { CustomerDetailData } from "@/types/memberType";
 import Dropdown from "../../ui/Dropdown";
+import Camera from "../create/Camera";
 
 interface DetailFormProps {
   member: CustomerDetailData;
@@ -14,99 +13,109 @@ interface DetailFormProps {
 const DetailForm: React.FC<DetailFormProps> = ({ member, onSave }) => {
   const [formData, setFormData] = useState<CustomerDetailData>(member);
   const [progress, setProgress] = useState(member.progressList || []);
+  const [rows, setRows] = useState([
+    { id: 1, date: "", content: "" }, // 기본 1회차
+  ]);
 
+  const addRow = () => {
+    setRows((prevRows) => [
+      ...prevRows,
+      { id: prevRows.length + 1, date: "", content: "" },
+    ]);
+  };
   const handleInputChange = (key: keyof CustomerDetailData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
     }));
   };
-
-  const handleProgressChange = (index: number, key: string, value: string) => {
-    setProgress((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, [key]: value } : item))
-    );
+  const handleCapture = (imageData: string) => {
+    setFormData((prevData) => ({ ...prevData, photoUrl: imageData }));
   };
-
-  const addProgressRow = () => {
-    setProgress((prev) => [...prev, { date: "", content: "" }]);
-  };
-
   const handleSave = () => {
     onSave({ ...formData, progressList });
   };
 
   return (
     <div className="space-y-6 p-6">
-      {/* 이미지 선택 */}
-      <div className="flex flex-col items-center gap-4">
-        <div className="image-selector">
-          <div className="image-selector-background"></div>
-          <div className="image-selector-content">
-            {formData.photoUrl ? (
-              <img
-                src={formData.photoUrl}
-                alt={`${formData.name}의 프로필`}
-                className="w-full h-full rounded-full object-cover"
+      {/* 상단 레이아웃: 프로필 이미지와 입력 폼 */}
+      <div className="flex gap-8 items-start">
+        {/* 왼쪽: 이미지 선택 */}
+        <div className="flex flex-col items-center w-1/3">
+          <Camera onCapture={handleCapture} />
+        </div>
+
+        {/* 오른쪽: 입력 폼 */}
+        <div className="w-2/3">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">이름</label>
+              <input
+                type="text"
+                className="input-content w-full"
+                value={formData.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
               />
-            ) : (
-              <span>
-                <CiCamera />
-              </span>
-            )}
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">성별</label>
+              <Dropdown
+                options={["남", "여"]}
+                defaultValue={formData.gender === "MALE" ? "남" : "여"}
+                onChange={(value) =>
+                  handleInputChange(
+                    "gender",
+                    value === "남" ? "MALE" : "FEMALE"
+                  )
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                생년월일
+              </label>
+              <input
+                type="date"
+                className="input-content w-full"
+                value={formData.birthDate || ""}
+                onChange={(e) => handleInputChange("birthDate", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                전화번호
+              </label>
+              <input
+                type="text"
+                className="input-content w-full"
+                value={formData.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 입력 폼 */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* 추가 입력 필드 */}
+      <div>
         <div>
-          <label className="block text-sm text-gray-600 mb-1">이름</label>
-          <input
-            type="text"
-            className="input-content w-full"
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">성별</label>
-          <Dropdown
-            options={["남", "여"]}
-            defaultValue={formData.gender === "MALE" ? "남" : "여"}
-            onChange={(value) =>
-              handleInputChange("gender", value === "남" ? "MALE" : "FEMALE")
-            }
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">생년월일</label>
-          <input
-            type="date"
-            className="input-content w-full"
-            // value={formData.birthDate}
-            // onChange={(e) => handleInputChange("birthDate", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">전화번호</label>
-          <input
-            type="text"
-            className="input-content w-full"
-            value={formData.phone}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
-          />
-        </div>
-        <div className="col-span-2">
           <label className="block text-sm text-gray-600 mb-1">주소</label>
           <input
             type="text"
-            className="input-content w-full"
+            className="input-content w-full mb-4"
             value={formData.address}
             onChange={(e) => handleInputChange("address", e.target.value)}
           />
         </div>
-        <div className="col-span-2">
+        <div>
+          <label className="block text-sm text-gray-600 mb-1">방문 경로</label>
+          <textarea
+            className="input-content w-full"
+            value={formData.visitPath}
+            onChange={(e) => handleInputChange("visitPath", e.target.value)}
+          ></textarea>
+        </div>
+        <div>
           <label className="block text-sm text-gray-600 mb-1">메모</label>
           <textarea
             className="input-content w-full"
@@ -115,59 +124,64 @@ const DetailForm: React.FC<DetailFormProps> = ({ member, onSave }) => {
           ></textarea>
         </div>
       </div>
-
       {/* 진도표 */}
       <div>
         <label className="block text-sm text-gray-600 mb-1">진도표</label>
-        <table className="w-full border text-sm mt-2">
-          <thead>
-            <tr>
-              <th className="border p-2">회차</th>
-              <th className="border p-2">날짜</th>
-              <th className="border p-2">내용</th>
-            </tr>
-          </thead>
-          <tbody>
-            {progress.map((row, index) => (
-              <tr key={index}>
-                <td className="border p-2 text-center">{index + 1}</td>
-                <td className="border p-2">
-                  <input
-                    type="date"
-                    className="input-content w-full"
-                    value={row.date}
-                    onChange={(e) =>
-                      handleProgressChange(index, "date", e.target.value)
-                    }
-                  />
-                </td>
-                <td className="border p-2">
-                  <input
-                    type="text"
-                    className="input-content w-full"
-                    value={row.content}
-                    onChange={(e) =>
-                      handleProgressChange(index, "content", e.target.value)
-                    }
-                  />
-                </td>
+        <div className="relative">
+          <table className="w-full border text-sm mt-2">
+            <thead>
+              <tr>
+                <th className="border p-2">회차</th>
+                <th className="border p-2">날짜 선택</th>
+                <th className="border p-2">내용</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <button className="mt-2 text-blue-500" onClick={addProgressRow}>
-          + 진도 추가
-        </button>
-      </div>
-
-      {/* 하단 버튼 */}
-      <div className="flex justify-end gap-4 mt-4">
-        <BasicButton size="large" color="secondary">
-          취소
-        </BasicButton>
-        <BasicButton size="large" color="primary" onClick={handleSave}>
-          저장
-        </BasicButton>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr key={row.id}>
+                  <td className="border p-0 text-center">{row.id}</td>
+                  <td className="p-0">
+                    <input
+                      type="date"
+                      value={row.date}
+                      onChange={(e) =>
+                        setRows((prevRows) =>
+                          prevRows.map((r) =>
+                            r.id === row.id ? { ...r, date: e.target.value } : r
+                          )
+                        )
+                      }
+                      className="input-content w-full"
+                    />
+                  </td>
+                  <td className="p-0">
+                    <input
+                      type="text"
+                      value={row.content}
+                      placeholder="내용 입력"
+                      onChange={(e) =>
+                        setRows((prevRows) =>
+                          prevRows.map((r) =>
+                            r.id === row.id
+                              ? { ...r, content: e.target.value }
+                              : r
+                          )
+                        )
+                      }
+                      className="input-content w-full rounded-none"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            className="absolute w-8 h-8 border border-1 left-1/2 transform -translate-x-1/2 translate-y-0 text-gray-500 bg-white hover:text-[#3C6229] hover:border-[#3C6229] rounded-full shadow-md flex items-center justify-center"
+            onClick={addRow}
+          >
+            +
+          </button>
+        </div>
       </div>
     </div>
   );

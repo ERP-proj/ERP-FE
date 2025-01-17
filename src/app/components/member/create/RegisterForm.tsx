@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import BasicButton from "../../ui/BasicButton";
 import Dropdown from "../../ui/Dropdown";
-import { CiCirclePlus, CiCamera } from "react-icons/ci";
 import { FormData } from "@/types/memberType";
 import Camera from "./Camera";
 export interface RegisterFormProps {
@@ -127,65 +125,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             onChange={(e) => handleInputChange("memo", e.target.value)}
           ></textarea>
         </div>
-      </div>
-
-      {/* 진도표 */}
-      <div>
-        <label className="block text-sm text-gray-600 mb-1">진도표</label>
-        <div className="relative">
-          <table className="w-full border text-sm mt-2">
-            <thead>
-              <tr>
-                <th className="border p-2">회차</th>
-                <th className="border p-2">날짜 선택</th>
-                <th className="border p-2">내용</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.id}>
-                  <td className="border p-0 text-center">{row.id}</td>
-                  <td className="p-0">
-                    <input
-                      type="date"
-                      value={row.date}
-                      onChange={(e) =>
-                        setRows((prevRows) =>
-                          prevRows.map((r) =>
-                            r.id === row.id ? { ...r, date: e.target.value } : r
-                          )
-                        )
-                      }
-                      className="input-content w-full"
-                    />
-                  </td>
-                  <td className="p-0">
-                    <input
-                      type="text"
-                      value={row.content}
-                      placeholder="내용 입력"
-                      onChange={(e) =>
-                        setRows((prevRows) =>
-                          prevRows.map((r) =>
-                            r.id === row.id
-                              ? { ...r, content: e.target.value }
-                              : r
-                          )
-                        )
-                      }
-                      className="input-content w-full rounded-none"
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <button
-            className="absolute left-1/2 transform -translate-x-1/2 translate-y-0 text-gray-500 bg-white hover:text-[#B4D89C] rounded-full shadow-md"
-            onClick={addRow}
-          >
-            +
-          </button>
+        <div className="col-span-2">
+          <label className="block text-sm text-gray-600 mb-1">약관</label>
+          <textarea
+            placeholder="약관약관약관"
+            className="input-content w-full"
+          ></textarea>
         </div>
       </div>
     </div>

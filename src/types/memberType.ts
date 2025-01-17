@@ -29,7 +29,7 @@ export interface CustomerDetailData {
   birthDate: string;
   phone: string; // 전화번호
   address: string; // 주소
-  visitPath: string | null; // 방문 경로
+  visitPath: string; // 방문 경로
   memo: string; // 메모
   progressList: ProgressList[]; // 진도표 리스트
   planPayment: PlanPayment; // 이용권 결제 정보

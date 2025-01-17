@@ -226,7 +226,12 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
             <BasicButton size="medium" color="danger" border={true}>
               회원 삭제
             </BasicButton>
-            <BasicButton size="medium" color="secondary" border={true}>
+            <BasicButton
+              size="medium"
+              color="secondary"
+              border={true}
+              onClick={onClose}
+            >
               취소
             </BasicButton>
             <BasicButton
