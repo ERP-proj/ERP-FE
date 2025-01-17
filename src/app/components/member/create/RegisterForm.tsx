@@ -34,55 +34,71 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
 
   return (
     <div className="space-y-6 p-6">
-      {/* 이미지 선택 */}
-      <Camera onCapture={handleCapture} />
-      {/* 입력 폼 */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">이름</label>
-          <input
-            type="text"
-            placeholder="이름"
-            className="input-content w-full"
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-          />
+      {/* 프로필 이미지와 기본 정보 */}
+      <div className="flex gap-6">
+        {/* 왼쪽 - 이미지 선택 */}
+        <div className="flex flex-col items-center w-1/3">
+          <Camera onCapture={handleCapture} />
         </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">성별(필수)</label>
-          <Dropdown
-            options={["여", "남"]}
-            placeholder="성별"
-            defaultValue={formData.gender === "MALE" ? "남" : "여"}
-            className="w-full"
-            onChange={(value) => {
-              const mappedGender = value === "남" ? "MALE" : "FEMALE";
-              handleInputChange("gender", mappedGender);
-            }}
-          />
+
+        {/* 오른쪽 - 이름, 성별, 생년월일, 전화번호 */}
+        <div className="flex flex-col w-2/3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">이름</label>
+              <input
+                type="text"
+                placeholder="이름"
+                className="input-content w-full mb-6"
+                value={formData.name}
+                onChange={(e) => handleInputChange("name", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                성별(필수)
+              </label>
+              <Dropdown
+                options={["여", "남"]}
+                placeholder="성별"
+                defaultValue={formData.gender === "MALE" ? "남" : "여"}
+                className="w-full"
+                onChange={(value) => {
+                  const mappedGender = value === "남" ? "MALE" : "FEMALE";
+                  handleInputChange("gender", mappedGender);
+                }}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                생년월일(필수)
+              </label>
+              <input
+                type="date"
+                placeholder="생년월일"
+                className="input-content w-full"
+                value={formData.birthDate}
+                onChange={(e) => handleInputChange("birthDate", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-sm text-gray-600 mb-1">
+                전화번호
+              </label>
+              <input
+                type="text"
+                placeholder="01012341234"
+                className="input-content w-full"
+                value={formData.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+              />
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">
-            생년월일(필수)
-          </label>
-          <input
-            type="date"
-            placeholder="생년월일"
-            className="input-content w-full"
-            value={formData.birthDate}
-            onChange={(e) => handleInputChange("birthDate", e.target.value)}
-          />
-        </div>
-        <div>
-          <label className="block text-sm text-gray-600 mb-1">전화번호</label>
-          <input
-            type="text"
-            placeholder="01012341234"
-            className="input-content w-full"
-            value={formData.phone}
-            onChange={(e) => handleInputChange("phone", e.target.value)}
-          />
-        </div>
+      </div>
+
+      {/* 나머지 입력 폼 */}
+      <div className="grid grid-cols-2 gap-4 mt-6">
         <div className="col-span-2">
           <label className="block text-sm text-gray-600 mb-1">주소</label>
           <input
@@ -110,10 +126,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             value={formData.memo}
             onChange={(e) => handleInputChange("memo", e.target.value)}
           ></textarea>
-        </div>
-        <div className="col-span-2">
-          <label className="block text-sm text-gray-600 mb-1">약관</label>
-          <p>약관약관약관약관약관약관</p>
         </div>
       </div>
 
@@ -172,7 +184,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             className="absolute left-1/2 transform -translate-x-1/2 translate-y-0 text-gray-500 bg-white hover:text-[#B4D89C] rounded-full shadow-md"
             onClick={addRow}
           >
-            <CiCirclePlus size={28} />
+            +
           </button>
         </div>
       </div>
