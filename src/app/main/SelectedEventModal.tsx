@@ -161,31 +161,66 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           <div className="flex justify-between text-left m-2 font-semibold">
             예약 시간
           </div>
-          <div className="flex justify-between">
+          <div className="flex-1">
             {/* Start Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
-              type="time"
-              value={
-                userInfo?.formattedStartTime !== undefined
-                  ? userInfo?.formattedStartTime
-                  : ""
-              }
-              onChange={(e) => handleInputChange("startTime", e.target.value)}
-            ></input>
+              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="text"
+              maxLength={5}
+              value={userInfo?.formattedStartTime || ""}
+              placeholder="00:00"
+              readOnly={event?.mode === "add"}
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 4) {
+                  const formattedTime =
+                    input.length > 2
+                      ? `${input.slice(0, 2)}:${input.slice(2)}`
+                      : input;
+
+                  const updatedStartTime = `${userInfo.startTime.slice(
+                    0,
+                    11
+                  )}${formattedTime}:00`;
+
+                  setUserInfo((prev: any) => ({
+                    ...prev,
+                    formattedStartTime: formattedTime,
+                    startTime: updatedStartTime,
+                  }));
+                }
+              }}
+            />
             {/* ~ */}
             <span className="font-light p-2 ">~</span>
             {/* End Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
-              type="time"
-              value={
-                userInfo?.formattedEndTime !== undefined
-                  ? userInfo?.formattedEndTime
-                  : ""
-              }
-              onChange={(e) => handleInputChange("endTime", e.target.value)}
-            ></input>
+              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="text"
+              maxLength={5}
+              value={userInfo?.formattedEndTime || ""}
+              placeholder="00:00"
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 4) {
+                  const formattedTime =
+                    input.length > 2
+                      ? `${input.slice(0, 2)}:${input.slice(2)}`
+                      : input;
+
+                  const updatedEndTime = `${userInfo.endTime.slice(
+                    0,
+                    11
+                  )}${formattedTime}:00`;
+
+                  setUserInfo((prev: any) => ({
+                    ...prev,
+                    formattedEndTime: formattedTime,
+                    endTime: updatedEndTime,
+                  }));
+                }
+              }}
+            />
           </div>
 
           {/* User name */}
