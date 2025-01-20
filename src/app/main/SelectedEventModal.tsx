@@ -6,8 +6,9 @@ import getReservationCustomerDetails from "@/utils/reservation/getReservationCus
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
-import apiClient from "@/api/core/apiClient";
-import errorHandler from "@/api/core/errorHandler";
+import { postAddReservations } from "@/api/reservation/postAddReservations";
+import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
+import { deleteReservations } from "@/api/reservation/deleteReservations";
 
 interface EventProps {
   event: {
@@ -43,6 +44,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   }, [event]);
 
   console.log("response(userInfo)", userInfo);
+  console.log("response(event)", event);
 
   const handleInputChange = (field: string, value: string) => {
     setUserInfo((prev: any) => ({
@@ -52,49 +54,30 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (userInfo?.mode == "add") {
-      console.log("------Submit ADD------");
-      try {
-        const response = await apiClient.post(
-          "/api/reservation/addReservation",
-          {
-            customerId: 1,
-            startTime: userInfo.start,
-            endTime: userInfo.end,
-            resourceId: userInfo.resourceId,
-            memo: userInfo.memo,
-            seatNumber: userInfo.resourceId,
-          }
-        );
-        if (response.status === 200) {
-          console.log("예약 성공", response);
-        }
-      } catch (error: unknown) {
-        const errorMessage = errorHandler(error);
-        throw new Error(errorMessage);
+    let response;
+    try {
+      if (userInfo?.mode == "add") {
+        console.log("------Submit ADD------");
+        const response = await postAddReservations(userInfo);
+      } else {
+        console.log("------Submit EDIT------");
+        const response = await putUpdateReservations(userInfo);
       }
-    } else {
-      console.log("------Submit EDIT------");
-      try {
-        const response = await apiClient.put(
-          "/api/reservation/updatedReservation",
-          {
-            reservationId: userInfo.reservationId,
-            startTime: userInfo.startTime,
-            endTime: userInfo.endTime,
-            memo: userInfo.memo,
-            seatNumber: userInfo.resourceId,
-          }
-        );
-        if (response.status === 200) {
-          console.log("수정 성공");
-        }
-      } catch (error: unknown) {
-        const errorMessage = errorHandler(error);
-        throw new Error(errorMessage);
-      }
+    } finally {
+      onClose();
     }
+    return response;
+  };
+
+  const handleDelete = async () => {
+    if (!event?.reservationId) {
+      console.error("Reservation ID is missing. Can not Delete");
+      return;
+    }
+    console.log("-----Delete------");
+    const response = await deleteReservations(event?.reservationId);
     onClose();
+    return response;
   };
 
   return (
@@ -220,11 +203,19 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       <div className="flex">
         {/* Edit & Save button */}
         <Button
-          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4"
+          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2"
           onClick={handleSubmit}
         >
           {event?.mode === "add" ? "저장" : "수정 완료"}
         </Button>
+        {event?.mode === "edit" && (
+          <Button
+            className="flex flex-1 font-light bg-[#FFFFFF] border-2 border-[#DB5461] rounded-lg text-[#DB5461] p-2 mt-4"
+            onClick={handleDelete}
+          >
+            삭제
+          </Button>
+        )}
       </div>
     </div>
   );

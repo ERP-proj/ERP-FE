@@ -80,6 +80,7 @@ export const calendarSetup = (
           endDate,
           reservationId,
           position,
+          mode: "edit",
         });
       }
     },
