@@ -2,6 +2,7 @@ import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import dayjs from "dayjs";
 
 export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
@@ -38,14 +39,14 @@ export const calendarSetup = (
 
     // Set calendar resources
     resources: [
-      { id: "SeatNumber1", title: "1" },
-      { id: "SeatNumber2", title: "2" },
-      { id: "SeatNumber3", title: "3" },
-      { id: "SeatNumber4", title: "4" },
-      { id: "SeatNumber5", title: "5" },
-      { id: "SeatNumber6", title: "6" },
-      { id: "SeatNumber7", title: "7" },
-      { id: "SeatNumber8", title: "8" },
+      { id: "1", title: "1" },
+      { id: "2", title: "2" },
+      { id: "3", title: "3" },
+      { id: "4", title: "4" },
+      { id: "5", title: "5" },
+      { id: "6", title: "6" },
+      { id: "7", title: "7" },
+      { id: "8", title: "8" },
     ],
 
     // Set event items
@@ -59,6 +60,7 @@ export const calendarSetup = (
       const startDate = eventObj?.start;
       const endDate = eventObj?.end;
       const seatNumber = eventObj?.id;
+      const reservationId = eventObj.extendedProps?.reservationId;
       const target = info.jsEvent.target as HTMLElement | null;
 
       if (target && target.getBoundingClientRect) {
@@ -68,22 +70,15 @@ export const calendarSetup = (
           left: rect.left + window.scrollX + rect.width * 1.2,
         };
 
-        console.log("클릭한 이벤트 위치:", position);
-
-        console.log(
-          "userName/startDate/endDate/userId/eventObj",
-          userName,
-          startDate,
-          endDate,
-          seatNumber,
-          eventObj
-        );
+        console.log("clicked event info--------------------");
+        console.log(info);
 
         setSelectedEvent({
           userName,
           seatNumber,
           startDate,
           endDate,
+          reservationId,
           position,
         });
       }
@@ -91,27 +86,29 @@ export const calendarSetup = (
 
     // Set drag Callback
     select: function (info) {
-      const start = info.start;
-      const end = info.end;
       const resourceId = info.resource?.id;
 
       console.log("infoooo", info);
-      const title = prompt("새로운 예약");
-      if (title) {
-        calendar.addEvent({
-          title,
-          start,
-          end,
-          resourceId,
-          extendedProps: {
-            seatNumber: resourceId,
-          },
-        });
 
-        alert(
-          `새로운 예약이 추가되었습니다:\nStart: ${info.startStr}\nEnd: ${info.endStr}\nResource: ${resourceId}`
-        );
-      }
+      const newEvent = {
+        start: dayjs(info.start).format("YYYY-MM-DDTHH:mm:ss"),
+        end: dayjs(info.end).format("YYYY-MM-DDTHH:mm:ss"),
+        formattedStartTime: dayjs(info.start).format("HH:mm"),
+        formattedEndTime: dayjs(info.end).format("HH:mm"),
+        resourceId,
+        extendedProps: {
+          seatNumber: resourceId,
+        },
+        mode: "add",
+      };
+
+      // if (info) {
+      //   calendar.addEvent(newEvent);
+      //   console.log("addEvent 발생");
+      // }
+
+      setSelectedEvent(newEvent);
+      console.log("newEvent", newEvent);
     },
 
     // default design setting

@@ -18,7 +18,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
-        className="absolute z-50 bg-white p-6 rounded-xl shadow-lg"
+        className="absolute z-50 bg-white p-6 rounded-xl shadow-lg w-6/12 h-fit min-w-fit border-0"
         style={{
           top: position?.top || "50%",
           left: position?.left || "50%",

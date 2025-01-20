@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { fetchDailyReservations } from "@/api/reservation/fetchDailyReservations";
 import transformReservationsToEvents from "@/utils/calendar/transformReservationsToEvents ";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { colorList } from "@/utils/calendar/colorList";
+import fetchDailyReservations from "@/api/reservation/fetchDailyReservations";
 
 dayjs.extend(utc);
 
@@ -19,7 +19,6 @@ export const useReservations = (date: string, calendarInstance: any) => {
       try {
         // response 받아오기
         const response = await fetchDailyReservations(date);
-        console.log("API response fetchDailyReservations:", response);
 
         // 데이터 Transform 실시
         const reservationEvents = transformReservationsToEvents(
@@ -46,10 +45,7 @@ export const useReservations = (date: string, calendarInstance: any) => {
           };
         });
 
-        console.log("reservationEvents--------------", reservationEvents);
-
-        console.log(calendarInstance.current);
-        console.log(Object.getOwnPropertyNames(calendarInstance.current));
+        console.log("data after modify----", eventWithColors);
 
         if (calendarInstance.current) {
           // 기존 이벤트 삭제 및 리소스 정의 및 새로운 이벤트 추가

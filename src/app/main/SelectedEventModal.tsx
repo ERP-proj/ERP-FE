@@ -1,55 +1,109 @@
 "use client";
 
 import Image from "next/image";
-import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 import noUser from "../../assets/noUser.png";
-import inactiveCheck from "../../../public/reservationModal/inactiveCheck.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
+import apiClient from "@/api/core/apiClient";
+import errorHandler from "@/api/core/errorHandler";
 
 interface EventProps {
   event: {
-    userName: string;
-    getReservationCustomerDetails: any;
-    userId: number;
-    startDate: string | null;
-    endDate: string | null;
+    startTime: string;
+    endTime: string;
+    resourceId: string;
+    reservationId: number;
+    mode: "add" | "edit";
   } | null;
   onClose: () => void;
 }
 
 const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
-  const [startDate, setStartDate] = useState<string | "N/A">("N/A");
-  const [endDate, setEndDate] = useState<string | "N/A">("N/A");
   const [userInfo, setUserInfo] = useState<any>(null);
 
-  console.log("eventttttdfdt", event);
-
   useEffect(() => {
-    if (event) {
+    console.log("~~~~~~~~~~~event", event);
+
+    // Case 1: add Mode
+    if (event?.mode == "add") {
+      setUserInfo(event);
+    }
+
+    // Case 2: Edit Mode
+    if (event?.reservationId) {
       const fetchUserInfo = async () => {
-        const data = await getReservationCustomerDetails(event.userId);
-        setUserInfo(data);
+        const data = await getReservationCustomerDetails(event.reservationId);
+        setUserInfo(data?.data || null);
       };
 
       fetchUserInfo();
-
-      setStartDate(
-        event.startDate ? dayjs(event.startDate).format("HH:mm") : "N/A"
-      );
-      setEndDate(event.endDate ? dayjs(event.endDate).format("HH:mm") : "N/A");
     }
   }, [event]);
 
-  const userData = userInfo?.data;
+  console.log("response(userInfo)", userInfo);
+
+  const handleInputChange = (field: string, value: string) => {
+    setUserInfo((prev: any) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (userInfo?.mode == "add") {
+      console.log("------Submit ADD------");
+      try {
+        const response = await apiClient.post(
+          "/api/reservation/addReservation",
+          {
+            customerId: 1,
+            startTime: userInfo.start,
+            endTime: userInfo.end,
+            resourceId: userInfo.resourceId,
+            memo: userInfo.memo,
+            seatNumber: userInfo.resourceId,
+          }
+        );
+        if (response.status === 200) {
+          console.log("예약 성공", response);
+        }
+      } catch (error: unknown) {
+        const errorMessage = errorHandler(error);
+        throw new Error(errorMessage);
+      }
+    } else {
+      console.log("------Submit EDIT------");
+      try {
+        const response = await apiClient.put(
+          "/api/reservation/updatedReservation",
+          {
+            reservationId: userInfo.reservationId,
+            startTime: userInfo.startTime,
+            endTime: userInfo.endTime,
+            memo: userInfo.memo,
+            seatNumber: userInfo.resourceId,
+          }
+        );
+        if (response.status === 200) {
+          console.log("수정 성공");
+        }
+      } catch (error: unknown) {
+        const errorMessage = errorHandler(error);
+        throw new Error(errorMessage);
+      }
+    }
+    onClose();
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         {/* Modal title */}
-        <div className="text-lg font-semibold">예약 수정</div>
+        <div className="text-lg font-semibold">
+          {event?.mode === "add" ? "예약 추가" : "예약 수정"}
+        </div>
         {/* Modal close button */}
         <Button className="size-12" onClick={onClose}>
           <Image src={closeIcon} alt="closeIcon" />
@@ -58,12 +112,12 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
 
       <div className="flex">
         {/* User photo */}
-        <div className="flex justify-center items-center size-32 mx-2">
-          {userData?.photoUrl ? (
+        <div className="justify-center m-2 size-32">
+          {userInfo?.photoUrl !== undefined ? (
             <Image
-              src={userInfo.data.photoUrl || noUser}
+              src={userInfo.photoUrl || noUser}
               alt="User Photo"
-              className="w-32 h-32 object-cover rounded-xl"
+              className="object-cover rounded-lg"
             />
           ) : (
             <Image src={noUser} alt="noUser" />
@@ -71,93 +125,106 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
 
         {/* basic info */}
-        <div className="flex w-5/12 flex-col mx-2">
+        <div className="flex w-6/12 flex-col mx-2">
           {/* reservation time */}
-          <div className="flex text-left m-2 font-semibold">예약 시간</div>
-          <div>
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              {startDate !== "N/A" ? startDate : "N/A"}
-            </span>
+          <div className="flex justify-between text-left m-2 font-semibold">
+            예약 시간
+          </div>
+          <div className="flex justify-between">
+            {/* Start Time */}
+            <input
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="time"
+              value={
+                userInfo?.formattedStartTime !== undefined
+                  ? userInfo?.formattedStartTime
+                  : ""
+              }
+              onChange={(e) => handleInputChange("startTime", e.target.value)}
+            ></input>
+            {/* ~ */}
             <span className="font-light p-2 ">~</span>
-            <span className="font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              {endDate !== "N/A" ? endDate : "N/A"}
-            </span>
+            {/* End Time */}
+            <input
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="time"
+              value={
+                userInfo?.formattedEndTime !== undefined
+                  ? userInfo?.formattedEndTime
+                  : ""
+              }
+              onChange={(e) => handleInputChange("endTime", e.target.value)}
+            ></input>
           </div>
 
           {/* User name */}
           <div className="text-left m-2 font-semibold">성함</div>
-          <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
-            {event?.userName ? event?.userName : "더미회원이름"}
-          </div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            type="search"
+            value={userInfo?.name !== undefined ? userInfo?.name : ""}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+          ></input>
 
-          {/* User mobile number */}
+          {/* User phone number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
-          <div className="font-light bg-[#F2F8ED] p-2 rounded-xl border-[#B4D89C] border-2 text-[#3C6229]">
-            {userData?.phone ? userData?.phone : "010-0000-0000"}
-          </div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            value={userInfo?.phone !== undefined ? userInfo?.phone : ""}
+            type="tel"
+            onChange={(e) => handleInputChange("phone", e.target.value)}
+          ></input>
 
           {/* Event termination period */}
           <div className="text-left m-2 font-semibold">
             <span>이벤트 종료 기간</span>
             <span>남은 기간</span>
           </div>
-          <div className="m-2">
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              2024.99.99
+          <div className="flex m-2">
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 mr-2 rounded-lg text-[#888888] min-h-7">
+              {""}
             </span>
-            <span className=" font-light bg-[#F6F6F6] p-2 rounded-xl text-[#888888]">
-              999
+            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+              {userInfo?.remainingTime !== undefined
+                ? userInfo.remainingTime
+                : ""}
             </span>
           </div>
 
           {/* Plan Info */}
-          <div className="m-2">
-            <h3 className="text-left font-semibold">이용권</h3>
-            <p className="px-4 py-2 bg-green-100 border-2 border-green-300 rounded-lg">
-              {userData?.planPayment?.licenseType || "이용권이 없습니다."}
-            </p>
-          </div>
-
-          {/* Late/absent check */}
-          <div className="text-left m-2 font-semibold">지각/결석</div>
-          <div className="flex flex-row gap-3 align-center justify-center">
-            <span className="flex gap-1">
-              <Image
-                src={inactiveCheck}
-                alt="inactiveCheck"
-                className="size-5"
-              />
-              <button>지각</button>
-            </span>
-            <span className="flex gap-1">
-              <Image
-                src={inactiveCheck}
-                alt="inactiveCheck"
-                className="size-5"
-              />
-              <button>결석</button>
-            </span>
+          <div className="text-left m-2 font-semibold">이용권</div>
+          <div className="font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7">
+            {userInfo?.planName !== undefined ? userInfo?.planName : ""}
           </div>
         </div>
 
         {/* Additional Info */}
-        <div className="flex w-5/12 flex-col mx-2">
-          <div className="m-2">
-            <h3 className="text-left font-semibold">회원 메모</h3>
-            <p className="px-4 py-2 bg-green-100 border-2 border-green-300 rounded-lg">
-              {userData?.memo || "메모가 없습니다."}
-            </p>
-          </div>
+        <div className="flex w-6/12 flex-col mx-2">
+          {/* User memo */}
+          <div className="text-left m-2 font-semibold">회원 메모</div>
+          <input
+            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]"
+            value={userInfo?.memo !== undefined ? userInfo?.memo : ""}
+            type="text"
+            onChange={(e) => handleInputChange("memo", e.target.value)}
+          ></input>
 
           {/* Progress List */}
-          <div className="m-2">
-            <h3 className="text-left font-semibold">진도표</h3>
-            <p className="px-4 py-2 bg-gray-100 rounded-lg">
-              {userData?.progressList || "진도표가 없습니다."}
-            </p>
+          <div className="text-left m-2 font-semibold">진도표</div>
+          <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]">
+            {userInfo?.progress !== undefined ? userInfo?.progress : ""}
           </div>
         </div>
-        {/* User memo */}
+      </div>
+
+      <div className="flex">
+        {/* Edit & Save button */}
+        <Button
+          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4"
+          onClick={handleSubmit}
+        >
+          {event?.mode === "add" ? "저장" : "수정 완료"}
+        </Button>
       </div>
     </div>
   );
