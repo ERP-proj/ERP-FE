@@ -9,6 +9,8 @@ import closeIcon from "../../../public/reservationModal/closeIcon.png";
 import { postAddReservations } from "@/api/reservation/postAddReservations";
 import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
 import { deleteReservations } from "@/api/reservation/deleteReservations";
+import { searchCustomerName } from "@/api/reservation/searchCustomerName";
+import { debounce } from "lodash";
 
 interface EventProps {
   event: {
@@ -80,6 +82,43 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
     return response;
   };
 
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [customerList, setCustomerList] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const performSearch = debounce(async (keyword: string) => {
+    if (keyword.trim() === "") {
+      setCustomerList([]);
+      setIsSearching(false);
+      return;
+    }
+
+    try {
+      const response = await searchCustomerName(keyword.trim());
+      setCustomerList(response.data || []);
+    } catch (error) {
+      console.error("Failed to search custoemr name");
+    } finally {
+      setIsSearching(false);
+    }
+  }, 300);
+
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+    setIsSearching(true);
+    performSearch(keyword);
+  };
+
+  const handleSelectCustomer = (customer: any) => {
+    setUserInfo((prev: any) => ({
+      ...prev,
+      name: customer.name,
+      customerId: customer.customerId,
+    }));
+    setSearchKeyword(customer.name);
+    setCustomerList([]);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -145,9 +184,25 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           <input
             className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
             type="search"
-            value={userInfo?.name !== undefined ? userInfo?.name : ""}
-            onChange={(e) => handleInputChange("name", e.target.value)}
+            value={event?.mode === "add" ? searchKeyword : userInfo?.name}
+            onChange={(e) => handleSearch(e.target.value)}
+            readOnly={event?.mode === "edit"}
           ></input>
+
+          {/* 고객 검색 결과 */}
+          {searchKeyword && customerList.length > 0 && (
+            <div className="bg-white border border-gray-300 rounded-lg mt-2 max-h-40 overflow-y-auto">
+              {customerList.map((customer) => (
+                <div
+                  key={customer.customerId}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleSelectCustomer(customer)}
+                >
+                  {customer.name}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* User phone number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
