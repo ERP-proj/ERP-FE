@@ -6,14 +6,17 @@ import getReservationCustomerDetails from "@/utils/reservation/getReservationCus
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
-import apiClient from "@/api/core/apiClient";
-import errorHandler from "@/api/core/errorHandler";
+import { postAddReservations } from "@/api/reservation/postAddReservations";
+import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
+import { deleteReservations } from "@/api/reservation/deleteReservations";
+import { searchCustomerName } from "@/api/reservation/searchCustomerName";
+import { debounce } from "lodash";
 
 interface EventProps {
   event: {
     startTime: string;
     endTime: string;
-    resourceId: string;
+    seatNumber: number;
     reservationId: number;
     mode: "add" | "edit";
   } | null;
@@ -43,6 +46,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   }, [event]);
 
   console.log("response(userInfo)", userInfo);
+  console.log("response(event)", event);
 
   const handleInputChange = (field: string, value: string) => {
     setUserInfo((prev: any) => ({
@@ -52,49 +56,76 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (userInfo?.mode == "add") {
-      console.log("------Submit ADD------");
-      try {
-        const response = await apiClient.post(
-          "/api/reservation/addReservation",
-          {
-            customerId: 1,
-            startTime: userInfo.start,
-            endTime: userInfo.end,
-            resourceId: userInfo.resourceId,
-            memo: userInfo.memo,
-            seatNumber: userInfo.resourceId,
-          }
-        );
-        if (response.status === 200) {
-          console.log("예약 성공", response);
-        }
-      } catch (error: unknown) {
-        const errorMessage = errorHandler(error);
-        throw new Error(errorMessage);
+    let response;
+    try {
+      if (userInfo?.mode == "add") {
+        console.log("------Submit ADD------");
+        response = await postAddReservations({
+          ...userInfo,
+          customerId: userInfo.customerId,
+        });
+      } else if (event?.reservationId !== undefined) {
+        console.log("------Submit EDIT------");
+        response = await putUpdateReservations({
+          reservationId: event?.reservationId,
+          startTime: userInfo?.startTime,
+          endTime: userInfo?.endTime,
+          memo: userInfo?.memo,
+          seatNumber: event?.seatNumber,
+        });
       }
-    } else {
-      console.log("------Submit EDIT------");
-      try {
-        const response = await apiClient.put(
-          "/api/reservation/updatedReservation",
-          {
-            reservationId: userInfo.reservationId,
-            startTime: userInfo.startTime,
-            endTime: userInfo.endTime,
-            memo: userInfo.memo,
-            seatNumber: userInfo.resourceId,
-          }
-        );
-        if (response.status === 200) {
-          console.log("수정 성공");
-        }
-      } catch (error: unknown) {
-        const errorMessage = errorHandler(error);
-        throw new Error(errorMessage);
-      }
+    } finally {
+      onClose();
     }
+    return response;
+  };
+
+  const handleDelete = async () => {
+    if (!event?.reservationId) {
+      console.error("Reservation ID is missing. Can not Delete");
+      return;
+    }
+    console.log("-----Delete------");
+    const response = await deleteReservations(event?.reservationId);
     onClose();
+    return response;
+  };
+
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [customerList, setCustomerList] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const performSearch = debounce(async (keyword: string) => {
+    if (keyword.trim() === "") {
+      setCustomerList([]);
+      setIsSearching(false);
+      return;
+    }
+
+    try {
+      const response = await searchCustomerName(keyword.trim());
+      setCustomerList(response.data || []);
+    } catch (error) {
+      console.error("Failed to search custoemr name", error);
+    } finally {
+      setIsSearching(false);
+    }
+  }, 300);
+
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+    setIsSearching(true);
+    performSearch(keyword);
+  };
+
+  const handleSelectCustomer = (customer: any) => {
+    setUserInfo((prev: any) => ({
+      ...prev,
+      name: customer.name,
+      customerId: customer.customerId,
+    }));
+    setSearchKeyword(customer.name);
+    setCustomerList([]);
   };
 
   return (
@@ -130,31 +161,66 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           <div className="flex justify-between text-left m-2 font-semibold">
             예약 시간
           </div>
-          <div className="flex justify-between">
+          <div className="flex-1">
             {/* Start Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
-              type="time"
-              value={
-                userInfo?.formattedStartTime !== undefined
-                  ? userInfo?.formattedStartTime
-                  : ""
-              }
-              onChange={(e) => handleInputChange("startTime", e.target.value)}
-            ></input>
+              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="text"
+              maxLength={5}
+              value={userInfo?.formattedStartTime || ""}
+              placeholder="00:00"
+              readOnly={event?.mode === "add"}
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 4) {
+                  const formattedTime =
+                    input.length > 2
+                      ? `${input.slice(0, 2)}:${input.slice(2)}`
+                      : input;
+
+                  const updatedStartTime = `${userInfo.startTime.slice(
+                    0,
+                    11
+                  )}${formattedTime}:00`;
+
+                  setUserInfo((prev: any) => ({
+                    ...prev,
+                    formattedStartTime: formattedTime,
+                    startTime: updatedStartTime,
+                  }));
+                }
+              }}
+            />
             {/* ~ */}
             <span className="font-light p-2 ">~</span>
             {/* End Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
-              type="time"
-              value={
-                userInfo?.formattedEndTime !== undefined
-                  ? userInfo?.formattedEndTime
-                  : ""
-              }
-              onChange={(e) => handleInputChange("endTime", e.target.value)}
-            ></input>
+              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              type="text"
+              maxLength={5}
+              value={userInfo?.formattedEndTime || ""}
+              placeholder="00:00"
+              onChange={(e) => {
+                const input = e.target.value.replace(/[^0-9]/g, "");
+                if (input.length <= 4) {
+                  const formattedTime =
+                    input.length > 2
+                      ? `${input.slice(0, 2)}:${input.slice(2)}`
+                      : input;
+
+                  const updatedEndTime = `${userInfo.endTime.slice(
+                    0,
+                    11
+                  )}${formattedTime}:00`;
+
+                  setUserInfo((prev: any) => ({
+                    ...prev,
+                    formattedEndTime: formattedTime,
+                    endTime: updatedEndTime,
+                  }));
+                }
+              }}
+            />
           </div>
 
           {/* User name */}
@@ -162,9 +228,26 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           <input
             className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
             type="search"
-            value={userInfo?.name !== undefined ? userInfo?.name : ""}
-            onChange={(e) => handleInputChange("name", e.target.value)}
+            value={event?.mode === "add" ? searchKeyword : userInfo?.name}
+            onChange={(e) => handleSearch(e.target.value)}
+            readOnly={event?.mode === "edit"}
           ></input>
+
+          {/* 고객 검색 결과 */}
+          {isSearching && <div className="p-2 text-gray-500">검색 중...</div>}
+          {searchKeyword && customerList.length > 0 && (
+            <div className="bg-white border border-gray-300 rounded-lg mt-2 max-h-40 overflow-y-auto">
+              {customerList.map((customer) => (
+                <div
+                  key={customer.customerId}
+                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleSelectCustomer(customer)}
+                >
+                  {customer.name}
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* User phone number */}
           <div className="text-left m-2 font-semibold">전화번호</div>
@@ -220,11 +303,19 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       <div className="flex">
         {/* Edit & Save button */}
         <Button
-          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4"
+          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2"
           onClick={handleSubmit}
         >
           {event?.mode === "add" ? "저장" : "수정 완료"}
         </Button>
+        {event?.mode === "edit" && (
+          <Button
+            className="flex flex-1 font-light bg-[#FFFFFF] border-2 border-[#DB5461] rounded-lg text-[#DB5461] p-2 mt-4"
+            onClick={handleDelete}
+          >
+            삭제
+          </Button>
+        )}
       </div>
     </div>
   );

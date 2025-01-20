@@ -3,7 +3,7 @@ import transformReservationsToEvents from "@/utils/calendar/transformReservation
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { colorList } from "@/utils/calendar/colorList";
-import fetchDailyReservations from "@/api/reservation/fetchDailyReservations";
+import { getDailyReservations } from "@/api/reservation/getDailyReservations";
 
 dayjs.extend(utc);
 
@@ -18,7 +18,7 @@ export const useReservations = (date: string, calendarInstance: any) => {
     const loadReservation = async () => {
       try {
         // response 받아오기
-        const response = await fetchDailyReservations(date);
+        const response = await getDailyReservations(date);
 
         // 데이터 Transform 실시
         const reservationEvents = transformReservationsToEvents(

@@ -41,40 +41,8 @@ function NextReservation() {
               </div>
             )))
           ) : (
-            // <div className="text-center text-gray-500 m-4 bg-white">
-            //   예약 정보가 없습니다.
-            // </div>
-
-            // dummy data
-            <div>
-              {/* 홍길동1 */}
-              <div className="bg-white text-black font-medium h-18 min-h-14 flex flex-col justify-around align-middle p-4 rounded-xl m-3 rounded-none">
-                <div className="flex justify-between align-middle font-semibold text-sm">
-                  <span>{"홍길동1"}</span>
-                  <span className="flex font-normal text-xs text-[#888888]">
-                    {"11:00"}
-                    {"~"}
-                    {"12:30"}
-                  </span>
-                </div>
-                <div className="flex font-light text-base text-[#3A3A3A]">
-                  {"저번 시간 진도"}
-                </div>
-              </div>
-              {/* 홍길동1 */}
-              <div className="bg-white text-black font-medium h-18 min-h-14 flex flex-col justify-around align-middle p-4 rounded-xl m-3 rounded-none">
-                <div className="flex justify-between align-middle font-semibold text-sm">
-                  <span>{"홍길동1"}</span>
-                  <span className="flex font-normal text-xs text-[#888888]">
-                    {"11:00"}
-                    {"~"}
-                    {"12:30"}
-                  </span>
-                </div>
-                <div className="flex font-light text-base text-[#3A3A3A]">
-                  {"저번 시간 진도"}
-                </div>
-              </div>
+            <div className="text-center text-gray-500 m-4 bg-white">
+              예약 정보가 없습니다.
             </div>
           )}
         </ScrollArea>
