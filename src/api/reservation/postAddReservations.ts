@@ -6,10 +6,11 @@ export const postAddReservations = async (userInfo: {
   end: string;
   resourceId: number;
   memo: string;
+  customerId: number;
 }) => {
   try {
     const response = await apiClient.post("/api/reservation/addReservation", {
-      customerId: 1,
+      customerId: userInfo.customerId,
       startTime: userInfo.start,
       endTime: userInfo.end,
       resourceId: userInfo.resourceId,
