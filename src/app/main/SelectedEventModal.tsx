@@ -58,10 +58,10 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
     try {
       if (userInfo?.mode == "add") {
         console.log("------Submit ADD------");
-        const response = await postAddReservations(userInfo);
+        response = await postAddReservations(userInfo);
       } else {
         console.log("------Submit EDIT------");
-        const response = await putUpdateReservations(userInfo);
+        response = await putUpdateReservations(userInfo);
       }
     } finally {
       onClose();
