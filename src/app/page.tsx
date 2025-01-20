@@ -9,14 +9,14 @@ export default function Home() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
   return (
-    <div className="flex justify-center align-middle h-screen items-center">
-      <div className="flex-[4_0_0] h-full">
+    <div className="flex">
+      <div className=" flex-[5_0_0] h-full place-items-center">
         <SideBar />
       </div>
-      <div className="flex-[50_0_0]">
+      <div className="flex-[65_0_0]">
         <TimeTable setSelectedEvent={setSelectedEvent} />
       </div>
-      <div className="flex-[50_0_0] max-w-screen-md min-w-72 text-center flex-col">
+      <div className="flex flex-col flex-[30_0_0]">
         <NextReservation />
       </div>
 

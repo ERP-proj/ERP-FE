@@ -1,12 +1,12 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
 
-export default async function fetchDailyReservations(day: string) {
+export async function getReservationByTime(time: string) {
   try {
     const response = await apiClient.get(
-      "/api/reservation/getDailyReservations",
+      "/api/reservation/getReservationByTime",
       {
-        params: { day },
+        params: { time },
       }
     );
     return response.data;
