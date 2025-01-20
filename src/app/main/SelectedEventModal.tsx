@@ -100,7 +100,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       const response = await searchCustomerName(keyword.trim());
       setCustomerList(response.data || []);
     } catch (error) {
-      console.error("Failed to search custoemr name");
+      console.error("Failed to search custoemr name", error);
     } finally {
       setIsSearching(false);
     }
@@ -193,6 +193,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           ></input>
 
           {/* 고객 검색 결과 */}
+          {isSearching && <div className="p-2 text-gray-500">검색 중...</div>}
           {searchKeyword && customerList.length > 0 && (
             <div className="bg-white border border-gray-300 rounded-lg mt-2 max-h-40 overflow-y-auto">
               {customerList.map((customer) => (
