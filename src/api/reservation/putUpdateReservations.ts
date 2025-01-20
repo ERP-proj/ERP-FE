@@ -1,23 +1,22 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
 
-export const putUpdateReservations = async (userInfo: {
+export const putUpdateReservations = async (data: {
   reservationId: number;
   startTime: string;
   endTime: string;
   memo: string;
   seatNumber: number;
-  resourceId: number;
 }) => {
   try {
     const response = await apiClient.put(
       "/api/reservation/updatedReservation",
       {
-        reservationId: userInfo.reservationId,
-        startTime: userInfo.startTime,
-        endTime: userInfo.endTime,
-        memo: userInfo.memo,
-        seatNumber: userInfo.resourceId,
+        reservationId: data?.reservationId,
+        startTime: data?.startTime,
+        endTime: data?.endTime,
+        memo: data?.memo,
+        seatNumber: data?.seatNumber,
       }
     );
     if (response.status === 200) {

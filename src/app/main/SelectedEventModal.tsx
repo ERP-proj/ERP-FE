@@ -16,7 +16,7 @@ interface EventProps {
   event: {
     startTime: string;
     endTime: string;
-    resourceId: string;
+    seatNumber: number;
     reservationId: number;
     mode: "add" | "edit";
   } | null;
@@ -64,9 +64,15 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           ...userInfo,
           customerId: userInfo.customerId,
         });
-      } else {
+      } else if (event?.reservationId !== undefined) {
         console.log("------Submit EDIT------");
-        response = await putUpdateReservations(userInfo);
+        response = await putUpdateReservations({
+          reservationId: event?.reservationId,
+          startTime: userInfo?.startTime,
+          endTime: userInfo?.endTime,
+          memo: userInfo?.memo,
+          seatNumber: event?.seatNumber,
+        });
       }
     } finally {
       onClose();
