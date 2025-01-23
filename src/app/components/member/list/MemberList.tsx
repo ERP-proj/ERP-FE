@@ -40,7 +40,12 @@ const MemberList = () => {
       const memberDetail = await memberAPI.getCustomerDetail(customerId); // API 호출로 상세정보 가져오기
       console.log("상세 데이터:", memberDetail); // 전체 응답 출력
       console.log("상세 데이터의 data 필드:", memberDetail.data); // data 필드 확인
-      setSelectedMember(memberDetail.data); // 선택된 회원 정보 설정
+
+      // customerId를 포함하도록 데이터 가공
+      const enrichedMember = { ...memberDetail.data, customerId };
+
+      // 선택된 회원 정보 설정
+      setSelectedMember(enrichedMember);
       setIsModalOpen(true);
     } catch (error) {
       console.error("회원 상세 조회 오류:", error);

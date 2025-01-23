@@ -8,9 +8,14 @@ import Camera from "../create/Camera";
 interface DetailFormProps {
   member: CustomerDetailData;
   onSave: (updatedMember: CustomerDetailData) => void;
+  onModify: () => void;
 }
 
-const DetailForm: React.FC<DetailFormProps> = ({ member, onSave }) => {
+const DetailForm: React.FC<DetailFormProps> = ({
+  member,
+  onSave,
+  onModify,
+}) => {
   const [formData, setFormData] = useState<CustomerDetailData>(member);
   const [progress, setProgress] = useState(member.progressList || []);
   const [rows, setRows] = useState([
@@ -22,18 +27,18 @@ const DetailForm: React.FC<DetailFormProps> = ({ member, onSave }) => {
       ...prevRows,
       { id: prevRows.length + 1, date: "", content: "" },
     ]);
+    onModify();
   };
   const handleInputChange = (key: keyof CustomerDetailData, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,
     }));
+    onModify();
   };
   const handleCapture = (imageData: string) => {
     setFormData((prevData) => ({ ...prevData, photoUrl: imageData }));
-  };
-  const handleSave = () => {
-    onSave({ ...formData, progressList });
+    onModify();
   };
 
   return (

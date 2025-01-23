@@ -104,10 +104,20 @@ export const memberAPI = {
     address: string;
     visitPath: string;
     memo: string;
-    progressList: Array<{
-      date: string;
-      content: string;
-    }>;
+    progressList: {
+      addProgresses: Array<{
+        date: string;
+        content: string;
+      }>;
+      updateProgresses: Array<{
+        progressId: number;
+        date: string;
+        content: string;
+      }>;
+      deleteProgresses: Array<{
+        progressId: number;
+      }>;
+    };
     planPaymentStatus: boolean;
     otherPayment: Array<{
       paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";

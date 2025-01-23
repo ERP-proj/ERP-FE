@@ -17,30 +17,45 @@ interface DetailMemberProps {
 
 const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const [accordionOpenKey, setAccordionOpenKey] = useState<number | null>(null);
-
+  const [isModified, setIsModified] = useState(false); // 수정 여부 상태
+  console.log("DetailMember Props:", member); // DetailMember
   const handleSave = async (updatedMember: CustomerDetailData) => {
     const requestData = {
       ...updatedMember,
+      customerId: member.customerId,
       planPaymentStatus: true,
+      progressList: {
+        addProgresses: updatedMember.progressList.filter(
+          (progressList) => !progressList.progressId // progressId가 없는 항목은 새로 추가
+        ),
+        updateProgresses: updatedMember.progressList
+          ? updatedMember.progressList.filter(
+              (progressList) => progressList.progressId // progressId가 있는 항목만 수정
+            )
+          : [],
+        deleteProgresses: [], // 삭제할 항목은 빈 배열로 처리
+      },
     };
 
     try {
-      const response = await memberAPI.updateCustomerDetail(requestData);
+      await memberAPI.updateCustomerDetail(requestData);
       alert("회원 정보가 성공적으로 수정되었습니다.");
+      setIsModified(false); // 저장 후 수정 상태 초기화
       onClose();
     } catch (error) {
       console.error("회원 정보 수정 실패:", error);
       alert("회원 정보 수정 중 오류가 발생했습니다.");
+      console.log(JSON.stringify(requestData, null, 2));
     }
-  };
-  const toggleAccordion = (key: number) => {
-    setAccordionOpenKey((prev) => (prev === key ? null : key));
   };
 
   if (!member) {
-    return <div className="p-4 text-center">데이터를 불러오는 중...</div>;
+    return <div>데이터를 불러오는 중...</div>;
   }
 
+  const toggleAccordion = (key: number) => {
+    setAccordionOpenKey((prev) => (prev === key ? null : key));
+  };
   return (
     <Modal
       isOpen={!!member}
@@ -49,6 +64,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
         <DetailForm
           member={member}
           onSave={handleSave} // 저장 함수 전달
+          onModify={() => setIsModified(true)}
         />
       }
       rightChildren={
@@ -91,7 +107,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                 </div>
               }
             >
-              <div className="bg-white rounded-lg h-[1100px] ">
+              <div className="bg-white rounded-lg h-[1050px] ">
                 <h3 className="text-md pl-4 bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                   이용권 정보
                 </h3>
@@ -173,6 +189,10 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                       일반
                     </button>
                   </div>
+                  <h4 className="text-sm font-bold mb-2">이용권</h4>
+                  <h4 className="input-content mb-4">
+                    {member.planPayment.planName}
+                  </h4>
                 </div>
                 <div className="mb-4">
                   <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
@@ -317,9 +337,10 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
             </BasicButton>
             <BasicButton
               size="medium"
-              color="primary"
+              color={isModified ? "primary" : "gray"}
               border={true}
-              // onClick={handleSave}
+              onClick={() => handleSave(member)}
+              disabled={!isModified} // 수정되지 않은 경우 비활성화
             >
               저장
             </BasicButton>

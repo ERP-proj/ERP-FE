@@ -15,6 +15,7 @@ export interface Member {
   tardinessCount: number;
   absenceCount: number;
 }
+
 //회원상세
 export interface CustomerDetailResponse {
   code: string;
@@ -23,7 +24,8 @@ export interface CustomerDetailResponse {
 }
 
 export interface CustomerDetailData {
-  photoUrl: string | null; // 회원 사진 URL
+  customerId: number;
+  photoUrl: string; // 회원 사진 URL
   name: string; // 회원 이름
   gender: "MALE" | "FEMALE"; // 성별
   birthDate: string;
