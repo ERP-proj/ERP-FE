@@ -37,28 +37,32 @@ export interface CustomerDetailData {
 }
 
 export interface ProgressList {
+  progressId: number;
   date: string; // 날짜
   content: string; // 내용
 }
 
 export interface PlanPayment {
-  licenseType: string; // 이용권 타입
+  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  otherPaymentMethod: string; //기타결제
+  registrationAt: string; // 등록 날짜
+  licenseType: string; // 구분1
+  planType: string; //구분2
+  courseType: string; //구분3
   planName: string; // 이용권 이름
   planPrice: number; // 이용권 가격
   discountRate: number; // 할인율
-  discountPrice: number; // 할인 금액
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
-  registrationAt: string; // 등록 날짜
+  discountPrice: number; // 할인할 금액
   paymentTotal: number; // 총 결제 금액
   status: boolean; // 결제 상태
 }
 
 export interface OtherPayment {
+  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
   registrationAt: string; // 등록 날짜
   content: string; // 결제 내용
   price: number; // 결제 가격
   status: boolean; // 결제 상태
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
 }
 
 //회원추가

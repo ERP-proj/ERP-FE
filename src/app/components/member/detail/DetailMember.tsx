@@ -21,7 +21,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const handleSave = async (updatedMember: CustomerDetailData) => {
     const requestData = {
       ...updatedMember,
-      planPaymentStatus: true, // 항상 true로 설정
+      planPaymentStatus: true,
     };
 
     try {
@@ -64,7 +64,9 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                   <div className="flex justify-between items-center">
                     <h4 className="text-sm font-bold">총 금액</h4>
                     <p className="text-2xl font-bold text-[#DB5461]">
-                      {member.planPayment.paymentTotal}원
+                      {member.planPayment.planPrice -
+                        member.planPayment?.discountPrice}
+                      원
                     </p>
                   </div>
                   {/* 미납 여부 */}
@@ -93,6 +95,85 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                 <h3 className="text-md pl-4 bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                   이용권 정보
                 </h3>
+                <div className="gap-4 mt-4 px-4">
+                  {/* 구분1 */}
+                  <h4 className="text-sm font-bold mb-2">구분 1</h4>
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.licenseType === "1종"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      1종
+                    </button>
+                    <button
+                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.licenseType === "2종"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      2종
+                    </button>
+                  </div>
+
+                  {/* 구분2 */}
+                  <h4 className="text-sm font-bold mb-2">구분 2</h4>
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.planType === "TIME_BASED"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      시간제
+                    </button>
+                    <button
+                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.planType === "PERIOD_BASED"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      기간제
+                    </button>
+                  </div>
+
+                  {/* 구분3 */}
+                  <h4 className="text-sm font-bold mb-2">구분 3</h4>
+                  <div className="flex gap-2 mb-4">
+                    <button
+                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.courseType === "ACQUISITION"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      취득
+                    </button>
+                    <button
+                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.courseType === "REFRESHER"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      장롱
+                    </button>
+                    <button
+                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
+                        member.planPayment.courseType === "STANDARD"
+                          ? "bg-[#3C6229] text-white"
+                          : "bg-gray-200 text-gray-600"
+                      }`}
+                    >
+                      일반
+                    </button>
+                  </div>
+                </div>
                 <div className="mb-4">
                   <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
                     할인
@@ -115,43 +196,43 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         할인율 적용 금액
                       </h4>
                       <h4 className="input-content">
-                        {member.planPayment?.discountPrice}
+                        {member.planPayment.planPrice -
+                          member.planPayment?.discountPrice}
                       </h4>
                     </div>
                   </div>
                 </div>
-                <div className="mb-4">
-                  <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
-                    결제 정보
-                  </h3>
-                  <div className="p-4">
-                    <div>
-                      <h4 className="text-sm font-bold mb-2">결제 방법</h4>
-                      <div className="grid grid-cols-2 gap-2 py-2">
-                        {["현금", "카드", "계좌이체", "기타"].map(
-                          (method, index) => (
-                            <button
-                              key={index}
-                              className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border transition-colors ${
-                                member.planPayment.paymentsMethod === method
-                                  ? "bg-[#3C6229] text-white border-[#3C6229]" // 선택된 버튼 스타일
-                                  : "bg-white text-gray-600 border-gray-300" // 기본 버튼 스타일
-                              }`}
-                            >
-                              {method}
-                            </button>
-                          )
-                        )}
-                      </div>
+
+                <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
+                  결제 정보
+                </h3>
+                <div className="p-4">
+                  <div>
+                    <h4 className="text-sm font-bold mb-2">결제 방법</h4>
+                    <div className="grid grid-cols-2 gap-2 py-2">
+                      {["현금", "카드", "계좌이체", "기타"].map(
+                        (method, index) => (
+                          <button
+                            key={index}
+                            className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border transition-colors ${
+                              member.planPayment.paymentsMethod === method
+                                ? "bg-[#3C6229] text-white border-[#3C6229]"
+                                : "bg-white text-gray-600 border-gray-300"
+                            }`}
+                          >
+                            {method}
+                          </button>
+                        )
+                      )}
                     </div>
-                    <div className="mb-4">
-                      <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
-                      <h4 className="input-content">
-                        {new Date(
-                          member.planPayment.registrationAt
-                        ).toLocaleDateString()}
-                      </h4>
-                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
+                    <h4 className="input-content">
+                      {new Date(
+                        member.planPayment.registrationAt
+                      ).toLocaleDateString()}
+                    </h4>
                   </div>
                 </div>
               </div>
@@ -238,7 +319,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
               size="medium"
               color="primary"
               border={true}
-              onClick={handleSave}
+              // onClick={handleSave}
             >
               저장
             </BasicButton>
