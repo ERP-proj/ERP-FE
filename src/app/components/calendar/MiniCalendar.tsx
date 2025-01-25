@@ -31,15 +31,18 @@ function MiniCalendar({ onDateClick }: MiniCalendarProps) {
           onDateClick(clickedDate);
         },
         headerToolbar: {
-          left: "",
-          center: "prev, title, next",
-          right: "",
+          left: "prev",
+          center: "title",
+          right: "next",
         },
         titleFormat: {
           year: "numeric",
           month: "long",
         },
         dayCellClassNames: "dateCell",
+        dayCellContent: function (day) {
+          return day.dayNumberText.split("일")[0];
+        },
       });
 
       calendar.render();
@@ -61,18 +64,18 @@ const MiniCalendarWrapper = styled.div`
     background-color: #f6f6f6;
     font-size: 10px;
     padding: 0px;
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 210px;
   }
 
   .fc-theme-standard {
     padding: 10px;
     border-radius: 10px;
     box-sizing: border-box;
-    z-index: 1000;
+    z-index: 100;
   }
 
-  .fc .fc-toolbar {
+  .fc-toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -82,7 +85,7 @@ const MiniCalendarWrapper = styled.div`
   .fc-toolbar-chunk {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .fc-toolbar-title {
@@ -95,6 +98,26 @@ const MiniCalendarWrapper = styled.div`
     color: #000000;
   }
 
+  .fc-daygrid-body {
+    background-color: #ffffff;
+  }
+
+  .fc-daygrid-day-frame {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 10px;
+    background-color: white;
+  }
+
+  .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
+    background-color: #b4d89c !important;
+    border-radius: 50%;
+    // border: 2px solid #000000;
+  }
+
   .fc-button:empty {
     display: none;
   }
@@ -103,16 +126,13 @@ const MiniCalendarWrapper = styled.div`
     background-color: #ffffff;
   }
 
-  .dateCell {
-    background-color: #ffffff !important;
+  .fc .fc-col-header-cell .fc-scrollgrid-sync-inner {
+    background-color: #f6f6f6;
+    font-weight: 400;
   }
 
   .fc-theme-standard td,
   .fc-theme-standard th {
-    border: None;
-  }
-
-  .fc .fc-view-harness-active {
     border: None;
   }
 `;

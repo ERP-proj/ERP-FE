@@ -113,7 +113,8 @@ export const calendarSetup = (
     headerToolbar: {
       left: "",
       center: "prev, customTitle, next",
-      right: "nextReservation",
+      // right: "nextReservation",
+      right: "",
     },
     customButtons: {
       // customButton : customTitle
