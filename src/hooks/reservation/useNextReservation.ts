@@ -1,29 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchNextTimeReservations } from "@/api/reservation/fetchNextTimeReservations";
+import { getReservationByTime } from "@/api/reservation/getReservationByTime";
 import transformNextTimeReservation from "@/utils/reservation/transformNextTimeReservation";
-// import dayjs from "dayjs";
+import dayjs from "dayjs";
 
 export const useNextReservation = () => {
   const [nextReservation, setNextReservation] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // const currentTime = dayjs();
+  const currentTime = dayjs();
 
-  // const nextStartTime = currentTime
-  //   .add(1, "hour")
-  //   .startOf("hour")
-  //   .format("YYYY-MM-DDTHH:mm:ss");
+  const nextStartTime = currentTime
+    .add(1, "hour")
+    .startOf("hour")
+    .format("YYYY-MM-DDTHH:mm:ss");
 
-  // const nextEndTime = currentTime
-  //   .add(1, "hour")
-  //   .endOf("hour")
-  //   .format("YYYY-MM-DDTHH:mm:ss");
+  const nextEndTime = currentTime
+    .add(1, "hour")
+    .endOf("hour")
+    .format("YYYY-MM-DDTHH:mm:ss");
 
-  // 테스트용 시간
-  const nextStartTime = "2024-12-02T10:00:00.000";
-  const nextEndTime = "2024-12-02T10:59:59.000";
+  // Time for testing
+  // const nextStartTime = "2024-12-02T10:00:00.000";
+  // const nextEndTime = "2024-12-02T10:59:59.000";
 
   // console.log("currentTime", currentTime);
   // console.log("nextStart", nextStartTime);
@@ -32,7 +32,7 @@ export const useNextReservation = () => {
   useEffect(() => {
     const loadNextTimeReservation = async () => {
       try {
-        const response = await fetchNextTimeReservations(nextStartTime);
+        const response = await getReservationByTime(nextStartTime);
         console.log("API response fetchNextTimeReservations:", response);
 
         const transformedData = transformNextTimeReservation(
