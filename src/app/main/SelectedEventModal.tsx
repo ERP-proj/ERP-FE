@@ -6,6 +6,8 @@ import getReservationCustomerDetails from "@/utils/reservation/getReservationCus
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
 import closeIcon from "../../../public/reservationModal/closeIcon.png";
+import unchecked from "../../../public/reservationModal/unchecked.png";
+import checked from "../../../public/reservationModal/checked.png";
 import { postAddReservations } from "@/api/reservation/postAddReservations";
 import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
 import { deleteReservations } from "@/api/reservation/deleteReservations";
@@ -143,7 +145,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
 
       <div className="flex">
         {/* User photo */}
-        <div className="justify-center m-2 size-32">
+        <div className="justify-center m-1 size-32">
           {userInfo?.photoUrl !== undefined ? (
             <Image
               src={userInfo.photoUrl || noUser}
@@ -158,13 +160,13 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         {/* basic info */}
         <div className="flex w-6/12 flex-col mx-2">
           {/* reservation time */}
-          <div className="flex justify-between text-left m-2 font-semibold">
+          <div className="flex justify-between text-left m-1 font-semibold">
             예약 시간
           </div>
-          <div className="flex-1">
+          <div className="flex flex-row gap-1">
             {/* Start Time */}
             <input
-              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
               type="text"
               maxLength={5}
               value={userInfo?.formattedStartTime || ""}
@@ -192,10 +194,10 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
               }}
             />
             {/* ~ */}
-            <span className="font-light p-2 ">~</span>
+            <div className="font-light p-2 ">~</div>
             {/* End Time */}
             <input
-              className="flex font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
               type="text"
               maxLength={5}
               value={userInfo?.formattedEndTime || ""}
@@ -224,9 +226,9 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           </div>
 
           {/* User name */}
-          <div className="text-left m-2 font-semibold">성함</div>
+          <div className="text-left m-1 font-semibold">성함</div>
           <input
-            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            className="flex-1 font-light bg-[#F2F8ED] p-2 rounded-lg border-[#B4D89C] border-2 text-[#3C6229] min-h-7"
             type="search"
             value={event?.mode === "add" ? searchKeyword : userInfo?.name}
             onChange={(e) => handleSearch(e.target.value)}
@@ -240,7 +242,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
               {customerList.map((customer) => (
                 <div
                   key={customer.customerId}
-                  className="p-2 hover:bg-gray-100 cursor-pointer"
+                  className="p-2 hover:bg-[#F2F8ED] cursor-pointer"
                   onClick={() => handleSelectCustomer(customer)}
                 >
                   {customer.name}
@@ -250,50 +252,76 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           )}
 
           {/* User phone number */}
-          <div className="text-left m-2 font-semibold">전화번호</div>
+          <div className="text-left m-1 font-semibold">전화번호</div>
           <input
-            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7"
+            className="flex-1 font-light bg-[#F2F8ED] p-2 rounded-lg border-[#B4D89C] border-2 text-[#3C6229] min-h-7"
             value={userInfo?.phone !== undefined ? userInfo?.phone : ""}
             type="tel"
             onChange={(e) => handleInputChange("phone", e.target.value)}
           ></input>
 
           {/* Event termination period */}
-          <div className="text-left m-2 font-semibold">
-            <span>이벤트 종료 기간</span>
-            <span>남은 기간</span>
-          </div>
-          <div className="flex m-2">
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 mr-2 rounded-lg text-[#888888] min-h-7">
-              {""}
-            </span>
-            <span className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
-              {userInfo?.remainingTime !== undefined
-                ? userInfo.remainingTime
-                : ""}
-            </span>
+          <div className="flex flex-col">
+            <div className="flex flex-row">
+              <div className="flex-1 text-left m-1 font-semibold justify-around">
+                이벤트 종료 기간
+              </div>
+              <div className="flex-1 text-left m-1 font-semibold justify-around">
+                남은 기간
+              </div>
+            </div>
+
+            <div className="flex flex-row gap-2">
+              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+                {userInfo?.endDate !== undefined
+                  ? userInfo.endDate.split("T")[0]
+                  : ""}
+              </div>
+              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+                {userInfo?.remainingTime !== undefined
+                  ? userInfo.remainingTime
+                  : ""}
+              </div>
+            </div>
           </div>
 
           {/* Plan Info */}
-          <div className="text-left m-2 font-semibold">이용권</div>
-          <div className="font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] min-h-7">
+          <div className="text-left m-1 font-semibold">이용권</div>
+          <div className="font-light bg-[#F2F8ED] p-2 rounded-lg border-[#B4D89C] border-2 text-[#3C6229] min-h-7">
             {userInfo?.planName !== undefined ? userInfo?.planName : ""}
+          </div>
+
+          {/* Attendency Info */}
+          <div className="text-left m-1 font-semibold">지각/결석</div>
+          <div className="flex flex-row">
+            <Image
+              src={unchecked}
+              alt="unchecked"
+              className="flex self-center size-5"
+            />
+            <div className="flex-1 font-light p-2 min-h-7">지각</div>
+            <Image
+              src={unchecked}
+              alt="unchecked"
+              className="flex self-center size-5"
+            />
+            <div className="flex-1 font-light p-2 min-h-7">결석</div>
           </div>
         </div>
 
         {/* Additional Info */}
         <div className="flex w-6/12 flex-col mx-2">
           {/* User memo */}
-          <div className="text-left m-2 font-semibold">회원 메모</div>
+          <div className="text-left m-1 font-semibold">회원 메모</div>
           <input
-            className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]"
+            className="flex-1 font-light bg-[#F2F8ED] p-2 rounded-lg border-[#B4D89C] border-2 text-[#3C6229]"
             value={userInfo?.memo !== undefined ? userInfo?.memo : ""}
             type="text"
             onChange={(e) => handleInputChange("memo", e.target.value)}
           ></input>
 
           {/* Progress List */}
-          <div className="text-left m-2 font-semibold">진도표</div>
+          <div className="text-left m-1 font-semibold">진도표</div>
           <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]">
             {userInfo?.progress !== undefined ? userInfo?.progress : ""}
           </div>
