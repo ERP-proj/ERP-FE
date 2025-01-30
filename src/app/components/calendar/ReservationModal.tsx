@@ -1,5 +1,10 @@
 import SelectedEventModal from "@/app/main/SelectedEventModal";
-import { Dialog, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogTitle,
+} from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface ReservationModalProps {
@@ -17,11 +22,12 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
 
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
+      <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50 z-40" />
       <DialogContent
-        className="absolute z-50 bg-white p-6 rounded-xl shadow-lg w-6/12 h-fit min-w-fit border-0"
+        className="absolute z-50 bg-white p-6 rounded-xl shadow-lg border-0 flex max-w-auto"
         style={{
           top: position?.top || "50%",
-          left: position?.left || "50%",
+          left: position?.left - 400 || "50%",
           transform: position ? "none" : "translate(-50%, -50%)",
         }}
       >
