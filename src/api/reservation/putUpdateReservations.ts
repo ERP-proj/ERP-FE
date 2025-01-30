@@ -7,6 +7,7 @@ export const putUpdateReservations = async (data: {
   endTime: string;
   memo: string;
   seatNumber: number;
+  attendanceStatus: string;
 }) => {
   try {
     const response = await apiClient.put(
@@ -17,6 +18,7 @@ export const putUpdateReservations = async (data: {
         endTime: data?.endTime,
         memo: data?.memo,
         seatNumber: data?.seatNumber,
+        attendanceStatus: data?.attendanceStatus,
       }
     );
     if (response.status === 200) {

@@ -20,6 +20,7 @@ interface EventProps {
     endTime: string;
     seatNumber: number;
     reservationId: number;
+    attendanceStatus: string;
     mode: "add" | "edit";
   } | null;
   onClose: () => void;
@@ -37,7 +38,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
     }
 
     // Case 2: Edit Mode
-    if (event?.reservationId) {
+    if (event?.mode == "edit") {
       const fetchUserInfo = async () => {
         const data = await getReservationCustomerDetails(event.reservationId);
         setUserInfo(data?.data || null);
@@ -66,7 +67,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           ...userInfo,
           customerId: userInfo.customerId,
         });
-      } else if (event?.reservationId !== undefined) {
+      } else if (event?.mode == "edit") {
         console.log("------Submit EDIT------");
         response = await putUpdateReservations({
           reservationId: event?.reservationId,
@@ -74,6 +75,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           endTime: userInfo?.endTime,
           memo: userInfo?.memo,
           seatNumber: event?.seatNumber,
+          attendanceStatus: userInfo?.attendanceStatus,
         });
       }
     } finally {
@@ -166,7 +168,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           <div className="flex flex-row gap-1">
             {/* Start Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
               type="text"
               maxLength={5}
               value={userInfo?.formattedStartTime || ""}
@@ -194,10 +196,10 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
               }}
             />
             {/* ~ */}
-            <div className="font-light p-2 ">~</div>
+            <div className="font-light p-2 min-h-7">~</div>
             {/* End Time */}
             <input
-              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888]"
+              className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
               type="text"
               maxLength={5}
               value={userInfo?.formattedEndTime || ""}
@@ -292,21 +294,47 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           </div>
 
           {/* Attendency Info */}
-          <div className="text-left m-1 font-semibold">지각/결석</div>
-          <div className="flex flex-row">
-            <Image
-              src={unchecked}
-              alt="unchecked"
-              className="flex self-center size-5"
-            />
-            <div className="flex-1 font-light p-2 min-h-7">지각</div>
-            <Image
-              src={unchecked}
-              alt="unchecked"
-              className="flex self-center size-5"
-            />
-            <div className="flex-1 font-light p-2 min-h-7">결석</div>
-          </div>
+          {event?.mode == "edit" && (
+            <div>
+              <div className="text-left m-1 font-semibold">지각/결석</div>
+              <div className="flex flex-row">
+                <Image
+                  src={
+                    userInfo?.attendanceStatus === "LATE" ? checked : unchecked
+                  }
+                  alt="late"
+                  className="flex self-center size-5"
+                  onClick={() =>
+                    setUserInfo((prev: any) => ({
+                      ...prev,
+                      attendanceStatus:
+                        prev?.attendanceStatus === "LATE" ? "NORMAL" : "LATE",
+                    }))
+                  }
+                />
+                <div className="flex-1 font-light p-2 min-h-7">지각</div>
+                <Image
+                  src={
+                    userInfo?.attendanceStatus === "ABSENT"
+                      ? checked
+                      : unchecked
+                  }
+                  alt="absent"
+                  className="flex self-center size-5"
+                  onClick={() =>
+                    setUserInfo((prev: any) => ({
+                      ...prev,
+                      attendanceStatus:
+                        prev?.attendanceStatus === "ABSENT"
+                          ? "NORMAL"
+                          : "ABSENT",
+                    }))
+                  }
+                />
+                <div className="flex-1 font-light p-2 min-h-7">결석</div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Additional Info */}
@@ -323,7 +351,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
           {/* Progress List */}
           <div className="text-left m-1 font-semibold">진도표</div>
           <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229]">
-            {userInfo?.progress !== undefined ? userInfo?.progress : ""}
+            {userInfo?.progressList !== undefined ? userInfo?.progressList : ""}
           </div>
         </div>
       </div>
