@@ -133,10 +133,10 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   };
 
   return (
-    <div className="flex flex-col w-min">
-      <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col">
+      <div className="flex justify-between items-center mb-2">
         {/* Modal title */}
-        <div className="text-lg font-semibold">
+        <div className="text-xl font-semibold">
           {event?.mode === "add" ? "예약 추가" : "예약 수정"}
         </div>
         {/* Modal close button */}
@@ -145,7 +145,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </Button>
       </div>
 
-      <div className="flex">
+      <div className="flex gap-3">
         {/* User photo */}
         <div className="justify-center m-1 size-32">
           {userInfo?.photoUrl !== undefined ? (
@@ -160,7 +160,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
 
         {/* basic info */}
-        <div className="flex flex-col mx-2">
+        <div className="flex flex-col mx-2 max-w-[250px] max-h-[600px] overflow-y-auto space-y-2">
           {/* reservation time */}
           <div className="flex justify-between text-left m-1 font-semibold">
             예약 시간
@@ -273,13 +273,13 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
               </div>
             </div>
 
-            <div className="flex flex-row gap-2">
-              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+            <div className="flex flex-row gap-1">
+              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0">
                 {userInfo?.endDate !== undefined
                   ? userInfo.endDate.split("T")[0]
                   : ""}
               </div>
-              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7">
+              <div className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0">
                 {userInfo?.remainingTime !== undefined
                   ? userInfo.remainingTime
                   : ""}
@@ -358,14 +358,12 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
 
       {/* Edit & Save button */}
       {event?.mode === "add" && (
-        <div className="flex flex-1">
-          <Button
-            className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
-            onClick={handleSubmit}
-          >
-            저장
-          </Button>
-        </div>
+        <Button
+          className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
+          onClick={handleSubmit}
+        >
+          저장
+        </Button>
       )}
       {event?.mode === "edit" && (
         <div className="flex flex-1 gap-4">

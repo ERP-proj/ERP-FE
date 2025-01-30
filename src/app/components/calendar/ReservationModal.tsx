@@ -21,7 +21,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         className="absolute z-50 bg-white p-6 rounded-xl shadow-lg border-0 flex max-w-auto"
         style={{
           top: position?.top || "50%",
-          left: position?.left || "50%",
+          left: position?.left - 400 || "50%",
           transform: position ? "none" : "translate(-50%, -50%)",
         }}
       >
