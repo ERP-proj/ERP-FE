@@ -133,7 +133,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col w-min">
       <div className="flex justify-between items-center mb-4">
         {/* Modal title */}
         <div className="text-lg font-semibold">
@@ -160,7 +160,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
 
         {/* basic info */}
-        <div className="flex w-6/12 flex-col mx-2">
+        <div className="flex flex-col mx-2">
           {/* reservation time */}
           <div className="flex justify-between text-left m-1 font-semibold">
             예약 시간
@@ -338,7 +338,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
 
         {/* Additional Info */}
-        <div className="flex w-6/12 flex-col mx-2">
+        <div className="flex flex-col mx-2">
           {/* User memo */}
           <div className="text-left m-1 font-semibold">회원 메모</div>
           <input
@@ -356,35 +356,33 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
         </div>
       </div>
 
-      <div className="flex">
-        {/* Edit & Save button */}
-        {event?.mode === "add" && (
-          <div className="flex flex-1">
-            <Button
-              className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2"
-              onClick={handleSubmit}
-            >
-              저장
-            </Button>
-          </div>
-        )}
-        {event?.mode === "edit" && (
-          <div className="flex flex-1 gap-4">
-            <Button
-              className="flex flex-1 font-light bg-[#FFFFFF] border-2 border-[#DB5461] rounded-lg text-[#DB5461] p-2 mt-4"
-              onClick={handleDelete}
-            >
-              삭제
-            </Button>
-            <Button
-              className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2"
-              onClick={handleSubmit}
-            >
-              수정 완료
-            </Button>
-          </div>
-        )}
-      </div>
+      {/* Edit & Save button */}
+      {event?.mode === "add" && (
+        <div className="flex flex-1">
+          <Button
+            className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
+            onClick={handleSubmit}
+          >
+            저장
+          </Button>
+        </div>
+      )}
+      {event?.mode === "edit" && (
+        <div className="flex flex-1 gap-4">
+          <Button
+            className="flex flex-1 font-light bg-[#FFFFFF] border-2 border-[#DB5461] rounded-lg text-[#DB5461] p-2 mt-4"
+            onClick={handleDelete}
+          >
+            삭제
+          </Button>
+          <Button
+            className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
+            onClick={handleSubmit}
+          >
+            수정 완료
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
