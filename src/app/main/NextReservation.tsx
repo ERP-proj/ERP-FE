@@ -19,7 +19,7 @@ function NextReservation() {
 
       {/* 예약 리스트 */}
       <div className="flex flex-col gap-4 bg-[#F2F8ED] rounded-lg">
-        <ScrollArea className="h-[calc(50vh-60px)] flex-col content-start">
+        <ScrollArea className="h-auto flex-col content-start">
           {nextReservation.length > 0 ? (
             (console.log("nextReservation((((((((((", nextReservation),
             nextReservation.map((reservation: any) => (

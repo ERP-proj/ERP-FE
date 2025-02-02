@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div className="flex">
-      <div className=" flex-[5_0_0] h-full place-items-center">
+      <div className=" flex-[5_0_0] h-full place-self-center">
         <SideBar />
       </div>
       <div className="flex-[65_0_0]">
