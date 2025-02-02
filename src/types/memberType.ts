@@ -61,13 +61,66 @@ export interface PlanPayment {
 
 export interface OtherPayment {
   paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  otherPaymentMethod: string;
   registrationAt: string; // 등록 날짜
   content: string; // 결제 내용
   price: number; // 결제 가격
   status: boolean; // 결제 상태
 }
 
+//회원상세정보 수정
+export interface UpdateCustomerDetail {
+  customerId: number;
+  photoUrl: string;
+  name: string;
+  gender: "MALE" | "FEMALE";
+  birthDate: string;
+  phone: string;
+  address: string;
+  visitPath: string;
+  memo: string;
+  progressList: {
+    addProgresses: Array<{
+      date: string;
+      content: string;
+    }>;
+    updateProgresses: Array<{
+      progressId: number;
+      date: string;
+      content: string;
+    }>;
+    deleteProgresses: Array<{
+      progressId: number;
+    }>;
+  };
+  planPaymentStatus: boolean;
+  otherPayment: Array<{
+    paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
+    otherPaymentMethod: "string";
+    registrationAt: string;
+    content: string;
+    price: number;
+    status: boolean;
+  }>;
+}
+
 //회원추가
+export interface PlanPayment2 {
+  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  registrationAt: string; // 등록일 (ISO 형식)
+  discountRate: number; // 할인율 (선택적)
+  status: boolean; // 상태 (결제 여부)
+}
+
+// OtherPayment 타입 정의
+export interface OtherPayment2 {
+  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  otherPaymentMethod: string; // 기타 결제 방법 설명
+  registrationAt: string; // 등록일
+  content: string; // 결제 내용
+  price: number; // 결제 금액
+  status: boolean; // 결제 상태
+}
 export interface FormData {
   planId: number;
   name: string;
@@ -77,6 +130,6 @@ export interface FormData {
   visitPath: string;
   birthDate: string;
   memo: string;
-  planPayment: PlanPayment;
-  otherPayment: OtherPayment[];
+  planPayment: PlanPayment2;
+  otherPayment: OtherPayment2[];
 }

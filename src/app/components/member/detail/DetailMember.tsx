@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Accordion from "../../ui/Accordion";
 import BasicButton from "../../ui/BasicButton";
-import { CustomerDetailData } from "@/types/memberType";
+import { CustomerDetailData, UpdateCustomerDetail } from "@/types/memberType";
 // import Dropdown from "../ui/Dropdown";
 import Modal from "../../ui/Modal";
 import DetailForm from "./DetailForm";
@@ -19,22 +19,31 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const [accordionOpenKey, setAccordionOpenKey] = useState<number | null>(null);
   const [isModified, setIsModified] = useState(false); // 수정 여부 상태
   console.log("DetailMember Props:", member); // DetailMember
-  const handleSave = async (updatedMember: CustomerDetailData) => {
-    const requestData = {
-      ...updatedMember,
+  const handleSave = async (updatedMember: UpdateCustomerDetail) => {
+    const requestData: UpdateCustomerDetail = {
       customerId: member.customerId,
-      planPaymentStatus: true,
+      photoUrl: updatedMember.photoUrl || "",
+      name: updatedMember.name || "",
+      gender: updatedMember.gender,
+      birthDate: updatedMember.birthDate || "",
+      phone: updatedMember.phone || "",
+      address: updatedMember.address || "",
+      visitPath: updatedMember.visitPath || "",
+      memo: updatedMember.memo || "",
+      planPaymentStatus: updatedMember.planPaymentStatus || true,
       progressList: {
-        addProgresses: updatedMember.progressList.filter(
-          (progressList) => !progressList.progressId // progressId가 없는 항목은 새로 추가
-        ),
-        updateProgresses: updatedMember.progressList
-          ? updatedMember.progressList.filter(
-              (progressList) => progressList.progressId // progressId가 있는 항목만 수정
-            )
-          : [],
-        deleteProgresses: [], // 삭제할 항목은 빈 배열로 처리
+        addProgresses: updatedMember.progressList.addProgresses || [],
+        updateProgresses: updatedMember.progressList.updateProgresses || [],
+        deleteProgresses: updatedMember.progressList.deleteProgresses || [],
       },
+      otherPayment: updatedMember.otherPayment.map((payment) => ({
+        paymentsMethod: payment.paymentsMethod || "CASH", // 기본값 설정
+        otherPaymentMethod: payment.otherPaymentMethod || "",
+        registrationAt: payment.registrationAt,
+        content: payment.content,
+        price: payment.price,
+        status: payment.status,
+      })),
     };
 
     try {

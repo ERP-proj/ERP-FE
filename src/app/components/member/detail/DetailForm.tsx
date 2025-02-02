@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { CustomerDetailData } from "@/types/memberType";
+import { CustomerDetailData, UpdateCustomerDetail } from "@/types/memberType";
 import Dropdown from "../../ui/Dropdown";
 import Camera from "../create/Camera";
 
 interface DetailFormProps {
   member: CustomerDetailData;
-  onSave: (updatedMember: CustomerDetailData) => void;
+  onSave: (updatedMember: UpdateCustomerDetail) => void;
   onModify: () => void;
 }
 
@@ -29,7 +29,7 @@ const DetailForm: React.FC<DetailFormProps> = ({
     ]);
     onModify();
   };
-  const handleInputChange = (key: keyof CustomerDetailData, value: any) => {
+  const handleInputChange = (key: keyof UpdateCustomerDetail, value: any) => {
     setFormData((prev) => ({
       ...prev,
       [key]: value,

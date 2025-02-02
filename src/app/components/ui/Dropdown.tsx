@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { SlArrowDown } from "react-icons/sl";
 
+interface DropdownOption {
+  label: string;
+  value: string;
+}
+
 interface DropdownProps {
-  options: string[]; // 드롭다운에 표시할 옵션
-  placeholder?: string; // 초기 상태의 플레이스홀더
-  defaultValue?: string; // 초기 선택 값
+  options: DropdownOption[];
+  placeholder?: string;
+  defaultValue?: string;
   onChange?: (value: string) => void;
   className?: string;
 }
@@ -19,65 +24,43 @@ const Dropdown: React.FC<DropdownProps> = ({
   const [selected, setSelected] = useState<string>(defaultValue);
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // 기본값이 설정되지 않은 경우, 첫 번째 옵션을 기본값으로 설정
-  useEffect(() => {
-    if (!defaultValue && options.length > 0) {
-      setSelected(options[0]);
-    }
-  }, [defaultValue, options]);
-
-  // 외부 클릭 감지
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest(".dropdown")) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
   const handleSelect = (value: string) => {
+    console.log("선택된 값:", value); // 디버깅용
     setSelected(value);
     setIsOpen(false);
     if (onChange) onChange(value);
   };
 
+  const selectedLabel =
+    options.find((option) => option.value === selected)?.label || placeholder;
+
   return (
     <div className={`relative dropdown ${className}`}>
-      {/* 드롭다운 선택 영역 */}
       <div
-        className={`w-full font-size-4 px-3 py-1.5 border-[1px] rounded-lg cursor-pointer flex items-center justify-between 
-          ${
-            selected
-              ? "border-[#3c6229] text-[#3c6229]"
-              : "border-[#d1d1d1] text-[#d1d1d1]"
-          }`}
+        className={`w-full px-3 py-1.5 border rounded-lg cursor-pointer flex items-center justify-between ${
+          selected
+            ? "border-[#3c6229] text-[#3c6229]"
+            : "border-[#d1d1d1] text-[#d1d1d1]"
+        }`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span>{selected || placeholder}</span>
+        <span>{selectedLabel}</span>
         <SlArrowDown />
       </div>
 
-      {/* 드롭다운 옵션 목록 */}
       {isOpen && (
         <ul className="absolute top-full mt-2 w-full bg-white border rounded-xl shadow-lg z-10">
-          {options.map((option, index) => (
+          {options.map((option) => (
             <li
-              key={index}
+              key={option.value} // 고유한 key 설정
               className={`p-3 hover:bg-[#f1f1f1] cursor-pointer ${
-                selected === option
+                selected === option.value
                   ? "bg-[#f6f6f6] text-[#3c6229] font-bold"
                   : ""
               }`}
-              onClick={() => handleSelect(option)}
+              onClick={() => handleSelect(option.value)}
             >
-              {option}
+              {option.label}
             </li>
           ))}
         </ul>

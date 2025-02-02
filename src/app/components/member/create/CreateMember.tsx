@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
-import Dropdown from "../../ui/Dropdown";
 import Accordion from "../../ui/Accordion";
 import Toggle from "../../ui/Toggle";
 import RegisterForm from "./RegisterForm";
@@ -11,6 +10,7 @@ import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
+import { DiscountedPrice } from "@/utils/discountedPrice";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -26,15 +26,11 @@ const initialFormData: FormData = {
     registrationAt: new Date().toISOString().split("T")[0],
     discountRate: 0,
     status: false,
-    licenseType: "",
-    planName: "",
-    planPrice: 0,
-    discountPrice: 0,
-    paymentTotal: 0,
   },
   otherPayment: [
     {
       paymentsMethod: "CARD", // 기본값 설정
+      otherPaymentMethod: "",
       registrationAt: new Date().toISOString().split("T")[0],
       content: "",
       price: 0,
@@ -42,6 +38,7 @@ const initialFormData: FormData = {
     },
   ],
 };
+
 const CreateMember: React.FC<{
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -63,12 +60,19 @@ const CreateMember: React.FC<{
           obj = obj[k];
         }
       });
-
+      // 할인율이 변경될 때마다 최종 금액 자동 계산
+      if (key === "planPayment.discountRate") {
+        setDiscountRate(parseFloat(value as string) || 0);
+      }
       return newData;
     });
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [finalPrice, setFinalPrice] = useState<number>(0);
+  const [selectedPlanName, setSelectedPlanName] = useState<string>("");
+  const [discountRate, setDiscountRate] = useState<number>(0);
+  const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
   const [selectedPlanMethod, setSelectedPlanMethod] = useState<string>("");
   const [selectedOtherMethod, setSelectedOtherMethod] = useState<string>("");
@@ -82,6 +86,11 @@ const CreateMember: React.FC<{
   const handleMethodClick2 = (method: string) => {
     setSelectedOtherMethod(method === selectedOtherMethod ? "" : method);
   };
+  // ✅ 할인율과 가격 변경 시 자동으로 계산
+  useEffect(() => {
+    const discountedPrice = DiscountedPrice(selectedPlanPrice, discountRate);
+    setFinalPrice(discountedPrice);
+  }, [selectedPlanPrice, discountRate]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -129,7 +138,7 @@ const CreateMember: React.FC<{
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
-                        {formData.planPayment.paymentTotal}
+                        {finalPrice || selectedPlanPrice}원
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -148,7 +157,13 @@ const CreateMember: React.FC<{
                   </h3>
 
                   <div className="mb-4">
-                    <Plan />
+                    <Plan
+                      onSelectPlan={(planId, planName, price) => {
+                        handleInputChange("planId", planId);
+                        setSelectedPlanPrice(price);
+                        setSelectedPlanName(planName);
+                      }}
+                    />
                   </div>
 
                   <div className="mb-4">
@@ -156,25 +171,23 @@ const CreateMember: React.FC<{
                       할인
                     </h3>
                     <h4 className="text-sm font-bold pl-4 pt-4">할인 상품명</h4>
-                    <Dropdown
-                      options={[
-                        "10시간 이용권",
-                        "15시간 이용권",
-                        "20시간 이용권",
-                        "1개월 이용권",
-                      ]}
-                      placeholder="할인 상품 선택"
-                      defaultValue="10시간 이용권"
-                      className="w-full p-4"
-                    />
+                    <div className="m-4">
+                      <input
+                        type="text"
+                        value={selectedPlanName}
+                        placeholder="할인 상품명"
+                        readOnly
+                        className="input-content"
+                      />
+                    </div>
                     <div className="flex gap-4 mt-4 px-4">
                       <div className="w-1/2">
                         <h4 className="text-sm font-bold mb-2">할인율 (%)</h4>
                         <input
-                          type="text"
+                          type="number"
                           placeholder="할인율 입력"
                           className="w-full input-content"
-                          value={formData.planPayment?.discountRate}
+                          value={discountRate}
                           onChange={(e) =>
                             handleInputChange(
                               "planPayment.discountRate",
@@ -183,14 +196,17 @@ const CreateMember: React.FC<{
                           }
                         />
                       </div>
+
                       <div className="w-1/2">
                         <h4 className="text-sm font-bold mb-2">
                           할인율 적용 금액
                         </h4>
                         <input
                           type="text"
-                          placeholder="할인 금액 입력"
+                          placeholder="할인 금액"
                           className="w-full mb-2 input-content"
+                          value={finalPrice || selectedPlanPrice}
+                          readOnly
                         />
                       </div>
                     </div>
@@ -272,7 +288,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[600px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[750px] overflow-y-scroll">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     결제 정보
                   </h3>
@@ -282,13 +298,26 @@ const CreateMember: React.FC<{
                     <input
                       type="text"
                       placeholder="결제내용 입력"
-                      className="p-4 mb-4 input-content"
+                      className="p-4 input-content"
                       // value={formData.otherPayment?.content}
                       onChange={(e) =>
                         handleInputChange(
                           "otherPayment.content",
                           e.target.value
                         )
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-4 px-4">
+                    <h4 className="text-sm font-bold my-2">결제 금액</h4>
+                    <input
+                      type="text"
+                      placeholder="결제금액 입력"
+                      className="p-4 mb-4 input-content"
+                      // value={formData.otherPayment?.price}
+                      onChange={(e) =>
+                        handleInputChange("otherPayment.price", e.target.value)
                       }
                     />
                   </div>

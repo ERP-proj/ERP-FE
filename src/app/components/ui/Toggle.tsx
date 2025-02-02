@@ -57,7 +57,7 @@ const Toggle: React.FC<ToggleProps> = ({
       <span
         className={`text-sm ${status ? "text-[#3C6229]" : "text-gray-600"}`}
       >
-        미납여부
+        {status ? "결제완료" : "미납"}
       </span>
     </div>
   );

@@ -1,3 +1,4 @@
+import { FormData, UpdateCustomerDetail } from "@/types/memberType";
 import { defaultApi } from "../core/core";
 
 export const memberAPI = {
@@ -6,29 +7,7 @@ export const memberAPI = {
    * @param data 회원 등록 요청 데이터
    * @returns 등록된 회원 데이터
    */
-  registMember: async (data: {
-    planId: number;
-    name: string;
-    gender: "MALE" | "FEMALE";
-    phone: string;
-    address: string;
-    visitPath: string;
-    birthDate: string;
-    memo: string;
-    planPayment: {
-      paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
-      registrationAt: string;
-      discountRate?: number;
-      status: boolean;
-    };
-    otherPayment: Array<{
-      paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
-      registrationAt: string;
-      content: string;
-      price: number;
-      status: boolean;
-    }>;
-  }) => {
+  registMember: async (data: FormData) => {
     try {
       const response = await defaultApi.post("/customer/addCustomer", data);
       return response.data;
@@ -94,45 +73,28 @@ export const memberAPI = {
    * @param data 회원 상세정보 데이터
    * @returns 수정된 회원 데이터
    */
-  updateCustomerDetail: async (data: {
-    customerId: number;
-    photoUrl: string;
-    name: string;
-    gender: "MALE" | "FEMALE";
-    birthDate: string;
-    phone: string;
-    address: string;
-    visitPath: string;
-    memo: string;
-    progressList: {
-      addProgresses: Array<{
-        date: string;
-        content: string;
-      }>;
-      updateProgresses: Array<{
-        progressId: number;
-        date: string;
-        content: string;
-      }>;
-      deleteProgresses: Array<{
-        progressId: number;
-      }>;
-    };
-    planPaymentStatus: boolean;
-    otherPayment: Array<{
-      paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
-      registrationAt: string;
-      content: string;
-      price: number;
-      status: boolean;
-    }>;
-  }) => {
+  updateCustomerDetail: async (data: UpdateCustomerDetail) => {
     try {
       const response = await defaultApi.put("/customer/updateCustomer", data);
       return response.data;
     } catch (error) {
       console.error("회원 상세 수정 오류:", error);
       throw error;
+    }
+  },
+
+  /**
+   * 이용권 조회 메서드
+   * @param licenseType 라이선스 타입 (예: "TYPE_1", "TYPE_2")
+   * @returns 조회된 이용권 데이터 리스트
+   */
+  getPlans: async (licenseType: string) => {
+    try {
+      const response = await defaultApi.get(`/plan/getPlans/${licenseType}`);
+      return response.data;
+    } catch (error) {
+      console.error("이용권 조회 API 호출 오류:", error);
+      throw new Error("이용권 조회 API 호출 실패");
     }
   },
 };

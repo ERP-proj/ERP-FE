@@ -57,7 +57,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
                 성별(필수)
               </label>
               <Dropdown
-                options={["여", "남"]}
+                options={[
+                  { label: "여", value: "FEMALE" },
+                  { label: "남", value: "MALE" },
+                ]}
                 placeholder="성별"
                 defaultValue={formData.gender === "MALE" ? "남" : "여"}
                 className="w-full"
@@ -130,6 +133,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
           <textarea
             placeholder="약관약관약관"
             className="input-content w-full"
+            readOnly
           ></textarea>
         </div>
       </div>
