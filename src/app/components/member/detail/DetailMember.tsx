@@ -10,18 +10,17 @@ import { FaRegCircleCheck } from "react-icons/fa6";
 import { memberAPI } from "@/api/member";
 
 interface DetailMemberProps {
-  member: CustomerDetailData | null;
+  member: CustomerDetailData;
   onClose: () => void;
 }
 
 const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const [accordionOpenKey, setAccordionOpenKey] = useState<number | null>(null);
-  const [isModified, setIsModified] = useState(false); // 수정 여부 상태
-  console.log("DetailMember Props:", member); // DetailMember
+  const [isModified, setIsModified] = useState(false);
+  console.log("DetailMember Props:", member);
   const handleSave = async (updatedMember: UpdateCustomerDetail) => {
     const requestData: UpdateCustomerDetail = {
       customerId: member.customerId,
-      photoUrl: updatedMember.photoUrl || "",
       name: updatedMember.name || "",
       gender: updatedMember.gender,
       birthDate: updatedMember.birthDate || "",
@@ -29,6 +28,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
       address: updatedMember.address || "",
       visitPath: updatedMember.visitPath || "",
       memo: updatedMember.memo || "",
+      photoFile: null,
       planPaymentStatus: updatedMember.planPaymentStatus || true,
       progressList: {
         addProgresses: updatedMember.progressList.addProgresses || [],
@@ -57,13 +57,28 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     }
   };
 
-  if (!member) {
-    return <div>데이터를 불러오는 중...</div>;
-  }
-
   const toggleAccordion = (key: number) => {
     setAccordionOpenKey((prev) => (prev === key ? null : key));
   };
+
+  // 매핑 함수
+  const getLabel = (type: string) => {
+    const mapping: { [key: string]: string } = {
+      TYPE_1: "1종",
+      TYPE_2: "2종",
+      TIME_BASED: "시간제",
+      PERIOD_BASED: "기간제",
+      ACQUISITION: "취득",
+      REFRESHER: "장롱",
+      STANDARD: "일반",
+      CARD: "카드",
+      CASH: "현금",
+      TRANSFER: "계좌이체",
+      OTHER: "기타",
+    };
+    return mapping[type] || type;
+  };
+
   return (
     <Modal
       isOpen={!!member}
@@ -115,153 +130,50 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                 </div>
               }
             >
-              <div className="bg-white rounded-lg h-[1050px] ">
-                <h3 className="text-md pl-4 bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
-                  이용권 정보
-                </h3>
-                <div className="gap-4 mt-4 px-4">
-                  {/* 구분1 */}
-                  <h4 className="text-sm font-bold mb-2">구분 1</h4>
-                  <div className="flex gap-2 mb-4">
-                    <button
-                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.licenseType === "1종"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      1종
-                    </button>
-                    <button
-                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.licenseType === "2종"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      2종
-                    </button>
-                  </div>
-
-                  {/* 구분2 */}
-                  <h4 className="text-sm font-bold mb-2">구분 2</h4>
-                  <div className="flex gap-2 mb-4">
-                    <button
-                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.planType === "TIME_BASED"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      시간제
-                    </button>
-                    <button
-                      className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.planType === "PERIOD_BASED"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      기간제
-                    </button>
-                  </div>
-
-                  {/* 구분3 */}
-                  <h4 className="text-sm font-bold mb-2">구분 3</h4>
-                  <div className="flex gap-2 mb-4">
-                    <button
-                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.courseType === "ACQUISITION"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      취득
-                    </button>
-                    <button
-                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.courseType === "REFRESHER"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      장롱
-                    </button>
-                    <button
-                      className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
-                        member.planPayment.courseType === "STANDARD"
-                          ? "bg-[#3C6229] text-white"
-                          : "bg-gray-200 text-gray-600"
-                      }`}
-                    >
-                      일반
-                    </button>
-                  </div>
-                  <h4 className="text-sm font-bold mb-2">이용권</h4>
-                  <h4 className="input-content mb-4">
-                    {member.planPayment.planName}
-                  </h4>
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
-                    할인
-                  </h3>
-                  <div className="gap-4 mt-4 px-4">
-                    <h4 className="text-sm font-bold mb-2">할인 상품명</h4>
-                    <h4 className="input-content">
-                      {member.planPayment.planName}
-                    </h4>
-                  </div>
-                  <div className="flex gap-4 mt-4 px-4">
-                    <div className="w-1/2">
-                      <h4 className="text-sm font-bold mb-2 ">할인율 (%)</h4>
-                      <h4 className="input-content">
-                        {member.planPayment?.discountRate}
-                      </h4>
-                    </div>
-                    <div className="w-1/2">
-                      <h4 className="text-sm font-bold mb-2">
-                        할인율 적용 금액
-                      </h4>
-                      <h4 className="input-content">
-                        {member.planPayment.planPrice -
-                          member.planPayment?.discountPrice}
-                      </h4>
-                    </div>
-                  </div>
-                </div>
-
-                <h3 className="text-md bg-[#F6F6F6] p-2 pl-4 m-0 text-[#0D0D0D] font-bold">
-                  결제 정보
-                </h3>
-                <div className="p-4">
-                  <div>
-                    <h4 className="text-sm font-bold mb-2">결제 방법</h4>
-                    <div className="grid grid-cols-2 gap-2 py-2">
-                      {["현금", "카드", "계좌이체", "기타"].map(
-                        (method, index) => (
-                          <button
-                            key={index}
-                            className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border transition-colors ${
-                              member.planPayment.paymentsMethod === method
-                                ? "bg-[#3C6229] text-white border-[#3C6229]"
-                                : "bg-white text-gray-600 border-gray-300"
-                            }`}
-                          >
-                            {method}
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
-                    <h4 className="input-content">
-                      {new Date(
-                        member.planPayment.registrationAt
-                      ).toLocaleDateString()}
-                    </h4>
-                  </div>
+              <div className="bg-white rounded-lg p-4 space-y-4">
+                <div className="border rounded-lg shadow-sm p-4 bg-gray-50 space-y-2">
+                  <p>
+                    <strong>면허 종류:</strong>{" "}
+                    {getLabel(member.planPayment.licenseType)}
+                  </p>
+                  <p>
+                    <strong>수강 방식:</strong>{" "}
+                    {getLabel(member.planPayment.planType)}
+                  </p>
+                  <p>
+                    <strong>수강 목적:</strong>{" "}
+                    {getLabel(member.planPayment.courseType)}
+                  </p>
+                  <p>
+                    <strong>이용권 이름:</strong> {member.planPayment.planName}
+                  </p>
+                  <p>
+                    <strong>결제 방법:</strong>{" "}
+                    {getLabel(member.planPayment.paymentsMethod)}
+                  </p>
+                  {member.planPayment.paymentsMethod === "OTHER" && (
+                    <p>
+                      <strong>기타 결제 내용:</strong>{" "}
+                      {getLabel(member.planPayment.otherPaymentMethod)}
+                    </p>
+                  )}
+                  <p>
+                    <strong>등록일:</strong>{" "}
+                    {new Date(
+                      member.planPayment.registrationAt
+                    ).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>이용권 가격:</strong> {member.planPayment.planPrice}
+                    원
+                  </p>
+                  <p>
+                    <strong>할인율:</strong> {member.planPayment.discountRate}%
+                  </p>
+                  <p>
+                    <strong>할인 금액:</strong>{" "}
+                    {member.planPayment.discountPrice}원
+                  </p>
                 </div>
               </div>
             </Accordion>
@@ -284,21 +196,28 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         className="border rounded-lg shadow-sm p-4 bg-gray-50"
                       >
                         <p>
-                          <strong>결제 {index + 1}:</strong>{" "}
-                          {payment.content || "내용 없음"}
+                          <strong>결제 내용 {index + 1}:</strong>{" "}
+                          {payment.content || ""}
                         </p>
                         <p>
                           <strong>결제 방법:</strong>{" "}
-                          {payment.paymentsMethod || "N/A"}
+                          {getLabel(payment.paymentsMethod || "")}
+                        </p>
+                        {payment.paymentsMethod === "OTHER" && (
+                          <p>
+                            <strong>기타 결제 내용:</strong>{" "}
+                            {getLabel(payment.otherPaymentMethod || "")}
+                          </p>
+                        )}
+
+                        <p>
+                          <strong>금액:</strong> {payment.price}원
                         </p>
                         <p>
                           <strong>등록일:</strong>{" "}
                           {new Date(
                             payment.registrationAt
                           ).toLocaleDateString()}
-                        </p>
-                        <p>
-                          <strong>금액:</strong> {payment.price}원
                         </p>
                         <div className="flex items-center gap-2 mt-2">
                           <FaRegCircleCheck

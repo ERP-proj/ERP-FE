@@ -25,7 +25,6 @@ const Dropdown: React.FC<DropdownProps> = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const handleSelect = (value: string) => {
-    console.log("선택된 값:", value); // 디버깅용
     setSelected(value);
     setIsOpen(false);
     if (onChange) onChange(value);

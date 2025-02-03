@@ -118,7 +118,11 @@ export const memberAPI = {
    */
   updateCustomerDetail: async (data: UpdateCustomerDetail) => {
     try {
-      const response = await defaultApi.put("/customer/updateCustomer", data);
+      const response = await defaultApi.put("/customer/updateCustomer", data, {
+        headers: {
+          "Content-Type": "multipart/form-data", // ✅ FormData 전송 설정
+        },
+      });
       return response.data;
     } catch (error) {
       console.error("회원 상세 수정 오류:", error);

@@ -17,6 +17,7 @@ const DetailForm: React.FC<DetailFormProps> = ({
   onModify,
 }) => {
   const [formData, setFormData] = useState<CustomerDetailData>(member);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // ✅ 사진 파일 저장
   const [progress, setProgress] = useState(member.progressList || []);
   const [rows, setRows] = useState([
     { id: 1, date: "", content: "" }, // 기본 1회차
@@ -36,8 +37,8 @@ const DetailForm: React.FC<DetailFormProps> = ({
     }));
     onModify();
   };
-  const handleCapture = (imageData: string) => {
-    setFormData((prevData) => ({ ...prevData, photoUrl: imageData }));
+  const handleCapture = (photoFile: File) => {
+    setFormData((prevData) => ({ ...prevData, photoFile }));
     onModify();
   };
 
@@ -45,9 +46,10 @@ const DetailForm: React.FC<DetailFormProps> = ({
     <div className="space-y-6 p-6">
       {/* 상단 레이아웃: 프로필 이미지와 입력 폼 */}
       <div className="flex gap-8 items-start">
-        {/* 왼쪽: 이미지 선택 */}
+        {/* 프로필이미지 */}
         <div className="flex flex-col items-center w-1/3">
-          <Camera onCapture={handleCapture} />
+          <Camera onCapture={handleCapture} photoUrl={formData.photoUrl} />{" "}
+          {/* ✅ Camera 컴포넌트 추가 */}
         </div>
 
         {/* 오른쪽: 입력 폼 */}
@@ -69,7 +71,7 @@ const DetailForm: React.FC<DetailFormProps> = ({
                   { label: "여", value: "FEMALE" },
                   { label: "남", value: "MALE" },
                 ]}
-                defaultValue={formData.gender === "MALE" ? "남" : "여"}
+                defaultValue={formData.gender}
                 onChange={(value) =>
                   handleInputChange(
                     "gender",

@@ -60,7 +60,7 @@ const Plan: React.FC<{
   return (
     <div className="mb-4 p-4">
       {/* 구분1 */}
-      <h4 className="text-sm font-bold mb-2">구분 1</h4>
+      <h4 className="text-sm font-bold mb-2">면허 종류</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup1("1종")}
@@ -85,7 +85,7 @@ const Plan: React.FC<{
       </div>
 
       {/* 구분2 */}
-      <h4 className="text-sm font-bold mb-2">구분 2</h4>
+      <h4 className="text-sm font-bold mb-2">수강 방식</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup2("시간제")}
@@ -110,7 +110,7 @@ const Plan: React.FC<{
       </div>
 
       {/* 구분3 */}
-      <h4 className="text-sm font-bold mb-2">구분 3</h4>
+      <h4 className="text-sm font-bold mb-2">수강 목적</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup3("취득")}

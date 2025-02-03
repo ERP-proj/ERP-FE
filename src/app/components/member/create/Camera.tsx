@@ -1,17 +1,24 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CiCamera } from "react-icons/ci";
 import BasicButton from "../../ui/BasicButton";
 import { base64ToBlob } from "@/api/member";
 
 interface CameraProps {
   onCapture: (file: File) => void; // ✅ File 객체를 상위 컴포넌트로 전달
+  photoUrl?: string;
 }
-const Camera: React.FC<CameraProps> = ({ onCapture }) => {
+const Camera: React.FC<CameraProps> = ({ onCapture, photoUrl }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (photoUrl) {
+      setImageSrc(photoUrl); // ✅ 초기 프로필 사진 설정
+    }
+  }, [photoUrl]);
 
   const handleOpenCamera = async () => {
     setIsModalOpen(true);
@@ -83,7 +90,7 @@ const Camera: React.FC<CameraProps> = ({ onCapture }) => {
           {imageSrc ? (
             <img
               src={imageSrc}
-              alt="Captured"
+              alt="프로필 사진"
               className="w-full h-full rounded-full object-cover"
             />
           ) : (

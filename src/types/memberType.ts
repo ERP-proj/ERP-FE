@@ -71,7 +71,6 @@ export interface OtherPayment {
 //회원상세정보 수정
 export interface UpdateCustomerDetail {
   customerId: number;
-  photoUrl: string;
   name: string;
   gender: "MALE" | "FEMALE";
   birthDate: string;
@@ -79,6 +78,7 @@ export interface UpdateCustomerDetail {
   address: string;
   visitPath: string;
   memo: string;
+  photoFile: File | null;
   progressList: {
     addProgresses: Array<{
       date: string;
