@@ -1,9 +1,9 @@
 import React from "react";
 import { FaRegCircleCheck } from "react-icons/fa6";
-import { PlanPayment, OtherPayment } from "@/types/memberType";
+import { PlanPayment2, OtherPayment2 } from "@/types/memberType";
 
 interface ToggleProps {
-  formData: { planPayment: PlanPayment; otherPayment: OtherPayment[] };
+  formData: { planPayment: PlanPayment2; otherPayment: OtherPayment2[] };
   setFormData: React.Dispatch<React.SetStateAction<any>>;
   keyPath: "planPayment" | "otherPayment"; // 상태를 구분하기 위한 키
   index?: number; // otherPayment 배열의 특정 항목을 식별하기 위한 인덱스
@@ -30,7 +30,7 @@ const Toggle: React.FC<ToggleProps> = ({
       setFormData((prevData: any) => ({
         ...prevData,
         otherPayment: prevData.otherPayment.map(
-          (payment: OtherPayment, idx: number) =>
+          (payment: OtherPayment2, idx: number) =>
             idx === index ? { ...payment, status: !payment.status } : payment
         ),
       }));

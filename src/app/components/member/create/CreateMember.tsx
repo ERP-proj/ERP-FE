@@ -23,7 +23,8 @@ const initialFormData: FormData = {
   memo: "",
   planPayment: {
     paymentsMethod: "CARD", // 기본값 설정
-    registrationAt: new Date().toISOString().split("T")[0],
+    otherPaymentMethod: "",
+    registrationAt: new Date().toISOString(), // ISO 형식
     discountRate: 0,
     status: false,
   },
@@ -31,38 +32,44 @@ const initialFormData: FormData = {
     {
       paymentsMethod: "CARD", // 기본값 설정
       otherPaymentMethod: "",
-      registrationAt: new Date().toISOString().split("T")[0],
+      registrationAt: new Date().toISOString(),
       content: "",
       price: 0,
       status: false,
     },
   ],
+  photoFile: null,
 };
 
 const CreateMember: React.FC<{
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }> = ({ formData = initialFormData, setFormData }) => {
-  const handleInputChange = (
-    key: string,
-    value: string | number | undefined
-  ) => {
+  const handleInputChange = (key: string, value: any, index?: number) => {
     const keys = key.split(".");
     setFormData((prevData) => {
       const newData: FormData = { ...prevData };
       let obj: any = newData;
 
-      keys.forEach((k, index) => {
-        if (index === keys.length - 1) {
-          obj[k] = value;
+      keys.forEach((k, idx) => {
+        if (idx === keys.length - 1) {
+          // 배열 처리
+          if (Array.isArray(obj) && index !== undefined) {
+            obj[index][k] = value;
+          } else {
+            obj[k] = value;
+          }
         } else {
-          obj[k] = obj[k] || {};
-          obj = obj[k];
+          if (Array.isArray(obj) && index !== undefined) {
+            obj = obj[index][k] || {};
+          } else {
+            obj = obj[k] || {};
+          }
         }
       });
       // 할인율이 변경될 때마다 최종 금액 자동 계산
       if (key === "planPayment.discountRate") {
-        setDiscountRate(parseFloat(value as string) || 0);
+        setDiscountRate(parseFloat(value) || 0);
       }
       return newData;
     });
@@ -74,19 +81,70 @@ const CreateMember: React.FC<{
   const [discountRate, setDiscountRate] = useState<number>(0);
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
-  const [selectedPlanMethod, setSelectedPlanMethod] = useState<string>("");
-  const [selectedOtherMethod, setSelectedOtherMethod] = useState<string>("");
+  const [selectedMethod, setSelectedMethod] = useState<{
+    [key: string]: string;
+  }>({
+    planPayment: "",
+    otherPayment: "",
+  });
+
   const toggleAccordion = (key: string) => {
     setAccordionOpenKey((prevKey) => (prevKey === key ? null : key));
   };
-  const handleMethodClick = (method: string) => {
-    setSelectedPlanMethod(method === selectedPlanMethod ? "" : method);
+  const getPaymentMethod = (
+    method: string
+  ): "CARD" | "CASH" | "TRANSFER" | "OTHER" => {
+    switch (method) {
+      case "현금":
+        return "CASH";
+      case "카드":
+        return "CARD";
+      case "계좌이체":
+        return "TRANSFER";
+      default:
+        return "OTHER";
+    }
   };
+  const handleMethodClick = (
+    method: string,
+    type: "planPayment" | "otherPayment"
+  ) => {
+    const paymentMethod = getPaymentMethod(method);
 
-  const handleMethodClick2 = (method: string) => {
-    setSelectedOtherMethod(method === selectedOtherMethod ? "" : method);
+    setSelectedMethod((prev) => ({
+      ...prev,
+      [type]: prev[type] === method ? "" : method,
+    }));
+
+    setFormData((prevData) => {
+      if (type === "planPayment") {
+        return {
+          ...prevData,
+          planPayment: {
+            ...prevData.planPayment,
+            paymentsMethod: paymentMethod,
+            otherPaymentMethod:
+              method === "기타" ? prevData.planPayment.otherPaymentMethod : "",
+          },
+        };
+      } else {
+        return {
+          ...prevData,
+          otherPayment: prevData.otherPayment.map((item, idx) =>
+            idx === 0
+              ? {
+                  ...item,
+                  paymentsMethod: paymentMethod,
+                  otherPaymentMethod:
+                    method === "기타" ? item.otherPaymentMethod : "",
+                }
+              : item
+          ),
+        };
+      }
+    });
   };
-  // ✅ 할인율과 가격 변경 시 자동으로 계산
+  // 할인율과 가격 변경 시 자동으로 계산
   useEffect(() => {
     const discountedPrice = DiscountedPrice(selectedPlanPrice, discountRate);
     setFinalPrice(discountedPrice);
@@ -95,10 +153,61 @@ const CreateMember: React.FC<{
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
+  // const handleRegister = async () => {
+  //   try {
+  //     // ✅ `otherPayment`가 배열인지 확인 후 변환
+  //     const formattedData = {
+  //       ...formData,
+  //       otherPayment: Array.isArray(formData.otherPayment)
+  //         ? formData.otherPayment
+  //         : [formData.otherPayment], // 배열이 아닐 경우 배열로 변환
+  //     };
+
+  //     console.info("회원 등록 요청 데이터:", formattedData); // 📌 전송 전 데이터 확인
+
+  //     const response = await memberAPI.registMember(formattedData);
+  //     console.info("회원 등록 성공:", response);
+  //     alert("회원 등록이 성공적으로 완료되었습니다!");
+  //     closeModal();
+  //   } catch (error) {
+  //     console.error("회원 등록 실패:", error);
+  //     alert("회원 등록에 실패했습니다.");
+  //   }
+  // };
   const handleRegister = async () => {
     try {
-      const response = await memberAPI.registMember(formData);
-      console.info("회원 등록 요청 데이터:", formData);
+      if (!formData.planId) {
+        alert("이용권을 선택해주세요.");
+        return;
+      }
+
+      if (
+        formData.planPayment.paymentsMethod === "OTHER" &&
+        !formData.planPayment.otherPaymentMethod
+      ) {
+        alert("기타 결제 방법을 입력해주세요.");
+        return;
+      }
+
+      const formattedData = {
+        ...formData,
+        planPayment: {
+          ...formData.planPayment,
+          registrationAt:
+            formData.planPayment.registrationAt || new Date().toISOString(),
+        },
+        otherPayment: Array.isArray(formData.otherPayment) // ✅ 배열 보장
+          ? formData.otherPayment.map((payment) => ({
+              ...payment,
+              price: payment.price ? Number(payment.price) : 0, // ✅ 숫자로 변환
+              registrationAt:
+                payment.registrationAt || new Date().toISOString(),
+            }))
+          : [],
+      };
+
+      console.info("회원 등록 요청 데이터:", formattedData);
+      const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
       alert("회원 등록이 성공적으로 완료되었습니다!");
       closeModal();
@@ -107,7 +216,6 @@ const CreateMember: React.FC<{
       alert("회원 등록에 실패했습니다.");
     }
   };
-
   return (
     <div>
       <BasicButton
@@ -224,9 +332,11 @@ const CreateMember: React.FC<{
                             (method, index) => (
                               <button
                                 key={index}
-                                onClick={() => handleMethodClick(method)}
+                                onClick={() =>
+                                  handleMethodClick(method, "planPayment")
+                                }
                                 className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border ${
-                                  selectedPlanMethod === method
+                                  selectedMethod.planPayment === method
                                     ? "bg-[#3C6229] text-white border-[#3C6229]"
                                     : "bg-white text-gray-600 border-gray-300"
                                 }`}
@@ -235,32 +345,41 @@ const CreateMember: React.FC<{
                               </button>
                             )
                           )}
-                        </div>
 
-                        {selectedPlanMethod === "기타" && (
+                          {selectedMethod.planPayment === "기타" && (
+                            <input
+                              type="text"
+                              placeholder="기타 입력"
+                              value={formData.planPayment.otherPaymentMethod}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "planPayment.otherPaymentMethod",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full input-content"
+                            />
+                          )}
+                        </div>
+                        <div className="mb-4">
+                          <h4 className="text-sm font-bold mb-2 pt-4">
+                            등록일
+                          </h4>
                           <input
-                            type="text"
-                            placeholder="기타 입력"
-                            className="w-full mt-2 p-2 rounded-md border border-gray-300 placeholder-gray-400 text-sm"
+                            type="date"
+                            value={
+                              formData.planPayment?.registrationAt ||
+                              getCurrentDate()
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "planPayment.registrationAt",
+                                e.target.value
+                              )
+                            }
+                            className="input-content"
                           />
-                        )}
-                      </div>
-                      <div className="mb-4">
-                        <h4 className="text-sm font-bold mb-2 pt-4">등록일</h4>
-                        <input
-                          type="date"
-                          value={
-                            formData.planPayment?.registrationAt ||
-                            getCurrentDate()
-                          }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "planPayment.registrationAt",
-                              e.target.value
-                            )
-                          }
-                          className="input-content"
-                        />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -299,11 +418,12 @@ const CreateMember: React.FC<{
                       type="text"
                       placeholder="결제내용 입력"
                       className="p-4 input-content"
-                      // value={formData.otherPayment?.content}
+                      value={formData.otherPayment[0]?.content}
                       onChange={(e) =>
                         handleInputChange(
                           "otherPayment.content",
-                          e.target.value
+                          e.target.value,
+                          0
                         )
                       }
                     />
@@ -315,9 +435,13 @@ const CreateMember: React.FC<{
                       type="text"
                       placeholder="결제금액 입력"
                       className="p-4 mb-4 input-content"
-                      // value={formData.otherPayment?.price}
+                      value={formData.otherPayment[0]?.price}
                       onChange={(e) =>
-                        handleInputChange("otherPayment.price", e.target.value)
+                        handleInputChange(
+                          "otherPayment.price",
+                          e.target.value,
+                          0
+                        )
                       }
                     />
                   </div>
@@ -334,9 +458,11 @@ const CreateMember: React.FC<{
                             (method, index) => (
                               <button
                                 key={index}
-                                onClick={() => handleMethodClick2(method)}
+                                onClick={() =>
+                                  handleMethodClick(method, "otherPayment")
+                                }
                                 className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border ${
-                                  selectedOtherMethod === method
+                                  selectedMethod.otherPayment === method
                                     ? "bg-[#3C6229] text-white border-[#3C6229]"
                                     : "bg-white text-gray-600 border-gray-300"
                                 }`}
@@ -345,33 +471,46 @@ const CreateMember: React.FC<{
                               </button>
                             )
                           )}
+
+                          {selectedMethod.otherPayment === "기타" && (
+                            <input
+                              type="text"
+                              placeholder="기타 입력"
+                              value={
+                                formData.otherPayment[0]?.otherPaymentMethod ||
+                                ""
+                              }
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "otherPayment.otherPaymentMethod",
+                                  e.target.value,
+                                  0
+                                )
+                              }
+                              className="input-content"
+                            />
+                          )}
                         </div>
 
-                        {selectedOtherMethod === "기타" && (
+                        <div className="mb-4">
+                          <h4 className="text-sm font-bold mb-3 pt-4">
+                            등록일
+                          </h4>
                           <input
-                            type="text"
-                            placeholder="기타 입력"
-                            className="w-full mt-2 p-2 rounded-md border border-gray-300 placeholder-gray-400 text-sm"
+                            type="date"
+                            value={
+                              formData.otherPayment[0]?.registrationAt ||
+                              getCurrentDate()
+                            }
+                            onChange={(e) =>
+                              handleInputChange(
+                                "otherPayment.registrationAt",
+                                e.target.value
+                              )
+                            }
+                            className="input-content"
                           />
-                        )}
-                      </div>
-
-                      <div className="mb-4">
-                        <h4 className="text-sm font-bold mb-3 pt-4">등록일</h4>
-                        <input
-                          type="date"
-                          // value={
-                          //   formData.otherPayment?.registrationAt ||
-                          //   getCurrentDate()
-                          // }
-                          onChange={(e) =>
-                            handleInputChange(
-                              "otherPayment.registrationAt",
-                              e.target.value
-                            )
-                          }
-                          className="input-content"
-                        />
+                        </div>
                       </div>
                     </div>
                   </div>

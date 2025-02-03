@@ -40,11 +40,7 @@
   },
   "devDependencies": {
     "@locator/babel-jsx": "^0.4.4",
-<<<<<<< HEAD
     "@types/lodash": "^4.17.14",
-=======
-    "@types/lodash": "^4.17.13",
->>>>>>> 8566fa9 (feat: 고객이름검색 (#19))
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

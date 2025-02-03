@@ -107,6 +107,7 @@ export interface UpdateCustomerDetail {
 //회원추가
 export interface PlanPayment2 {
   paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  otherPaymentMethod: string; // 기타 결제 방법 설명
   registrationAt: string; // 등록일 (ISO 형식)
   discountRate: number; // 할인율 (선택적)
   status: boolean; // 상태 (결제 여부)
@@ -130,6 +131,7 @@ export interface FormData {
   visitPath: string;
   birthDate: string;
   memo: string;
+  photoFile: File | null;
   planPayment: PlanPayment2;
   otherPayment: OtherPayment2[];
 }

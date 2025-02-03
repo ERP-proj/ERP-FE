@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Accordion from "../../ui/Accordion";
 import BasicButton from "../../ui/BasicButton";
 import { CustomerDetailData, UpdateCustomerDetail } from "@/types/memberType";
-// import Dropdown from "../ui/Dropdown";
 import Modal from "../../ui/Modal";
 import DetailForm from "./DetailForm";
 import { FaRegCircleCheck } from "react-icons/fa6";

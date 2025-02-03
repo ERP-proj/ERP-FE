@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Dropdown from "../../ui/Dropdown";
 import { FormData } from "@/types/memberType";
 import Camera from "./Camera";
@@ -12,22 +12,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   formData,
   setFormData,
 }) => {
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: keyof FormData, value: any) => {
     setFormData((prevData) => ({ ...prevData, [key]: value }));
   };
-  const [rows, setRows] = useState([
-    { id: 1, date: "", content: "" }, // 기본 1회차
-  ]);
-
-  const addRow = () => {
-    setRows((prevRows) => [
-      ...prevRows,
-      { id: prevRows.length + 1, date: "", content: "" },
-    ]);
-  };
-
-  const handleCapture = (imageData: string) => {
-    setFormData((prevData) => ({ ...prevData, photoUrl: imageData }));
+  const handleCapture = (photoFile: File) => {
+    setFormData((prevData) => ({ ...prevData, photoFile }));
   };
 
   return (

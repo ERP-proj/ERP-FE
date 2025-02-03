@@ -65,7 +65,10 @@ const DetailForm: React.FC<DetailFormProps> = ({
             <div>
               <label className="block text-sm text-gray-600 mb-1">성별</label>
               <Dropdown
-                options={["남", "여"]}
+                options={[
+                  { label: "여", value: "FEMALE" },
+                  { label: "남", value: "MALE" },
+                ]}
                 defaultValue={formData.gender === "MALE" ? "남" : "여"}
                 onChange={(value) =>
                   handleInputChange(

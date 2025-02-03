@@ -2,11 +2,11 @@
 import React, { useRef, useState } from "react";
 import { CiCamera } from "react-icons/ci";
 import BasicButton from "../../ui/BasicButton";
+import { base64ToBlob } from "@/api/member";
 
 interface CameraProps {
-  onCapture: (imageData: string) => void; // 캡처된 이미지를 상위 컴포넌트에 전달
+  onCapture: (file: File) => void; // ✅ File 객체를 상위 컴포넌트로 전달
 }
-
 const Camera: React.FC<CameraProps> = ({ onCapture }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -41,11 +41,26 @@ const Camera: React.FC<CameraProps> = ({ onCapture }) => {
           canvasRef.current.width,
           canvasRef.current.height
         );
+
+        // ✅ 캡처한 이미지를 Base64로 변환
         const imageData = canvasRef.current.toDataURL("image/png");
         setImageSrc(imageData);
-        onCapture(imageData);
+
+        // ✅ Base64 → Blob 변환
+        const imageBlob = base64ToBlob(imageData);
+
+        // ✅ Blob → File 변환 (이름: profile.png)
+        const imageFile = new File([imageBlob], "profile.png", {
+          type: "image/png",
+        });
+
+        // ✅ File 객체를 상위 컴포넌트로 전달
+        onCapture(imageFile);
+
+        // ✅ 카메라 스트림 종료
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach((track) => track.stop());
+
         setIsModalOpen(false); // 모달 닫기
       }
     }
