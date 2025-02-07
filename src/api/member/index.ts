@@ -1,6 +1,7 @@
 import type { FormData } from "@/types/memberType";
 import axios from "axios";
 import apiClient from "../core/apiClient";
+import errorHandler from "../core/errorHandler";
 /**
  * Base64 이미지를 Blob으로 변환하는 함수
  */
@@ -130,6 +131,22 @@ export const memberAPI = {
     }
   },
 
+  //  회원 상태값 변경
+  updateCustomerStatus: async (
+    customerId: number,
+    status: "ACTIVE" | "INACTIVE" | "DELETED"
+  ) => {
+    try {
+      const response = await apiClient.put("/customer/updateStatus", {
+        customerId,
+        status,
+      });
+      return response.data;
+    } catch (error: unknown) {
+      const errorMessage = errorHandler(error);
+      throw new Error(errorMessage);
+    }
+  },
   /**
    * 이용권 조회 메서드
    * @param licenseType 라이선스 타입 (예: "TYPE_1", "TYPE_2")

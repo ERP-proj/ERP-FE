@@ -24,7 +24,7 @@ const convertToUpdateCustomerDetail = (
     visitPath: data.visitPath,
     memo: data.memo,
     photoFile: null, // 파일은 새로 업로드하는 경우만 포함
-    photoUrl: data.photoUrl, // ✅ 기존 사진 URL 유지
+    photoUrl: data.photoUrl,
     planPaymentStatus: data.planPayment.status,
     progressList: {
       addProgresses: [],
@@ -47,10 +47,7 @@ interface DetailMemberProps {
 }
 
 const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
-  const [isOpen, setIsOpen] = useState(false); // ✅ 상태 추가
-
-  // const [otherPayments, setOtherPayments] = useState(member.otherPayment || []);
-  // console.log("DetailMember Props:", member);
+  const [isOpen, setIsOpen] = useState(false);
   const [isModified, setIsModified] = useState(false);
   // ✅ `CustomerDetailData` → `UpdateCustomerDetail`로 변환하여 상태 관리
   const [customerInfo, setCustomerInfo] = useState<UpdateCustomerDetail>(
@@ -63,10 +60,10 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     setIsModified(true);
   };
 
+  //✅ 저장 핸들러
   const handleSave = async () => {
     const formData = new FormData();
 
-    // ✅ progressList 빈 값 제거
     const filteredAddProgresses =
       customerInfo.progressList.addProgresses.filter(
         (p) => p.date.trim() !== "" && p.content.trim() !== ""
@@ -77,13 +74,13 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
       ).values()
     );
 
-    // ✅ 날짜 형식 변환
+    // 날짜 형식 변환
     const formattedOtherPayment = customerInfo.otherPayment.map((payment) => ({
       ...payment,
       registrationAt: new Date(payment.registrationAt).toISOString(),
     }));
 
-    // ✅ JSON 데이터 Blob 변환
+    // JSON 데이터 Blob 변환
     const requestData = {
       customerId: customerInfo.customerId,
       name: customerInfo.name,
@@ -107,7 +104,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     });
     formData.append("req", jsonBlob);
 
-    // ✅ 파일 추가 (선택적)
+    // 파일 추가 (선택적)
     if (customerInfo.photoFile) {
       formData.append("file", customerInfo.photoFile);
     }
@@ -124,6 +121,18 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   };
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev);
+  };
+  //✅ 회원삭제 핸들러
+  const handleDelete = async () => {
+    if (!window.confirm("정말로 이 회원을 삭제하시겠습니까?")) return;
+
+    try {
+      await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
+      alert("회원이 삭제되었습니다.");
+      onClose();
+    } catch (error) {
+      alert("회원 삭제 중 오류가 발생했습니다.");
+    }
   };
 
   const addPayment = () => {
@@ -319,7 +328,12 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
 
           {/* 하단 버튼 */}
           <div className="sticky bottom-0 left-0 bg-white p-4 shadow-md flex justify-end gap-4 z-10">
-            <BasicButton size="medium" color="danger" border={true}>
+            <BasicButton
+              size="medium"
+              color="danger"
+              border={true}
+              onClick={handleDelete}
+            >
               회원 삭제
             </BasicButton>
             <BasicButton
