@@ -4,7 +4,7 @@ import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 interface Props {
   title: string;
   isOpen: boolean; // 아코디언 열림 여부
-  toggleOpen: () => void; // 아코디언 열림/닫힘 함수
+  toggleOpen?: () => void; // 아코디언 열림/닫힘 함수
   footer?: React.ReactNode; // 하단 내용
   children: React.ReactNode; // 아코디언 본문
 }
@@ -30,7 +30,7 @@ const Accordion: React.FC<Props> = ({
       {/* 아코디언 컨텐츠 */}
       {isOpen && (
         <div className="relative">
-          <div className="overflow-y-auto h-[570px] px-3">{children}</div>
+          <div className="overflow-y-auto h-[570px]">{children}</div>
           {footer && (
             <div className="absolute bottom-0 bg-white left-0 right-0 h-[130px] px-4 border-t border-t-1 flex justify-between items-center">
               {footer}

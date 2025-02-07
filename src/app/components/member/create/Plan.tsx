@@ -1,17 +1,66 @@
 "use client";
 
-import React, { useState } from "react";
-import Dropdown from "../ui/Dropdown";
+import React, { useEffect, useState } from "react";
+import Dropdown from "../../ui/Dropdown";
+import { memberAPI } from "@/api/member";
 
-const Plan: React.FC = () => {
+interface PlanOption {
+  id: number;
+  planType: string;
+  licenseType: string;
+  courseType: string;
+  planName: string;
+  price: number;
+}
+
+const Plan: React.FC<{
+  onSelectPlan: (planId: number, planName: string, price: number) => void;
+}> = ({ onSelectPlan }) => {
+  const [plans, setPlans] = useState<PlanOption[]>([]);
+  const [filteredPlans, setFilteredPlans] = useState<PlanOption[]>([]);
   const [selectedGroup1, setSelectedGroup1] = useState("1종");
   const [selectedGroup2, setSelectedGroup2] = useState("시간제");
   const [selectedGroup3, setSelectedGroup3] = useState("취득");
 
+  // API 호출
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const licenseType = selectedGroup1 === "1종" ? "TYPE_1" : "TYPE_2";
+        const response = await memberAPI.getPlans(licenseType);
+        if (response && response.data) {
+          setPlans(response.data);
+          setFilteredPlans(response.data); // 초기값
+        }
+      } catch (error) {
+        console.error("이용권 데이터를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchPlans();
+  }, [selectedGroup1]); // selectedGroup1 변경 시 API 호출
+
+  // 구분 선택에 따라 필터링
+  useEffect(() => {
+    if (plans.length > 0) {
+      const filtered = plans.filter((plan) => {
+        if (selectedGroup2 === "시간제") {
+          return plan.planType === "TIME_BASED";
+        } else if (selectedGroup2 === "기간제") {
+          return plan.planType === "PERIOD_BASED";
+        } else {
+          return true;
+        }
+      });
+      console.log("Filtered Plans:", filtered);
+      setFilteredPlans(filtered);
+    }
+  }, [selectedGroup2, plans]);
+
   return (
     <div className="mb-4 p-4">
       {/* 구분1 */}
-      <h4 className="text-sm font-bold mb-2">구분 1</h4>
+      <h4 className="text-sm font-bold mb-2">면허 종류</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup1("1종")}
@@ -36,7 +85,7 @@ const Plan: React.FC = () => {
       </div>
 
       {/* 구분2 */}
-      <h4 className="text-sm font-bold mb-2">구분 2</h4>
+      <h4 className="text-sm font-bold mb-2">수강 방식</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup2("시간제")}
@@ -61,7 +110,7 @@ const Plan: React.FC = () => {
       </div>
 
       {/* 구분3 */}
-      <h4 className="text-sm font-bold mb-2">구분 3</h4>
+      <h4 className="text-sm font-bold mb-2">수강 목적</h4>
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup3("취득")}
@@ -97,15 +146,25 @@ const Plan: React.FC = () => {
 
       <h4 className="text-sm font-bold mb-2">이용권</h4>
       <Dropdown
-        options={[
-          "10시간 이용권",
-          "15시간 이용권",
-          "20시간 이용권",
-          "1개월 이용권",
-        ]}
+        options={filteredPlans.map((plan) => ({
+          label: plan.planName,
+          value: plan.id.toString(), // ID를 value로 사용
+        }))}
         placeholder="이용권 선택"
-        defaultValue="10시간 이용권"
+        defaultValue=""
         className="w-full"
+        onChange={(selectedOption) => {
+          const selectedPlan = filteredPlans.find(
+            (plan) => plan.id.toString() === selectedOption
+          );
+          if (selectedPlan) {
+            onSelectPlan(
+              selectedPlan.id,
+              selectedPlan.planName,
+              selectedPlan.price
+            );
+          }
+        }}
       />
     </div>
   );

@@ -160,3 +160,6 @@
 .input-content {
   @apply focus:outline-none cursor-pointer w-full p-2 bg-[#fff] border border-[#D1D1D1] text-[#3A3A3A] focus:bg-[#F2F8ED] focus:border-[#B4D89C] rounded-md text-sm;
 }
+.square {
+  @apply flex flex-col items-center justify-center bg-white border border-red-500 rounded-lg w-[80px] h-[70px];
+}

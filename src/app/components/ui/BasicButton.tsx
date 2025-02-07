@@ -7,6 +7,7 @@ interface BasicButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 }
 
 const BasicButton: React.FC<BasicButtonProps> = ({
@@ -16,6 +17,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   children,
   onClick,
   className = "",
+  disabled = false,
 }) => {
   const sizeStyles = {
     small: "w-[58px] h-[34px] rounded-lg px-4 py-2 gap-2 text-sm",
@@ -34,7 +36,8 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`flex ml-auto justify-center items-center rounded-[8px] font-[600] ${
+      disabled={disabled}
+      className={`flex  justify-center items-center rounded-[8px] font-[600] ${
         sizeStyles[size]
       } ${colorStyles[color]} ${
         border ? "border" : "border-none"
