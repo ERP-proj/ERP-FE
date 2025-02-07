@@ -13,7 +13,6 @@ interface DetailFormProps {
 }
 
 const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
-  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { rows, addRow, deleteRow, updateRow } = useProgressList({
     data: customerInfo,
     onModify,

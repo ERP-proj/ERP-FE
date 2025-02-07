@@ -5,6 +5,7 @@ import { GoEye, GoEyeClosed } from "react-icons/go";
 import Image from "next/image";
 import { formatDate } from "@/utils/formatDate";
 import { formatMaskedPhone } from "@/utils/formatPhone";
+import { getLabel } from "@/utils/mapping";
 
 const MemberRow = ({
   member,
@@ -50,7 +51,7 @@ const MemberRow = ({
                   : "bg-pink-100 text-pink-600"
               }`}
             >
-              {member.gender}
+              {getLabel(member.gender)}
             </div>
             <div
               className={`px-2 py-1 text-xs sm:text-sm rounded ${
@@ -59,7 +60,7 @@ const MemberRow = ({
                   : "bg-gray-300 text-gray-800"
               }`}
             >
-              {member.licenseType}
+              {getLabel(member.licenseType)}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -83,7 +84,7 @@ const MemberRow = ({
                 : "bg-[#B4D89C] text-black"
             }`}
           >
-            {member.planType}
+            {getLabel(member.planType)}
           </div>
         </div>
       </div>
@@ -91,7 +92,7 @@ const MemberRow = ({
       {/* 이용권 종류 */}
       <div className="flex items-center justify-center font-medium flex-1 min-w-[150px]">
         <div className="text-xs sm:text-sm bg-[#f6f6f6] border border-[#d1d1d1] px-3 sm:px-4 py-1 sm:py-2 rounded-full text-[#3a3a3a]">
-          {member.planName}
+          {getLabel(member.planName)}
         </div>
       </div>
 
@@ -141,10 +142,12 @@ const MemberRow = ({
         </div>
         <div
           className={`text-xs sm:text-sm font-bold ${
-            member.payment > 0 ? "text-green-600" : "text-red-600"
+            member.otherPaymentPrice > 0 ? "text-green-600" : "text-red-600"
           }`}
         >
-          {member.payment > 0 ? `+${member.payment}` : `${member.payment}`}
+          {member.otherPaymentPrice > 0
+            ? `+${member.otherPaymentPrice}`
+            : `${member.otherPaymentPrice}`}
         </div>
       </div>
     </div>

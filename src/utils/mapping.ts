@@ -3,6 +3,8 @@ export const getLabel = (type: string) => {
   const mapping: { [key: string]: string } = {
     TYPE_1: "1종",
     TYPE_2: "2종",
+    MALE: "남",
+    FEMALE: "여",
     TIME_BASED: "시간제",
     PERIOD_BASED: "기간제",
     ACQUISITION: "취득",
