@@ -1,6 +1,6 @@
-import type { FormData, UpdateCustomerDetail } from "@/types/memberType";
-import { defaultApi } from "../core/core";
+import type { FormData } from "@/types/memberType";
 import axios from "axios";
+import apiClient from "../core/apiClient";
 /**
  * Base64 이미지를 Blob으로 변환하는 함수
  */
@@ -64,7 +64,7 @@ export const memberAPI = {
    */
   getMemberRow: async (page: number) => {
     try {
-      const response = await defaultApi.get(
+      const response = await apiClient.get(
         `/customer/currentCustomers/${page}`
       );
       return response.data;
@@ -84,7 +84,7 @@ export const memberAPI = {
       throw new Error("검색어를 입력해 주세요.");
     }
     try {
-      const response = await defaultApi.get(
+      const response = await apiClient.get(
         `/customer/searchCustomerName/${encodeURIComponent(keyword)}`
       );
       return response.data;
@@ -101,7 +101,7 @@ export const memberAPI = {
    */
   getCustomerDetail: async (customerId: number) => {
     try {
-      const response = await defaultApi.get(
+      const response = await apiClient.get(
         `/customer/getCustomerDetail/${customerId}`
       );
       return response.data;
@@ -116,11 +116,11 @@ export const memberAPI = {
    * @param data 회원 상세정보 데이터
    * @returns 수정된 회원 데이터
    */
-  updateCustomerDetail: async (data: UpdateCustomerDetail) => {
+  updateCustomerDetail: async (data: FormData) => {
     try {
-      const response = await defaultApi.put("/customer/updateCustomer", data, {
+      const response = await apiClient.put("/customer/updateCustomer", data, {
         headers: {
-          "Content-Type": "multipart/form-data", // ✅ FormData 전송 설정
+          "Content-Type": "multipart/form-data",
         },
       });
       return response.data;
@@ -137,7 +137,7 @@ export const memberAPI = {
    */
   getPlans: async (licenseType: string) => {
     try {
-      const response = await defaultApi.get(`/plan/getPlans/${licenseType}`);
+      const response = await apiClient.get(`/plan/getPlans/${licenseType}`);
       return response.data;
     } catch (error) {
       console.error("이용권 조회 API 호출 오류:", error);

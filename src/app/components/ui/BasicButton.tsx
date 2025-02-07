@@ -37,7 +37,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex ml-auto justify-center items-center rounded-[8px] font-[600] ${
+      className={`flex  justify-center items-center rounded-[8px] font-[600] ${
         sizeStyles[size]
       } ${colorStyles[color]} ${
         border ? "border" : "border-none"

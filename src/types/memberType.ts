@@ -33,39 +33,34 @@ export interface CustomerDetailData {
   address: string; // 주소
   visitPath: string; // 방문 경로
   memo: string; // 메모
-  progressList: ProgressList[]; // 진도표 리스트
+  progressList: Array<{
+    progressId: number;
+    date: string;
+    content: string;
+  }>; // 진도표 리스트
   planPayment: PlanPayment; // 이용권 결제 정보
-  otherPayment: OtherPayment[]; // 기타 결제 리스트
+  otherPayment: Array<{
+    paymentsMethod: string;
+    otherPaymentMethod: string;
+    registrationAt: string;
+    content: string;
+    price: number;
+    status: boolean;
+  }>;
 }
-
-export interface ProgressList {
-  progressId: number;
-  date: string; // 날짜
-  content: string; // 내용
-}
-
 export interface PlanPayment {
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
-  otherPaymentMethod: string; //기타결제
-  registrationAt: string; // 등록 날짜
-  licenseType: string; // 구분1
-  planType: string; //구분2
-  courseType: string; //구분3
-  planName: string; // 이용권 이름
-  planPrice: number; // 이용권 가격
-  discountRate: number; // 할인율
-  discountPrice: number; // 할인할 금액
-  paymentTotal: number; // 총 결제 금액
-  status: boolean; // 결제 상태
-}
-
-export interface OtherPayment {
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  licenseType: string;
+  planName: string;
+  planType: string;
+  courseType: string;
+  planPrice: number;
+  discountRate: number;
+  discountPrice: number;
+  paymentsMethod: string;
   otherPaymentMethod: string;
-  registrationAt: string; // 등록 날짜
-  content: string; // 결제 내용
-  price: number; // 결제 가격
-  status: boolean; // 결제 상태
+  registrationAt: string;
+  paymentTotal: number;
+  status: boolean;
 }
 
 //회원상세정보 수정
@@ -79,6 +74,7 @@ export interface UpdateCustomerDetail {
   visitPath: string;
   memo: string;
   photoFile: File | null;
+  photoUrl: string;
   progressList: {
     addProgresses: Array<{
       date: string;
@@ -95,8 +91,8 @@ export interface UpdateCustomerDetail {
   };
   planPaymentStatus: boolean;
   otherPayment: Array<{
-    paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER";
-    otherPaymentMethod: "string";
+    paymentsMethod: string;
+    otherPaymentMethod: string;
     registrationAt: string;
     content: string;
     price: number;

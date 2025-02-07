@@ -4,7 +4,7 @@ import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 interface Props {
   title: string;
   isOpen: boolean; // 아코디언 열림 여부
-  toggleOpen: () => void; // 아코디언 열림/닫힘 함수
+  toggleOpen?: () => void; // 아코디언 열림/닫힘 함수
   footer?: React.ReactNode; // 하단 내용
   children: React.ReactNode; // 아코디언 본문
 }
