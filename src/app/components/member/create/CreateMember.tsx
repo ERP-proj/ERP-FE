@@ -15,6 +15,7 @@ import { DiscountedPrice } from "@/utils/discountedPrice";
 const initialFormData: FormData = {
   planId: 0,
   name: "",
+  photoUrl: "string",
   gender: "MALE",
   phone: "",
   address: "",
@@ -153,27 +154,6 @@ const CreateMember: React.FC<{
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  // const handleRegister = async () => {
-  //   try {
-  //     // ✅ `otherPayment`가 배열인지 확인 후 변환
-  //     const formattedData = {
-  //       ...formData,
-  //       otherPayment: Array.isArray(formData.otherPayment)
-  //         ? formData.otherPayment
-  //         : [formData.otherPayment], // 배열이 아닐 경우 배열로 변환
-  //     };
-
-  //     console.info("회원 등록 요청 데이터:", formattedData); // 📌 전송 전 데이터 확인
-
-  //     const response = await memberAPI.registMember(formattedData);
-  //     console.info("회원 등록 성공:", response);
-  //     alert("회원 등록이 성공적으로 완료되었습니다!");
-  //     closeModal();
-  //   } catch (error) {
-  //     console.error("회원 등록 실패:", error);
-  //     alert("회원 등록에 실패했습니다.");
-  //   }
-  // };
   const handleRegister = async () => {
     try {
       if (!formData.planId) {

@@ -131,6 +131,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
       alert("회원이 삭제되었습니다.");
       onClose();
     } catch (error) {
+      console.error("❌ 회원 정보 수정 실패:", error);
       alert("회원 삭제 중 오류가 발생했습니다.");
     }
   };

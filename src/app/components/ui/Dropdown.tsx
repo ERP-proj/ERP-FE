@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SlArrowDown } from "react-icons/sl";
 
-interface DropdownOption {
+export interface DropdownOption {
   label: string;
   value: string;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { UpdateCustomerDetail } from "@/types/memberType";
 import Dropdown from "../../ui/Dropdown";
 import Camera from "../create/Camera";
@@ -13,7 +13,7 @@ interface DetailFormProps {
 }
 
 const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // ✅ 사진 파일 저장
+  // const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const { rows, addRow, deleteRow, updateRow } = useProgressList({
     data: customerInfo,
     onModify,

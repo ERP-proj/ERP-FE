@@ -11,7 +11,7 @@ const MemberRow = ({
   onClick,
 }: {
   member: any;
-  onClick: (customerId: number) => void;
+  onClick?: (customerId: number) => void;
 }) => {
   const [isPhoneHidden, setIsPhoneHidden] = useState<boolean>(true);
 
@@ -21,7 +21,7 @@ const MemberRow = ({
   return (
     <div
       className="flex flex-wrap items-center justify-between p-4 bg-[#F2F8ED] rounded-lg gap-4 cursor-pointer"
-      onClick={() => onClick(member.customerId)}
+      onClick={() => onClick?.(member.customerId)}
     >
       {/* 프로필 사진 및 기본 정보 */}
       <div className="flex items-center gap-4 flex-1 min-w-[250px]">

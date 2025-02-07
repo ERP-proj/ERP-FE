@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { CiCamera } from "react-icons/ci";
 import BasicButton from "../../ui/BasicButton";
 import { base64ToBlob } from "@/api/member";
+import Image from "next/image";
 
 interface CameraProps {
   onCapture: (file: File) => void; // ✅ File 객체를 상위 컴포넌트로 전달
@@ -88,7 +89,9 @@ const Camera: React.FC<CameraProps> = ({ onCapture, photoUrl }) => {
         <div className="image-selector-background absolute inset-0 z-0 rounded-full"></div>
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           {imageSrc ? (
-            <img
+            <Image
+              width={100}
+              height={100}
               src={imageSrc}
               alt="프로필 사진"
               className="w-full h-full rounded-full object-cover"

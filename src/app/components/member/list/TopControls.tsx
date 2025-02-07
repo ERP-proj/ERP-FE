@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
-import Dropdown from "../../ui/Dropdown";
+import Dropdown, { DropdownOption } from "../../ui/Dropdown";
 import CreateMember from "../create/CreateMember";
 import { memberAPI } from "@/api/member";
 import debounce from "lodash/debounce";
@@ -12,6 +12,7 @@ const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
   const [keyword, setKeyword] = useState("");
   const [formData, setFormData] = useState<FormData>({
     planId: 0,
+    photoUrl: "string",
     name: "",
     gender: "MALE",
     phone: "",
@@ -19,19 +20,22 @@ const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
     visitPath: "",
     birthDate: "",
     memo: "",
+    photoFile: null,
     planPayment: {
       paymentsMethod: "CARD",
       registrationAt: "",
       discountRate: 0,
       status: false,
     },
-    otherPayment: {
-      paymentsMethod: "CARD",
-      registrationAt: "",
-      content: "",
-      price: 0,
-      status: false,
-    },
+    otherPayment: [
+      {
+        paymentsMethod: "CARD",
+        registrationAt: "",
+        content: "",
+        price: 0,
+        status: false,
+      },
+    ],
   });
 
   // 디바운싱된 검색 함수
@@ -47,16 +51,32 @@ const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
       } catch (error) {
         console.error("검색 오류:", error);
       }
-    }, 500), // 500ms 디바운싱
-    []
+    }, 500),
+    [setSearchResults]
   );
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel(); // ✅ 언마운트 시 debounce 취소
+    };
+  }, []);
 
-  // 입력 변경 시 디바운싱된 검색 호출
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setKeyword(value);
-    debouncedSearch(value); // 디바운싱된 검색 함수 호출
+    debouncedSearch(value);
   };
+  const sortingOptions: DropdownOption[] = [
+    { label: "최신순", value: "latest" },
+    { label: "이용 시간이 많은 순", value: "most_used" },
+    { label: "이용 시간이 적은 순", value: "least_used" },
+  ];
+
+  const memberStatusOptions: DropdownOption[] = [
+    { label: "이용 가능 회원 조회", value: "active" },
+    { label: "만료된 회원 조회", value: "expired" },
+    { label: "삭제된 회원 조회", value: "deleted" },
+    { label: "전체 회원 조회", value: "all" },
+  ];
 
   return (
     <div className="flex items-center mb-4 h-16 bg-[#f6f6f6] p-4 rounded-lg shadow">
@@ -72,18 +92,13 @@ const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
         />
       </div>
       <Dropdown
-        options={["최신순", "이용 시간이 많은 순", "이용 시간이 적은 순"]}
+        options={sortingOptions} // ✅ 수정된 부분
         placeholder="정렬 기준 선택"
         defaultValue=""
         className="ml-4 w-[180px]"
       />
       <Dropdown
-        options={[
-          "이용 가능 회원 조회",
-          "만료된 회원 조회",
-          "삭제된 회원 조회",
-          "전체 회원 조회",
-        ]}
+        options={memberStatusOptions} // ✅ 수정된 부분
         placeholder="정렬 기준 선택"
         defaultValue=""
         className="ml-4 w-[200px]"

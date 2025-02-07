@@ -11,7 +11,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
-  onClose,
+  // onClose,
   leftChildren,
   rightChildren,
 }) => {
