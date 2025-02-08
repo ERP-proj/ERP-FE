@@ -66,7 +66,7 @@ export const memberAPI = {
   getMemberRow: async (page: number) => {
     try {
       const response = await apiClient.get(
-        `/customer/currentCustomers/${page}`
+        `/api/customer/currentCustomers/${page}`
       );
       return response.data;
     } catch (error) {
@@ -86,7 +86,7 @@ export const memberAPI = {
     }
     try {
       const response = await apiClient.get(
-        `/customer/searchCustomerName/${encodeURIComponent(keyword)}`
+        `/api/customer/searchCustomerName/${encodeURIComponent(keyword)}`
       );
       return response.data;
     } catch (error) {
@@ -103,7 +103,7 @@ export const memberAPI = {
   getCustomerDetail: async (customerId: number) => {
     try {
       const response = await apiClient.get(
-        `/customer/getCustomerDetail/${customerId}`
+        `/api/customer/getCustomerDetail/${customerId}`
       );
       return response.data;
     } catch (error) {
@@ -119,11 +119,15 @@ export const memberAPI = {
    */
   updateCustomerDetail: async (data: FormData) => {
     try {
-      const response = await apiClient.put("/customer/updateCustomer", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await apiClient.put(
+        "/api/customer/updateCustomer",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       console.error("회원 상세 수정 오류:", error);
@@ -137,7 +141,7 @@ export const memberAPI = {
     status: "ACTIVE" | "INACTIVE" | "DELETED"
   ) => {
     try {
-      const response = await apiClient.put("/customer/updateStatus", {
+      const response = await apiClient.put("/api/customer/updateStatus", {
         customerId,
         status,
       });
@@ -154,7 +158,7 @@ export const memberAPI = {
    */
   getPlans: async (licenseType: string) => {
     try {
-      const response = await apiClient.get(`/plan/getPlans/${licenseType}`);
+      const response = await apiClient.get(`/api/plan/getPlans/${licenseType}`);
       return response.data;
     } catch (error) {
       console.error("이용권 조회 API 호출 오류:", error);
