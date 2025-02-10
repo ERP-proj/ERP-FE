@@ -33,84 +33,47 @@ export interface CustomerDetailData {
   address: string; // 주소
   visitPath: string; // 방문 경로
   memo: string; // 메모
-  progressList: Array<{
-    progressId: number;
-    date: string;
-    content: string;
-  }>; // 진도표 리스트
+  progressList: Progress[]; // 진도표 리스트
   planPayment: PlanPayment; // 이용권 결제 정보
-  otherPayment: Array<{
-    paymentsMethod: string;
-    otherPaymentMethod: string;
-    registrationAt: string;
-    content: string;
-    price: number;
-    status: boolean;
-  }>;
+  otherPayment: OtherPayment[];
+}
+// 진도표 리스트
+export interface Progress {
+  progressId: number;
+  date: string;
+  content: string;
 }
 export interface PlanPayment {
   licenseType: string;
-  planName: string;
   planType: string;
   courseType: string;
   planPrice: number;
+  planName: string;
+  discountName: string;
   discountRate: number;
   discountPrice: number;
   paymentsMethod: string;
   otherPaymentMethod: string;
   registrationAt: string;
-  paymentTotal: number;
   status: boolean;
 }
 
 //회원상세정보 수정
-export interface UpdateCustomerDetail {
-  customerId: number;
-  name: string;
-  gender: "MALE" | "FEMALE";
-  birthDate: string;
-  phone: string;
-  address: string;
-  visitPath: string;
-  memo: string;
+export interface UpdateCustomerDetail
+  extends Omit<
+    CustomerDetailData,
+    "planPayment" | "otherPayment" | "progressList"
+  > {
   photoFile: File | null;
-  photoUrl: string;
   progressList: {
-    addProgresses: Array<{
-      date: string;
-      content: string;
-    }>;
-    updateProgresses: Array<{
-      progressId: number;
-      date: string;
-      content: string;
-    }>;
-    deleteProgresses: Array<{
-      progressId: number;
-    }>;
+    addProgresses: Omit<Progress, "progressId">[];
+    updateProgresses: Progress[];
+    deleteProgresses: Pick<Progress, "progressId">[];
   };
   planPaymentStatus: boolean;
-  otherPayment: Array<{
-    paymentsMethod: string;
-    otherPaymentMethod: string;
-    registrationAt: string;
-    content: string;
-    price: number;
-    status: boolean;
-  }>;
+  otherPayment: OtherPayment[];
 }
-
-//회원추가
-export interface PlanPayment2 {
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
-  otherPaymentMethod?: string; // 기타 결제 방법 설명
-  registrationAt: string; // 등록일 (ISO 형식)
-  discountRate: number; // 할인율 (선택적)
-  status: boolean; // 상태 (결제 여부)
-}
-
-// OtherPayment 타입 정의
-export interface OtherPayment2 {
+export interface OtherPayment {
   paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
   otherPaymentMethod?: string; // 기타 결제 방법 설명
   registrationAt: string; // 등록일
@@ -118,17 +81,18 @@ export interface OtherPayment2 {
   price: number; // 결제 금액
   status: boolean; // 결제 상태
 }
-export interface FormData {
+export interface FormData
+  extends Omit<
+    CustomerDetailData,
+    "progressList" | "customerId" | "planPayment"
+  > {
   planId: number;
-  photoUrl: "string";
-  name: string;
-  gender: "MALE" | "FEMALE";
-  phone: string;
-  address: string;
-  visitPath: string;
-  birthDate: string;
-  memo: string;
   photoFile: File | null;
-  planPayment: PlanPayment2;
-  otherPayment: OtherPayment2[];
+  planPayment: Partial<
+    Omit<
+      PlanPayment,
+      "licenseType" | "planName" | "planType" | "courseType" | "planPrice"
+    >
+  >;
+  otherPayment: OtherPayment[];
 }

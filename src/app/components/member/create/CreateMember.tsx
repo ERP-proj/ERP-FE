@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, use } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
@@ -26,6 +26,7 @@ const initialFormData: FormData = {
     paymentsMethod: "CARD", // 기본값 설정
     otherPaymentMethod: "",
     registrationAt: new Date().toISOString(),
+    discountName: "",
     discountRate: 0,
     status: false,
   },
@@ -182,6 +183,7 @@ const CreateMember: React.FC<{
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
       alert("회원 등록이 성공적으로 완료되었습니다!");
+      window.location.reload();
       closeModal();
     } catch (error) {
       console.error("회원 등록 실패:", error);
@@ -254,9 +256,14 @@ const CreateMember: React.FC<{
                     <div className="m-4">
                       <input
                         type="text"
-                        value={selectedPlanName}
+                        value={formData.planPayment.discountName}
                         placeholder="할인 상품명"
-                        readOnly
+                        onChange={(e) =>
+                          handleInputChange(
+                            "planPayment.discountName",
+                            e.target.value
+                          )
+                        }
                         className="input-content"
                       />
                     </div>
@@ -322,9 +329,7 @@ const CreateMember: React.FC<{
                             <input
                               type="text"
                               placeholder="기타 입력"
-                              value={
-                                formData.planPayment.otherPaymentMethod || ""
-                              }
+                              value={formData.planPayment.otherPaymentMethod}
                               onChange={(e) =>
                                 handleInputChange(
                                   "planPayment.otherPaymentMethod",
@@ -451,8 +456,7 @@ const CreateMember: React.FC<{
                               type="text"
                               placeholder="기타 입력"
                               value={
-                                formData.otherPayment[0]?.otherPaymentMethod ||
-                                ""
+                                formData.otherPayment[0]?.otherPaymentMethod
                               }
                               onChange={(e) =>
                                 handleInputChange(

@@ -73,7 +73,6 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
         customerInfo.progressList.updateProgresses.map((p) => [p.progressId, p])
       ).values()
     );
-
     // 날짜 형식 변환
     const formattedOtherPayment = customerInfo.otherPayment.map((payment) => ({
       ...payment,
@@ -113,6 +112,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
       await memberAPI.updateCustomerDetail(formData as any);
       alert("회원 정보가 성공적으로 수정되었습니다.");
       setIsModified(false);
+      window.location.reload();
       onClose();
     } catch (error) {
       console.error("❌ 회원 정보 수정 실패:", error);
