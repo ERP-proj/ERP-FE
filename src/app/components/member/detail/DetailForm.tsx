@@ -26,7 +26,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
   //   setCustomerInfo((prevData) => ({ ...prevData, photoFile }));
   //   onModify();
   // };
-
+  // console.log("디테일 데이터", customerInfo);
   return (
     <div className="space-y-6 p-6">
       <div className="flex gap-8 items-start">

@@ -80,13 +80,13 @@ export const memberAPI = {
    * @param keyword 검색 키워드
    * @returns 검색 결과 리스트
    */
-  searchCustomerName: async (keyword: string) => {
-    if (!keyword.trim()) {
+  searchCustomerName: async (customerName: string) => {
+    if (!customerName.trim()) {
       throw new Error("검색어를 입력해 주세요.");
     }
     try {
       const response = await apiClient.get(
-        `/api/customer/searchCustomerName/${encodeURIComponent(keyword)}`
+        `/api/customer/searchCustomer/${encodeURIComponent(customerName)}`
       );
       return response.data;
     } catch (error) {

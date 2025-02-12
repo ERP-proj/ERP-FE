@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
@@ -55,6 +55,10 @@ const CreateMember: React.FC<{
 
       keys.forEach((k, idx) => {
         if (idx === keys.length - 1) {
+          // 날짜 변환 처리 (ISO 8601 형식)
+          if (k.includes("registrationAt") && typeof value === "string") {
+            value = new Date(value).toISOString();
+          }
           // 배열 처리
           if (Array.isArray(obj) && index !== undefined) {
             obj[index][k] = value;
@@ -190,6 +194,7 @@ const CreateMember: React.FC<{
       alert("회원 등록에 실패했습니다.");
     }
   };
+
   return (
     <div>
       <BasicButton
@@ -347,8 +352,9 @@ const CreateMember: React.FC<{
                           <input
                             type="date"
                             value={
-                              formData.planPayment?.registrationAt ||
-                              getCurrentDate()
+                              formData.planPayment?.registrationAt?.split(
+                                "T"
+                              )[0] || getCurrentDate()
                             }
                             onChange={(e) =>
                               handleInputChange(
@@ -477,8 +483,9 @@ const CreateMember: React.FC<{
                           <input
                             type="date"
                             value={
-                              formData.otherPayment[0]?.registrationAt ||
-                              getCurrentDate()
+                              formData.otherPayment[0]?.registrationAt?.split(
+                                "T"
+                              )[0] || getCurrentDate()
                             }
                             onChange={(e) =>
                               handleInputChange(

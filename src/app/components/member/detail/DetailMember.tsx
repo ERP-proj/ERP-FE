@@ -9,6 +9,7 @@ import DetailForm from "./DetailForm";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { memberAPI } from "@/api/member";
 import PlanPaymentForm from "./PlanPaymentForm";
+import useAutoFocus from "@/hooks/plan/useAutoFocus";
 
 // ✅ `CustomerDetailData` → `UpdateCustomerDetail` 변환 함수
 const convertToUpdateCustomerDetail = (
@@ -32,8 +33,8 @@ const convertToUpdateCustomerDetail = (
       deleteProgresses: [],
     },
     otherPayment: data.otherPayment.map((payment) => ({
-      paymentsMethod: payment.paymentsMethod,
-      otherPaymentMethod: payment.otherPaymentMethod,
+      paymentsMethod: payment.paymentsMethod || "",
+      otherPaymentMethod: payment.otherPaymentMethod || "",
       registrationAt: payment.registrationAt,
       content: payment.content,
       price: payment.price,
@@ -129,6 +130,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     try {
       await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
       alert("회원이 삭제되었습니다.");
+      window.location.reload();
       onClose();
     } catch (error) {
       console.error("❌ 회원 정보 수정 실패:", error);
@@ -174,7 +176,9 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     }));
     setIsModified(true);
   };
-
+  // ✅ 첫 번째 결제 내역에 포커스를 맞출 수 있도록 useAutoFocus 사용
+  const firstPaymentInputRef = useAutoFocus<HTMLInputElement>(isOpen);
+  console.log("디테일 데이터", customerInfo);
   return (
     <Modal
       isOpen={!!member}
@@ -203,6 +207,11 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                     <div className="mb-4">
                       <h4 className="text-sm font-bold my-2">결제 내용</h4>
                       <input
+                        ref={
+                          index === customerInfo.otherPayment.length - 1
+                            ? firstPaymentInputRef
+                            : null
+                        }
                         type="text"
                         value={payment.content}
                         onChange={(e) =>
@@ -233,6 +242,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         {["CASH", "CARD", "TRANSFER", "OTHER"].map((method) => (
                           <button
                             key={method}
+                            value={payment.paymentsMethod || ""}
                             onClick={() =>
                               updatePayment(index, "paymentsMethod", method)
                             }

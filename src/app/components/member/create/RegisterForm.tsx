@@ -3,6 +3,7 @@ import React from "react";
 import Dropdown from "../../ui/Dropdown";
 import { FormData } from "@/types/memberType";
 import Camera from "./Camera";
+import useAutoFocus from "@/hooks/plan/useAutoFocus";
 export interface RegisterFormProps {
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
@@ -18,7 +19,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
   const handleCapture = (photoFile: File) => {
     setFormData((prevData) => ({ ...prevData, photoFile }));
   };
-
+  const nameInputRef = useAutoFocus<HTMLInputElement>(true);
   return (
     <div className="space-y-6 p-6">
       {/* 프로필 이미지와 기본 정보 */}
@@ -34,6 +35,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({
             <div>
               <label className="block text-sm text-gray-600 mb-1">이름</label>
               <input
+                ref={nameInputRef}
                 type="text"
                 placeholder="이름"
                 className="input-content w-full mb-6"

@@ -57,6 +57,14 @@ export interface PlanPayment {
   registrationAt: string;
   status: boolean;
 }
+export interface OtherPayment {
+  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  otherPaymentMethod: string; // 기타 결제 방법 설명
+  registrationAt: string; // 등록일
+  content: string; // 결제 내용
+  price: number; // 결제 금액
+  status: boolean; // 결제 상태
+}
 
 //회원상세정보 수정
 export interface UpdateCustomerDetail
@@ -73,14 +81,8 @@ export interface UpdateCustomerDetail
   planPaymentStatus: boolean;
   otherPayment: OtherPayment[];
 }
-export interface OtherPayment {
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
-  otherPaymentMethod?: string; // 기타 결제 방법 설명
-  registrationAt: string; // 등록일
-  content: string; // 결제 내용
-  price: number; // 결제 금액
-  status: boolean; // 결제 상태
-}
+
+//회원등록
 export interface FormData
   extends Omit<
     CustomerDetailData,
