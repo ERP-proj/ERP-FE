@@ -1,5 +1,4 @@
 import type { FormData } from "@/types/memberType";
-import axios from "axios";
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
 /**
@@ -41,9 +40,10 @@ export const memberAPI = {
         formPayload.append("file", photoFile);
       }
 
-      const response = await axios.post(
-        "http://52.79.44.29:8080/api/customer/addCustomer",
+      const response = await apiClient.post(
+        "api/customer/addCustomer",
         formPayload,
+
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -58,6 +58,30 @@ export const memberAPI = {
       throw error;
     }
   },
+
+  /**
+   * 회원 상세정보 수정 메서드
+   * @param data 회원 상세정보 데이터
+   * @returns 수정된 회원 데이터
+   */
+  updateCustomerDetail: async (data: FormData) => {
+    try {
+      const response = await apiClient.put(
+        "/api/customer/updateCustomer",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("회원 상세 수정 오류:", error);
+      throw error;
+    }
+  },
+
   /**
    * 이용 중인 회원 조회 메서드
    * @param page 페이지 번호
@@ -108,29 +132,6 @@ export const memberAPI = {
       return response.data;
     } catch (error) {
       console.error("error fetching memberRow", error);
-      throw error;
-    }
-  },
-
-  /**
-   * 회원 상세정보 수정 메서드
-   * @param data 회원 상세정보 데이터
-   * @returns 수정된 회원 데이터
-   */
-  updateCustomerDetail: async (data: FormData) => {
-    try {
-      const response = await apiClient.put(
-        "/api/customer/updateCustomer",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("회원 상세 수정 오류:", error);
       throw error;
     }
   },

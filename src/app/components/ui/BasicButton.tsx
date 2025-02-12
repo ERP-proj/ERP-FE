@@ -8,6 +8,7 @@ interface BasicButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  type?: string;
 }
 
 const BasicButton: React.FC<BasicButtonProps> = ({
@@ -16,6 +17,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   color = "primary",
   children,
   onClick,
+  type,
   className = "",
   disabled = false,
 }) => {
