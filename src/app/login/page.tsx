@@ -34,43 +34,44 @@ const LoginPage: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen ">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-96 bg-white rounded-xl shadow-lg p-6"
+        className="w-96 bg-white rounded-xl shadow-lg"
       >
-        <h2 className="text-xl font-bold text-gray-700 text-center mb-4">
+        <div className="rounded-t-xl p-4 text-xl w-full h-full bg-[#F2F8ED] font-bold text-gray-700 text-center ">
           로그인
-        </h2>
+        </div>
 
-        <div>
+        <div className="p-6">
           <label className="block text-sm font-medium text-gray-700">
             아이디
           </label>
           <input
             type="text"
             {...register("account", { required: "아이디를 입력하세요." })}
-            className="w-full p-2 border rounded-lg mt-1"
+            className="input-content"
           />
           {errors.account && (
             <p className="text-red-500 text-sm">{errors.account.message}</p>
           )}
         </div>
 
-        <div className="mt-4">
+        <div className="px-6">
           <label className="block text-sm font-medium text-gray-700">
             비밀번호
           </label>
           <input
             type="password"
             {...register("password", { required: "비밀번호를 입력하세요." })}
-            className="w-full p-2 border rounded-lg mt-1"
+            className="input-content"
           />
           {errors.password && (
             <p className="text-red-500 text-sm">{errors.password.message}</p>
           )}
         </div>
-
-        <BasicButton type="submit" color="primary" className="mt-6 w-full">
-          로그인
-        </BasicButton>
+        <div className="px-6 pb-4">
+          <BasicButton type="submit" color="primary" className="mt-6 w-full">
+            로그인
+          </BasicButton>
+        </div>
       </form>
     </div>
   );
