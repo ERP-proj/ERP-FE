@@ -7,10 +7,12 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import { MdLogout } from "react-icons/md";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useAlertStore } from "@/store/useAlertStore";
 
 function SideBar() {
   const router = useRouter();
   const { logout } = useAuthStore();
+  const { showAlert } = useAlertStore();
 
   const handleNavigateUser = () => {
     router.push("/members/");
@@ -25,12 +27,14 @@ function SideBar() {
   const pathname = usePathname()?.split("/")[1];
 
   const handleLogout = () => {
-    logout();
-    router.push("/login");
+    showAlert("정말 로그아웃하시겠습니까?", () => {
+      logout();
+      router.push("/login");
+    });
   };
 
   return (
-    <div className="flex flex-col h-full w-[130px]">
+    <div className="flex flex-col h-full w-[130px] z-999">
       {/* 상단 버튼 그룹 */}
       <div className="flex flex-grow flex-col gap-4 justify-center">
         <Button className="py-6" onClick={handleNavigateUser}>
@@ -66,8 +70,6 @@ function SideBar() {
           />
         </Button>
       </div>
-
-      {/* ✅ 로그아웃 버튼 (하단에 정확히 배치) */}
       <Button
         className="flex flex-col text-gray-700 items-center mt-auto pb-12 hover:text-white transition-colors duration-300"
         onClick={handleLogout}
