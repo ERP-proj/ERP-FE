@@ -23,14 +23,14 @@ apiClient.interceptors.request.use(
 
 // 응답 인터셉터 (Response Interceptor)
 apiClient.interceptors.response.use(
-  (response) => response, // 성공적인 응답 그대로 반환
+  (response) => response,
   async (error) => {
     const { logout, accessToken, refreshToken, login } =
       useAuthStore.getState();
 
     if (error.response && error.response.status === 401) {
       if (!refreshToken) {
-        logout(); // Refresh Token이 없으면 로그아웃
+        logout();
         return Promise.reject(error);
       }
       try {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import Image from "next/image";
+import noUser from "../../../../assets/noUser.png";
 import { formatDate } from "@/utils/formatDate";
 import { formatMaskedPhone } from "@/utils/formatPhone";
 import { getLabel } from "@/utils/mapping";
@@ -29,14 +30,14 @@ const MemberRow = ({
         <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#fff] rounded-full flex justify-center items-center text-white text-lg">
           {member.photoUrl ? (
             <Image
-              src={member.photoUrl}
+              src={member.photoUrl || noUser}
               alt={`${member.name}의 프로필`}
               width={96}
               height={96}
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            "사진 없음"
+            <Image src={noUser} alt="noUser" />
           )}
         </div>
         <div className="flex flex-col gap-1">
