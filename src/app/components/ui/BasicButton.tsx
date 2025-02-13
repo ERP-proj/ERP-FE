@@ -8,6 +8,7 @@ interface BasicButtonProps {
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 const BasicButton: React.FC<BasicButtonProps> = ({
@@ -16,6 +17,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   color = "primary",
   children,
   onClick,
+  type = "button",
   className = "",
   disabled = false,
 }) => {
@@ -35,6 +37,7 @@ const BasicButton: React.FC<BasicButtonProps> = ({
   };
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       className={`flex  justify-center items-center rounded-[8px] font-[600] ${

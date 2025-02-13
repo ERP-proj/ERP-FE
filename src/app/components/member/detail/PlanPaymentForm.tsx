@@ -80,6 +80,9 @@ const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({ planPayment }) => {
             <strong>할인율:</strong> {planPayment.discountRate}%
           </p>
           <p>
+            <strong>할인 상품명:</strong> {planPayment.discountName}
+          </p>
+          <p>
             <strong>할인 금액:</strong>
             {planPayment.discountPrice}원
           </p>

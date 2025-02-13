@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GoEye, GoEyeClosed } from "react-icons/go";
 import Image from "next/image";
+import noUser from "../../../../assets/noUser.png";
 import { formatDate } from "@/utils/formatDate";
 import { formatMaskedPhone } from "@/utils/formatPhone";
 import { getLabel } from "@/utils/mapping";
@@ -21,25 +22,25 @@ const MemberRow = ({
 
   return (
     <div
-      className="flex flex-wrap items-center justify-between p-4 bg-[#F2F8ED] rounded-lg gap-4 cursor-pointer"
+      className="flex flex-wrap items-center justify-between p-4 bg-[#F2F8ED] rounded-lg gap-4 cursor-pointer w-full max-h-[200px] mx-auto"
       onClick={() => onClick?.(member.customerId)}
     >
       {/* 프로필 사진 및 기본 정보 */}
-      <div className="flex items-center gap-4 flex-1 min-w-[250px]">
+      <div className="flex items-center gap-4 min-w-[250px]">
         <div className="w-16 h-16 sm:w-24 sm:h-24 bg-[#fff] rounded-full flex justify-center items-center text-white text-lg">
           {member.photoUrl ? (
             <Image
-              src={member.photoUrl}
+              src={member.photoUrl || noUser}
               alt={`${member.name}의 프로필`}
               width={96}
               height={96}
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            "사진 없음"
+            <Image src={noUser} alt="noUser" />
           )}
         </div>
-        <div>
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 flex-wrap">
             <div className="text-gray-800 font-bold text-sm sm:text-[16px]">
               {member.name}

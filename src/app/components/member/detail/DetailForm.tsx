@@ -16,7 +16,6 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
   const { rows, addRow, deleteRow, updateRow } = useProgressList({
     data: customerInfo,
     onModify,
-    progressKey: "progressList", // ✅ 타입에 맞게 key를 지정하면 됨
   });
 
   const handleInputChange = (key: keyof UpdateCustomerDetail, value: any) => {
@@ -27,7 +26,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
   //   setCustomerInfo((prevData) => ({ ...prevData, photoFile }));
   //   onModify();
   // };
-
+  // console.log("디테일 데이터", customerInfo);
   return (
     <div className="space-y-6 p-6">
       <div className="flex gap-8 items-start">
@@ -65,7 +64,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
                 onChange={(value) =>
                   handleInputChange(
                     "gender",
-                    value === "남" ? "MALE" : "FEMALE"
+                    value === "MALE" ? "MALE" : "FEMALE"
                   )
                 }
               />
@@ -136,20 +135,19 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
                 <th className="border">회차</th>
                 <th className="border">날짜 선택</th>
                 <th className="border">내용</th>
-                <th className="border p-2 text-center">삭제</th>{" "}
-                {/* 삭제 컬럼 추가 */}
+                <th className="border p-2 text-center">삭제</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id}>
-                  <td className="border text-center">{row.id}</td>
+                <tr key={row.progressId}>
+                  <td className="border text-center">{row.progressId}</td>
                   <td className="border">
                     <input
                       type="date"
                       value={row.date}
                       onChange={(e) =>
-                        updateRow(row.id, "date", e.target.value)
+                        updateRow(row.progressId, "date", e.target.value)
                       }
                       className="input-content w-full border-gray-300"
                     />
@@ -160,15 +158,16 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
                       value={row.content}
                       placeholder="내용 입력"
                       onChange={(e) =>
-                        updateRow(row.id, "content", e.target.value)
+                        updateRow(row.progressId, "content", e.target.value)
                       }
                       className="input-content w-full border-gray-300"
                     />
                   </td>
                   <td className="border text-center">
                     <button
-                      onClick={() => deleteRow(row.id)}
+                      onClick={() => deleteRow(row.progressId)}
                       className="text-gray-500 hover:text-red-600 transition duration-200"
+                      disabled={rows.length === 1} // 최소 한 줄 유지
                     >
                       <FaTrashAlt className="w-5 h-5" />
                     </button>

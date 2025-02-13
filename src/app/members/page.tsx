@@ -10,9 +10,8 @@ export default function Page() {
   const [searchResults, setSearchResults] = useState<any[]>([]); // 검색 결과 상태
 
   return (
-    <div className="flex items-center h-screen">
-      {/* 사이드바 */}
-      <div className="flex">
+    <div className="flex h-screen">
+      <div className="h-full">
         <SideBar />
       </div>
       {/* 메인콘텐츠 */}

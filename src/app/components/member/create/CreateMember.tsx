@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
@@ -10,7 +10,7 @@ import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
-import { DiscountedPrice } from "@/utils/discountedPrice";
+import useDiscount from "@/hooks/plan/useDiscount";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -25,13 +25,20 @@ const initialFormData: FormData = {
   planPayment: {
     paymentsMethod: "CARD", // 기본값 설정
     otherPaymentMethod: "",
-    registrationAt: new Date().toISOString(), // ISO 형식
+    registrationAt: new Date().toISOString(),
+    discountName: "",
     discountRate: 0,
     status: false,
+    licenseType: "",
+    planType: "",
+    courseType: "",
+    planPrice: 0,
+    planName: "",
+    discountPrice: 0,
   },
   otherPayment: [
     {
-      paymentsMethod: "CARD", // 기본값 설정
+      paymentsMethod: null, // 기본값 설정
       otherPaymentMethod: "",
       registrationAt: new Date().toISOString(),
       content: "",
@@ -54,6 +61,10 @@ const CreateMember: React.FC<{
 
       keys.forEach((k, idx) => {
         if (idx === keys.length - 1) {
+          // 날짜 변환 처리 (ISO 8601 형식)
+          if (k.includes("registrationAt") && typeof value === "string") {
+            value = new Date(value).toISOString();
+          }
           // 배열 처리
           if (Array.isArray(obj) && index !== undefined) {
             obj[index][k] = value;
@@ -70,18 +81,20 @@ const CreateMember: React.FC<{
       });
       // 할인율이 변경될 때마다 최종 금액 자동 계산
       if (key === "planPayment.discountRate") {
-        setDiscountRate(parseFloat(value) || 0);
+        handleDiscountChange({
+          target: { value: String(value) },
+        } as React.ChangeEvent<HTMLInputElement>);
       }
       return newData;
     });
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [finalPrice, setFinalPrice] = useState<number>(0);
-  const [selectedPlanName, setSelectedPlanName] = useState<string>("");
-  const [discountRate, setDiscountRate] = useState<number>(0);
+  // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
+  const { discountRate, finalPrice, errorMessage, handleDiscountChange } =
+    useDiscount(selectedPlanPrice);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;
   }>({
@@ -145,22 +158,12 @@ const CreateMember: React.FC<{
       }
     });
   };
-  // 할인율과 가격 변경 시 자동으로 계산
-  useEffect(() => {
-    const discountedPrice = DiscountedPrice(selectedPlanPrice, discountRate);
-    setFinalPrice(discountedPrice);
-  }, [selectedPlanPrice, discountRate]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const handleRegister = async () => {
     try {
-      if (!formData.planId) {
-        alert("이용권을 선택해주세요.");
-        return;
-      }
-
       if (
         formData.planPayment.paymentsMethod === "OTHER" &&
         !formData.planPayment.otherPaymentMethod
@@ -190,12 +193,14 @@ const CreateMember: React.FC<{
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
       alert("회원 등록이 성공적으로 완료되었습니다!");
+      window.location.reload();
       closeModal();
     } catch (error) {
       console.error("회원 등록 실패:", error);
       alert("회원 등록에 실패했습니다.");
     }
   };
+
   return (
     <div>
       <BasicButton
@@ -226,7 +231,7 @@ const CreateMember: React.FC<{
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
-                        {finalPrice || selectedPlanPrice}원
+                        {finalPrice}원
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -249,7 +254,7 @@ const CreateMember: React.FC<{
                       onSelectPlan={(planId, planName, price) => {
                         handleInputChange("planId", planId);
                         setSelectedPlanPrice(price);
-                        setSelectedPlanName(planName);
+                        // setSelectedPlanName(planName);
                       }}
                     />
                   </div>
@@ -262,9 +267,14 @@ const CreateMember: React.FC<{
                     <div className="m-4">
                       <input
                         type="text"
-                        value={selectedPlanName}
+                        value={formData.planPayment.discountName}
                         placeholder="할인 상품명"
-                        readOnly
+                        onChange={(e) =>
+                          handleInputChange(
+                            "planPayment.discountName",
+                            e.target.value
+                          )
+                        }
                         className="input-content"
                       />
                     </div>
@@ -276,13 +286,13 @@ const CreateMember: React.FC<{
                           placeholder="할인율 입력"
                           className="w-full input-content"
                           value={discountRate}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "planPayment.discountRate",
-                              e.target.value
-                            )
-                          }
+                          onChange={(e) => handleDiscountChange(e)}
                         />
+                        {errorMessage && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errorMessage}
+                          </p>
+                        )}
                       </div>
 
                       <div className="w-1/2">
@@ -293,7 +303,7 @@ const CreateMember: React.FC<{
                           type="text"
                           placeholder="할인 금액"
                           className="w-full mb-2 input-content"
-                          value={finalPrice || selectedPlanPrice}
+                          value={finalPrice}
                           readOnly
                         />
                       </div>
@@ -348,8 +358,9 @@ const CreateMember: React.FC<{
                           <input
                             type="date"
                             value={
-                              formData.planPayment?.registrationAt ||
-                              getCurrentDate()
+                              formData.planPayment?.registrationAt?.split(
+                                "T"
+                              )[0] || getCurrentDate()
                             }
                             onChange={(e) =>
                               handleInputChange(
@@ -387,7 +398,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[750px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[700px] overflow-y-scroll">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     결제 정보
                   </h3>
@@ -457,8 +468,7 @@ const CreateMember: React.FC<{
                               type="text"
                               placeholder="기타 입력"
                               value={
-                                formData.otherPayment[0]?.otherPaymentMethod ||
-                                ""
+                                formData.otherPayment[0]?.otherPaymentMethod
                               }
                               onChange={(e) =>
                                 handleInputChange(
@@ -479,12 +489,13 @@ const CreateMember: React.FC<{
                           <input
                             type="date"
                             value={
-                              formData.otherPayment[0]?.registrationAt ||
-                              getCurrentDate()
+                              formData.otherPayment[0]?.registrationAt?.split(
+                                "T"
+                              )[0] || getCurrentDate()
                             }
                             onChange={(e) =>
                               handleInputChange(
-                                "otherPayment.registrationAt",
+                                "otherPayment.0.registrationAt",
                                 e.target.value
                               )
                             }

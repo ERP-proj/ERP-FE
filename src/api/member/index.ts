@@ -1,5 +1,4 @@
 import type { FormData } from "@/types/memberType";
-import axios from "axios";
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
 /**
@@ -41,9 +40,10 @@ export const memberAPI = {
         formPayload.append("file", photoFile);
       }
 
-      const response = await axios.post(
-        "http://52.79.44.29:8080/api/customer/addCustomer",
+      const response = await apiClient.post(
+        "api/customer/addCustomer",
         formPayload,
+
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -58,6 +58,30 @@ export const memberAPI = {
       throw error;
     }
   },
+
+  /**
+   * 회원 상세정보 수정 메서드
+   * @param data 회원 상세정보 데이터
+   * @returns 수정된 회원 데이터
+   */
+  updateCustomerDetail: async (data: FormData) => {
+    try {
+      const response = await apiClient.put(
+        "/api/customer/updateCustomer",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("회원 상세 수정 오류:", error);
+      throw error;
+    }
+  },
+
   /**
    * 이용 중인 회원 조회 메서드
    * @param page 페이지 번호
@@ -66,7 +90,7 @@ export const memberAPI = {
   getMemberRow: async (page: number) => {
     try {
       const response = await apiClient.get(
-        `/customer/currentCustomers/${page}`
+        `/api/customer/currentCustomers/${page}`
       );
       return response.data;
     } catch (error) {
@@ -80,13 +104,13 @@ export const memberAPI = {
    * @param keyword 검색 키워드
    * @returns 검색 결과 리스트
    */
-  searchCustomerName: async (keyword: string) => {
-    if (!keyword.trim()) {
+  searchCustomerName: async (customerName: string) => {
+    if (!customerName.trim()) {
       throw new Error("검색어를 입력해 주세요.");
     }
     try {
       const response = await apiClient.get(
-        `/customer/searchCustomerName/${encodeURIComponent(keyword)}`
+        `/api/customer/searchCustomer/${encodeURIComponent(customerName)}`
       );
       return response.data;
     } catch (error) {
@@ -103,30 +127,11 @@ export const memberAPI = {
   getCustomerDetail: async (customerId: number) => {
     try {
       const response = await apiClient.get(
-        `/customer/getCustomerDetail/${customerId}`
+        `/api/customer/getCustomerDetail/${customerId}`
       );
       return response.data;
     } catch (error) {
       console.error("error fetching memberRow", error);
-      throw error;
-    }
-  },
-
-  /**
-   * 회원 상세정보 수정 메서드
-   * @param data 회원 상세정보 데이터
-   * @returns 수정된 회원 데이터
-   */
-  updateCustomerDetail: async (data: FormData) => {
-    try {
-      const response = await apiClient.put("/customer/updateCustomer", data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("회원 상세 수정 오류:", error);
       throw error;
     }
   },
@@ -137,7 +142,7 @@ export const memberAPI = {
     status: "ACTIVE" | "INACTIVE" | "DELETED"
   ) => {
     try {
-      const response = await apiClient.put("/customer/updateStatus", {
+      const response = await apiClient.put("/api/customer/updateStatus", {
         customerId,
         status,
       });
@@ -154,7 +159,7 @@ export const memberAPI = {
    */
   getPlans: async (licenseType: string) => {
     try {
-      const response = await apiClient.get(`/plan/getPlans/${licenseType}`);
+      const response = await apiClient.get(`/api/plan/getPlans/${licenseType}`);
       return response.data;
     } catch (error) {
       console.error("이용권 조회 API 호출 오류:", error);

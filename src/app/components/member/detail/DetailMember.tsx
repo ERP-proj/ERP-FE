@@ -9,6 +9,8 @@ import DetailForm from "./DetailForm";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { memberAPI } from "@/api/member";
 import PlanPaymentForm from "./PlanPaymentForm";
+import useAutoFocus from "@/hooks/plan/useAutoFocus";
+import { useAlertStore } from "@/store/useAlertStore";
 
 // ✅ `CustomerDetailData` → `UpdateCustomerDetail` 변환 함수
 const convertToUpdateCustomerDetail = (
@@ -32,8 +34,8 @@ const convertToUpdateCustomerDetail = (
       deleteProgresses: [],
     },
     otherPayment: data.otherPayment.map((payment) => ({
-      paymentsMethod: payment.paymentsMethod,
-      otherPaymentMethod: payment.otherPaymentMethod,
+      paymentsMethod: payment.paymentsMethod || null,
+      otherPaymentMethod: payment.otherPaymentMethod || "",
       registrationAt: payment.registrationAt,
       content: payment.content,
       price: payment.price,
@@ -47,12 +49,17 @@ interface DetailMemberProps {
 }
 
 const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
+  const { showAlert } = useAlertStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isModified, setIsModified] = useState(false);
   // ✅ `CustomerDetailData` → `UpdateCustomerDetail`로 변환하여 상태 관리
   const [customerInfo, setCustomerInfo] = useState<UpdateCustomerDetail>(
     convertToUpdateCustomerDetail(member)
   );
+
+  const toggleAccordion = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   // ✅ 수정 핸들러
   const handleModify = (key: keyof UpdateCustomerDetail, value: any) => {
@@ -62,80 +69,85 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
 
   //✅ 저장 핸들러
   const handleSave = async () => {
-    const formData = new FormData();
+    showAlert("변경된 정보를 저장하시겠습니까?", async () => {
+      const formData = new FormData();
 
-    const filteredAddProgresses =
-      customerInfo.progressList.addProgresses.filter(
-        (p) => p.date.trim() !== "" && p.content.trim() !== ""
+      const filteredAddProgresses =
+        customerInfo.progressList.addProgresses.filter(
+          (p) => p.date.trim() !== "" && p.content.trim() !== ""
+        );
+      const uniqueUpdateProgresses = Array.from(
+        new Map(
+          customerInfo.progressList.updateProgresses.map((p) => [
+            p.progressId,
+            p,
+          ])
+        ).values()
       );
-    const uniqueUpdateProgresses = Array.from(
-      new Map(
-        customerInfo.progressList.updateProgresses.map((p) => [p.progressId, p])
-      ).values()
-    );
+      // 날짜 형식 변환
+      const formattedOtherPayment = customerInfo.otherPayment.map(
+        (payment) => ({
+          ...payment,
+          registrationAt: new Date(payment.registrationAt).toISOString(),
+        })
+      );
 
-    // 날짜 형식 변환
-    const formattedOtherPayment = customerInfo.otherPayment.map((payment) => ({
-      ...payment,
-      registrationAt: new Date(payment.registrationAt).toISOString(),
-    }));
+      // JSON 데이터 Blob 변환
+      const requestData = {
+        customerId: customerInfo.customerId,
+        name: customerInfo.name,
+        gender: customerInfo.gender,
+        birthDate: customerInfo.birthDate,
+        phone: customerInfo.phone,
+        address: customerInfo.address,
+        visitPath: customerInfo.visitPath,
+        memo: customerInfo.memo,
+        planPaymentStatus: customerInfo.planPaymentStatus,
+        progressList: {
+          addProgresses: filteredAddProgresses,
+          updateProgresses: uniqueUpdateProgresses,
+          deleteProgresses: customerInfo.progressList.deleteProgresses,
+        },
+        otherPayment: formattedOtherPayment,
+      };
 
-    // JSON 데이터 Blob 변환
-    const requestData = {
-      customerId: customerInfo.customerId,
-      name: customerInfo.name,
-      gender: customerInfo.gender,
-      birthDate: customerInfo.birthDate,
-      phone: customerInfo.phone,
-      address: customerInfo.address,
-      visitPath: customerInfo.visitPath,
-      memo: customerInfo.memo,
-      planPaymentStatus: customerInfo.planPaymentStatus,
-      progressList: {
-        addProgresses: filteredAddProgresses,
-        updateProgresses: uniqueUpdateProgresses,
-        deleteProgresses: customerInfo.progressList.deleteProgresses,
-      },
-      otherPayment: formattedOtherPayment,
-    };
+      const jsonBlob = new Blob([JSON.stringify(requestData)], {
+        type: "application/json",
+      });
+      formData.append("req", jsonBlob);
 
-    const jsonBlob = new Blob([JSON.stringify(requestData)], {
-      type: "application/json",
+      // 파일 추가 (선택적)
+      if (customerInfo.photoFile) {
+        formData.append("file", customerInfo.photoFile);
+      }
+
+      try {
+        await memberAPI.updateCustomerDetail(formData as any);
+        alert("회원 정보가 성공적으로 수정되었습니다.");
+        setIsModified(false);
+        window.location.reload();
+        onClose();
+      } catch (error) {
+        console.error("❌ 회원 정보 수정 실패:", error);
+        alert("회원 정보 수정 중 오류가 발생했습니다.");
+      }
     });
-    formData.append("req", jsonBlob);
-
-    // 파일 추가 (선택적)
-    if (customerInfo.photoFile) {
-      formData.append("file", customerInfo.photoFile);
-    }
-
-    try {
-      await memberAPI.updateCustomerDetail(formData as any);
-      alert("회원 정보가 성공적으로 수정되었습니다.");
-      setIsModified(false);
-      onClose();
-    } catch (error) {
-      console.error("❌ 회원 정보 수정 실패:", error);
-      alert("회원 정보 수정 중 오류가 발생했습니다.");
-    }
   };
-  const toggleAccordion = () => {
-    setIsOpen((prev) => !prev);
-  };
+
   //✅ 회원삭제 핸들러
   const handleDelete = async () => {
-    if (!window.confirm("정말로 이 회원을 삭제하시겠습니까?")) return;
-
-    try {
-      await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
-      alert("회원이 삭제되었습니다.");
-      onClose();
-    } catch (error) {
-      console.error("❌ 회원 정보 수정 실패:", error);
-      alert("회원 삭제 중 오류가 발생했습니다.");
-    }
+    showAlert("정말 회원을 삭제하시겠습니까?", async () => {
+      try {
+        await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
+        alert("회원이 삭제되었습니다.");
+        window.location.reload();
+        onClose();
+      } catch (error) {
+        console.error("❌ 회원 정보 수정 실패:", error);
+        alert("회원 삭제 중 오류가 발생했습니다.");
+      }
+    });
   };
-
   const addPayment = () => {
     setCustomerInfo((prev) => ({
       ...prev,
@@ -154,6 +166,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     setIsModified(true);
   };
 
+  // ✅ 기타 결제 추가
   const updatePayment = (
     index: number,
     key: keyof UpdateCustomerDetail["otherPayment"][0],
@@ -167,6 +180,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     });
     setIsModified(true);
   };
+  // ✅ 기타 결제 삭제
   const deletePayment = (index: number) => {
     setCustomerInfo((prev) => ({
       ...prev,
@@ -174,7 +188,9 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     }));
     setIsModified(true);
   };
-
+  // ✅ 첫 번째 결제 내역에 포커스를 맞출 수 있도록 useAutoFocus 사용
+  const firstPaymentInputRef = useAutoFocus<HTMLInputElement>(isOpen);
+  console.log("디테일 데이터", customerInfo);
   return (
     <Modal
       isOpen={!!member}
@@ -203,6 +219,11 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                     <div className="mb-4">
                       <h4 className="text-sm font-bold my-2">결제 내용</h4>
                       <input
+                        ref={
+                          index === customerInfo.otherPayment.length - 1
+                            ? firstPaymentInputRef
+                            : null
+                        }
                         type="text"
                         value={payment.content}
                         onChange={(e) =>
@@ -233,6 +254,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         {["CASH", "CARD", "TRANSFER", "OTHER"].map((method) => (
                           <button
                             key={method}
+                            value={payment.paymentsMethod || ""}
                             onClick={() =>
                               updatePayment(index, "paymentsMethod", method)
                             }
