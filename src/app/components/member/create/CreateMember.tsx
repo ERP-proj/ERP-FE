@@ -29,10 +29,16 @@ const initialFormData: FormData = {
     discountName: "",
     discountRate: 0,
     status: false,
+    licenseType: "",
+    planType: "",
+    courseType: "",
+    planPrice: 0,
+    planName: "",
+    discountPrice: 0,
   },
   otherPayment: [
     {
-      paymentsMethod: "CARD", // 기본값 설정
+      paymentsMethod: null, // 기본값 설정
       otherPaymentMethod: "",
       registrationAt: new Date().toISOString(),
       content: "",
@@ -84,7 +90,7 @@ const CreateMember: React.FC<{
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedPlanName, setSelectedPlanName] = useState<string>("");
+  // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
   const { discountRate, finalPrice, errorMessage, handleDiscountChange } =
@@ -248,7 +254,7 @@ const CreateMember: React.FC<{
                       onSelectPlan={(planId, planName, price) => {
                         handleInputChange("planId", planId);
                         setSelectedPlanPrice(price);
-                        setSelectedPlanName(planName);
+                        // setSelectedPlanName(planName);
                       }}
                     />
                   </div>

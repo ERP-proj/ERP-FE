@@ -11,7 +11,6 @@ import { memberAPI } from "@/api/member";
 import PlanPaymentForm from "./PlanPaymentForm";
 import useAutoFocus from "@/hooks/plan/useAutoFocus";
 import { useAlertStore } from "@/store/useAlertStore";
-import { useRouter, usePathname } from "next/navigation";
 
 // ✅ `CustomerDetailData` → `UpdateCustomerDetail` 변환 함수
 const convertToUpdateCustomerDetail = (
@@ -35,7 +34,7 @@ const convertToUpdateCustomerDetail = (
       deleteProgresses: [],
     },
     otherPayment: data.otherPayment.map((payment) => ({
-      paymentsMethod: payment.paymentsMethod || "",
+      paymentsMethod: payment.paymentsMethod || null,
       otherPaymentMethod: payment.otherPaymentMethod || "",
       registrationAt: payment.registrationAt,
       content: payment.content,
@@ -57,7 +56,6 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
   const [customerInfo, setCustomerInfo] = useState<UpdateCustomerDetail>(
     convertToUpdateCustomerDetail(member)
   );
-  const router = useRouter();
 
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev);

@@ -27,7 +27,7 @@ const useDiscount = (initialPrice: number) => {
 
   // 할인율 변경 핸들러
   const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = parseFloat(e.target.value);
+    const value = parseFloat(e.target.value);
 
     if (isNaN(value) || value < 0 || value > 100) {
       setErrorMessage("할인율은 0~100 사이로 입력해주세요.");

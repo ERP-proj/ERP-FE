@@ -25,8 +25,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const { logout, accessToken, refreshToken, login } =
-      useAuthStore.getState();
+    const { logout, refreshToken, login } = useAuthStore.getState();
 
     if (error.response && error.response.status === 401) {
       if (!refreshToken) {

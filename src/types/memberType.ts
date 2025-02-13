@@ -58,7 +58,7 @@ export interface PlanPayment {
   status: boolean;
 }
 export interface OtherPayment {
-  paymentsMethod: "CARD" | "CASH" | "TRANSFER" | "OTHER"; // 결제 방법
+  paymentsMethod?: "CARD" | "CASH" | "TRANSFER" | "OTHER" | null; // 결제 방법
   otherPaymentMethod: string; // 기타 결제 방법 설명
   registrationAt: string; // 등록일
   content: string; // 결제 내용
@@ -90,11 +90,6 @@ export interface FormData
   > {
   planId: number;
   photoFile: File | null;
-  planPayment: Partial<
-    Omit<
-      PlanPayment,
-      "licenseType" | "planName" | "planType" | "courseType" | "planPrice"
-    >
-  >;
+  planPayment: PlanPayment;
   otherPayment: OtherPayment[];
 }
