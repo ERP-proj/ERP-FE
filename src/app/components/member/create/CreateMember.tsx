@@ -192,7 +192,6 @@ const CreateMember: React.FC<{
       console.info("회원 등록 요청 데이터:", formattedData);
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
-      alert("회원 등록이 성공적으로 완료되었습니다!");
       window.location.reload();
       closeModal();
     } catch (error) {
