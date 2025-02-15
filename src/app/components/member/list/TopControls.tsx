@@ -91,23 +91,23 @@ const TopControls = ({ setSearchResults }: { setSearchResults: any }) => {
     <div className="flex items-center mb-4 h-16 bg-[#f6f6f6] p-4 rounded-lg shadow">
       {/* 검색 */}
       <div className="relative flex-1 max-w-sm">
-        <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
         <input
           type="text"
-          placeholder="검색"
+          placeholder="회원 검색"
           value={keyword}
           onChange={handleSearchChange}
-          className="border border-gray-300 rounded-lg p-2 pl-10 w-full bg-[#F2f8ed] focus:outline-none focus:ring-1 focus:ring-[#B4D89C]"
+          className="input-content"
         />
+        <FiSearch className="absolute right-5 top-1/2 transform -translate-y-1/2 text-gray-500" />
       </div>
       <Dropdown
-        options={sortingOptions} // ✅ 수정된 부분
+        options={sortingOptions}
         placeholder="정렬 기준 선택"
         defaultValue=""
         className="ml-4 w-[180px]"
       />
       <Dropdown
-        options={memberStatusOptions} // ✅ 수정된 부분
+        options={memberStatusOptions}
         placeholder="정렬 기준 선택"
         defaultValue=""
         className="ml-4 w-[200px]"

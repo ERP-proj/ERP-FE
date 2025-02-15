@@ -50,7 +50,7 @@ const MemberList = () => {
   }, [selectedMember, isModalOpen]);
 
   return (
-    <div className="grid grid-cols-1 rounded-xl gap-4 p-4 border border-gray-300  h-full overflow-y-auto">
+    <div className="grid grid-cols-1 rounded-xl gap-2 p-4 border border-gray-300  h-full overflow-y-auto">
       {members.map((member) => (
         <MemberRow
           key={member.customerId}
@@ -61,7 +61,6 @@ const MemberList = () => {
       {/* 모달 */}
       {isModalOpen && selectedMember && (
         <>
-          {console.log("모달 렌더링 중")}
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative">
               <button
