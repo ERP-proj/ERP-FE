@@ -22,7 +22,7 @@ export const formatMaskedPhone = (
 ): string => {
   const formattedPhone = formatPhone(phone); // 포맷 적용
   if (isHidden) {
-    return formattedPhone.replace(/(\d{3})-\d{4}-(\d{4})/, "$1-****-$2");
+    return formattedPhone.replace(/(\d{3})-\d{4}-(\d{4})/, "$1-****-****");
   }
   return formattedPhone;
 };
