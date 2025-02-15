@@ -123,7 +123,6 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
 
       try {
         await memberAPI.updateCustomerDetail(formData as any);
-        alert("회원 정보가 성공적으로 수정되었습니다.");
         setIsModified(false);
         window.location.reload();
         onClose();
@@ -139,7 +138,6 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
     showAlert("정말 회원을 삭제하시겠습니까?", async () => {
       try {
         await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
-        alert("회원이 삭제되었습니다.");
         window.location.reload();
         onClose();
       } catch (error) {
