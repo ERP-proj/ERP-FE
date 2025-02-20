@@ -1,20 +1,30 @@
 "use client";
 
-import { PlanPayment } from "@/types/memberType";
-import { FaRegCircleCheck } from "react-icons/fa6";
 import React, { useState } from "react";
 import { getLabel } from "@/utils/mapping";
 import Accordion from "../../ui/Accordion";
+import useCustomerStore from "@/store/useCustomerStore";
+import { CustomerDetailData } from "@/store/useCustomerStore";
+import { FaRegCircleCheck } from "react-icons/fa6";
 
-interface PlanPaymentFormProps {
-  planPayment: PlanPayment;
-}
-
-const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({ planPayment }) => {
+const PlanPaymentForm: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev);
   };
+
+  const { customer, updatePlanPaymentStatus } = useCustomerStore();
+
+  if (!customer || !customer.planPayment) {
+    return <div>회원 정보를 불러오는 중...</div>;
+  }
+  const { planPayment } = customer;
+
+  // 결제 상태 변경 핸들러
+  const handleToggle = async () => {
+    await updatePlanPaymentStatus(!planPayment.status);
+  };
+
   return (
     <Accordion
       title="이용권 결제"
@@ -28,8 +38,11 @@ const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({ planPayment }) => {
               {planPayment.planPrice - planPayment.discountPrice}원
             </p>
           </div>
-          {/* 미납 여부 */}
-          <div className="flex items-center gap-2">
+          {/* 결제토글 */}
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={handleToggle}
+          >
             <FaRegCircleCheck
               className={`w-5 h-5 ${
                 planPayment.status ? "text-[#3C6229]" : "text-gray-300"
@@ -40,7 +53,7 @@ const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({ planPayment }) => {
                 planPayment.status ? "text-[#3C6229]" : "text-gray-600"
               }`}
             >
-              {planPayment.status ? "결제 완료" : "미납"}
+              {planPayment.status ? "결제완료" : "미납"}
             </span>
           </div>
         </div>
@@ -65,8 +78,7 @@ const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({ planPayment }) => {
           </p>
           {planPayment.paymentsMethod === "OTHER" && (
             <p>
-              <strong>기타 결제 내용:</strong>{" "}
-              {getLabel(planPayment.otherPaymentMethod)}
+              <strong>기타 결제 내용:</strong> {planPayment.otherPaymentMethod}
             </p>
           )}
           <p>

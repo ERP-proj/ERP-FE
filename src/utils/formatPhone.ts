@@ -1,7 +1,7 @@
 /**
  * 전화번호 포맷팅 함수
  * @param phone - 포맷팅할 전화번호 (문자열)
- * @returns 포맷된 전화번호 (예: 010-2838-3999) 또는 "번호정보 없음"
+ * @returns 포맷된 전화번호 (예: 010-2222-3222) 또는 "번호정보 없음"
  */
 export const formatPhone = (phone: string | null | undefined): string => {
   if (!phone) {

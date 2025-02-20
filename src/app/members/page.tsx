@@ -21,8 +21,8 @@ export default function Page() {
           {/* 검색결과가 있을경우 */}
           {searchResults.length > 0 ? (
             <div className="grid grid-cols-1 rounded-xl gap-4 p-4 border border-gray-300 h-full overflow-y-auto">
-              {searchResults.map((member, index) => (
-                <MemberRow key={index} member={member} />
+              {searchResults.map((member, customerId) => (
+                <MemberRow key={customerId} member={member} />
               ))}
             </div>
           ) : (
