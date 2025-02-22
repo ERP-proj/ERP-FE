@@ -86,15 +86,21 @@ export const memberAPI = {
    * 이용 중인 회원 조회 메서드
    * @returns 조회된 회원 데이터 리스트
    */
-  getMemberRow: async (page: number) => {
+  getMemberRow: async (
+    lastId: number | null,
+    status: "ACTIVE" | "INACTIVE" | "DELETED"
+  ) => {
     try {
-      const response = await apiClient.get(
-        `/api/customer/currentCustomers/${page}`
-      );
+      const response = await apiClient.get("/api/customer/getCustomers", {
+        params: {
+          status,
+          ...(lastId ? { lastId } : {}), // lastId가 있을 경우에만 쿼리 추가
+        },
+      });
       return response.data;
-    } catch (error) {
-      console.error("error fetching memberRow", error);
-      throw error;
+    } catch (error: unknown) {
+      const errorMessage = errorHandler(error);
+      throw new Error(errorMessage);
     }
   },
 

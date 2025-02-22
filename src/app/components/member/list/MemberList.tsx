@@ -8,9 +8,6 @@ import DetailMember from "../detail/DetailMember";
 import useCustomerStore from "@/store/useCustomerStore";
 
 const MemberList = () => {
-  // const [members, setMembers] = useState<Member[]>([]);
-  // const [selectedMember, setSelectedMember] = useState<any>(null); // 선택된 회원 데이터
-  // const [isModalOpen, setIsModalOpen] = useState(false);
   const { customers, fetchCustomers, fetchCustomer } = useCustomerStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
@@ -20,36 +17,6 @@ const MemberList = () => {
   useEffect(() => {
     fetchCustomers();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchMemberRow = async () => {
-  //     try {
-  //       const response = await memberAPI.getMemberRow(0);
-  //       setMembers(response.data || []);
-  //       console.log("회원 데이터:", response.data);
-  //     } catch (error) {
-  //       console.error("회원 데이터 조회 오류:", error);
-  //     }
-  //   };
-  //   fetchMemberRow();
-  // }, []);
-
-  // const handleRowClick = async (customerId: number) => {
-  //   console.log("선택된 customerId:", customerId);
-  //   try {
-  //     const memberDetail = await memberAPI.getCustomerDetail(customerId); // API 호출로 상세정보 가져오기
-  //     console.log("상세 데이터의 data 필드:", memberDetail.data); // data 필드 확인
-
-  //     // customerId를 포함하도록 데이터 가공
-  //     const enrichedMember = { ...memberDetail.data, customerId };
-
-  //     // 선택된 회원 정보 설정
-  //     setSelectedMember(enrichedMember);
-  //     setIsModalOpen(true);
-  //   } catch (error) {
-  //     console.error("회원 상세 조회 오류:", error);
-  //   }
-  // };
 
   const handleRowClick = (customerId: number) => {
     console.log("선택된 customerId:", customerId);
