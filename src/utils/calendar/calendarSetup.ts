@@ -35,7 +35,7 @@ export const calendarSetup = (
     timeZone: "local",
     allDaySlot: false,
     slotMinWidth: 30,
-    contentHeight: 700,
+    contentHeight: 800,
 
     // Set calendar resources
     resources: [
