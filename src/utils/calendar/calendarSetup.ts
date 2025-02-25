@@ -143,10 +143,10 @@ export const calendarSetup = (
         day: "numeric",
       };
 
-      // 사용자 local 시간에서 KR 시간으로 변경 및 날짜 00월 00일 포맷팅팅
-      const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
-        currentDateDate
-      );
+      const formattedDate = new Intl.DateTimeFormat(
+        navigator.language,
+        options
+      ).format(currentDateDate);
 
       if (currentDate) {
         setClickedDate(currentDate);
@@ -156,7 +156,6 @@ export const calendarSetup = (
         ".fc-customTitle-button.fc-button.fc-button-primary"
       );
 
-      // customTitle에 들어갈 제목 포맷팅
       if (customTitleButton) {
         customTitleButton.textContent = formattedDate;
       }
