@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SideBar from "./components/SideBar";
 import TimeTable from "./main/TimeTable";
 import NextReservation from "./main/NextReservation";
@@ -7,6 +7,7 @@ import ReservationModal from "./components/calendar/ReservationModal";
 
 export default function Home() {
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const calendarRef = useRef<any>(null);
 
   return (
     <div className="flex h-screen">
@@ -24,7 +25,9 @@ export default function Home() {
       <ReservationModal
         selectedEvent={selectedEvent}
         onClose={() => setSelectedEvent(null)}
+        calendarRef={calendarRef}
       />
+      <div ref={calendarRef} />
     </div>
   );
 }

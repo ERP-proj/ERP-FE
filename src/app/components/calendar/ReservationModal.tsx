@@ -1,3 +1,4 @@
+import { loadReservation } from "@/api/reservation/loadReservation";
 import SelectedEventModal from "@/app/main/SelectedEventModal";
 import {
   Dialog,
@@ -10,15 +11,29 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 interface ReservationModalProps {
   selectedEvent: any;
   onClose: () => void;
+  calendarRef: any;
 }
 
 const ReservationModal: React.FC<ReservationModalProps> = ({
   selectedEvent,
   onClose,
+  calendarRef,
 }) => {
   if (!selectedEvent) return null;
 
-  const { position } = selectedEvent;
+  const { position, startTime } = selectedEvent;
+
+  const getEventDate = () => {
+    if (!startTime) return null;
+    return startTime.split("T")[0];
+  };
+
+  const refreshReservations = async () => {
+    const eventDate = getEventDate();
+    if (calendarRef.current && eventDate) {
+      await loadReservation(eventDate, calendarRef);
+    }
+  };
 
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
@@ -34,7 +49,14 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         <DialogTitle>
           <VisuallyHidden>숨겨진 제목</VisuallyHidden>
         </DialogTitle>
-        <SelectedEventModal event={selectedEvent} onClose={onClose} />
+        <SelectedEventModal
+          event={selectedEvent}
+          onClose={() => {
+            onClose();
+            refreshReservations();
+          }}
+          refreshReservations={refreshReservations}
+        />
       </DialogContent>
     </Dialog>
   );

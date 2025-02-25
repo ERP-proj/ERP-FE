@@ -24,9 +24,14 @@ interface EventProps {
     mode: "add" | "edit";
   } | null;
   onClose: () => void;
+  refreshReservations: () => void;
 }
 
-const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
+const SelectedEventModal: React.FC<EventProps> = ({
+  event,
+  onClose,
+  refreshReservations,
+}) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -80,6 +85,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       }
     } finally {
       onClose();
+      refreshReservations();
     }
     return response;
   };
@@ -92,6 +98,7 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
     console.log("-----Delete------");
     const response = await deleteReservations(event?.reservationId);
     onClose();
+    refreshReservations();
     return response;
   };
 
