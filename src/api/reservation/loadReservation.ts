@@ -32,6 +32,20 @@ export const loadReservation = async (date: string, calendarInstance: any) => {
 
     console.log("data after modify----", eventWithColors);
 
+    console.log("calendarInstance.current:", calendarInstance.current);
+    if (!calendarInstance.current) {
+      console.error("calendarInstance.current가 존재하지 않습니다!");
+      return;
+    }
+
+    if (!calendarInstance.current.removeAllEvents) {
+      console.error(
+        "calendarInstance.current가 FullCalendar 인스턴스가 아닙니다!",
+        calendarInstance.current
+      );
+      return;
+    }
+
     if (calendarInstance.current) {
       calendarInstance.current.removeAllEvents();
       calendarInstance.current.addEventSource(eventWithColors);

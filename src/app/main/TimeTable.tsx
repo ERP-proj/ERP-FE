@@ -9,12 +9,13 @@ import { useReservations } from "../../hooks/calendar/useDailyReservation";
 
 function TimeTable({
   setSelectedEvent,
+  calendarRef,
+  calendarInstance,
 }: {
   setSelectedEvent: (event: any) => void;
+  calendarRef: React.MutableRefObject<HTMLDivElement | null>;
+  calendarInstance: React.MutableRefObject<Calendar | null>;
 }) {
-  const calendarRef = useRef<HTMLDivElement | null>(null);
-  const calendarInstance = useRef<Calendar | null>(null);
-
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
   const [clickedDate, setClickedDate] = useState<string>("");
 
@@ -28,6 +29,7 @@ function TimeTable({
         setShowMiniCalendar,
         setSelectedEvent
       );
+      console.log("✅ calendarInstance 설정 완료:", calendarInstance.current);
     }
 
     return () => {

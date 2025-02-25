@@ -41,9 +41,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
     if (event?.mode == "add") {
       setUserInfo(event);
     }
-
     // Case 2: Edit Mode
-    if (event?.mode == "edit") {
+    else if (event?.mode == "edit") {
       const fetchUserInfo = async () => {
         const data = await getReservationCustomerDetails(event.reservationId);
         setUserInfo(data?.data || null);
@@ -86,6 +85,13 @@ const SelectedEventModal: React.FC<EventProps> = ({
     } finally {
       onClose();
       refreshReservations();
+
+      if (refreshReservations) {
+        console.log("🚀 refreshReservations 실행됨");
+        refreshReservations();
+      } else {
+        console.log("❌ refreshReservations 없음");
+      }
     }
     return response;
   };
@@ -95,10 +101,14 @@ const SelectedEventModal: React.FC<EventProps> = ({
       console.error("Reservation ID is missing. Can not Delete");
       return;
     }
-    console.log("-----Delete------");
+    console.log("🚀 -----Delete 요청 보냄------");
     const response = await deleteReservations(event?.reservationId);
+
+    console.log("✅ 삭제 완료, onClose 실행");
     onClose();
-    refreshReservations();
+
+    console.log("🚀 refreshReservations 실행");
+    await refreshReservations(); // ✅ 삭제 후 강제 새로고침
     return response;
   };
 

@@ -7,33 +7,54 @@ import {
   DialogTitle,
 } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Calendar } from "@fullcalendar/core";
+import { useEffect, useMemo } from "react";
 
 interface ReservationModalProps {
   selectedEvent: any;
   onClose: () => void;
-  calendarRef: any;
+  calendarInstance: React.MutableRefObject<Calendar | null>;
 }
 
 const ReservationModal: React.FC<ReservationModalProps> = ({
   selectedEvent,
   onClose,
-  calendarRef,
+  calendarInstance,
 }) => {
   if (!selectedEvent) return null;
 
-  const { position, startTime } = selectedEvent;
+  const { position } = selectedEvent;
 
-  const getEventDate = () => {
-    if (!startTime) return null;
-    return startTime.split("T")[0];
-  };
+  const eventDate = useMemo(() => {
+    if (!selectedEvent || !selectedEvent.start) return null;
+    return selectedEvent.start.split("T")[0];
+  }, [selectedEvent]);
 
   const refreshReservations = async () => {
-    const eventDate = getEventDate();
-    if (calendarRef.current && eventDate) {
-      await loadReservation(eventDate, calendarRef);
+    if (!eventDate) {
+      console.error("❌ 이벤트 날짜가 없어 refreshReservations 실행 불가!");
+      return;
+    }
+
+    if (!calendarInstance.current) {
+      console.error("❌ calendarInstance.current가 존재하지 않음!");
+      return;
+    }
+
+    try {
+      await loadReservation(eventDate, calendarInstance);
+      console.log("✅ loadReservation 실행 완료!");
+    } catch (error) {
+      console.error("❌ loadReservation 실행 중 오류 발생:", error);
     }
   };
+
+  useEffect(() => {
+    console.log(
+      "✅ ReservationModal에서 calendarInstance 확인:",
+      calendarInstance.current
+    );
+  }, [calendarInstance]);
 
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
