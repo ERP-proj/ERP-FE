@@ -159,6 +159,9 @@ const SelectedEventModal: React.FC<EventProps> = ({
             <Image
               src={userInfo.photoUrl || noUser}
               alt="User Photo"
+              width={100}
+              height={100}
+              layout="intrinsic"
               className="object-cover rounded-lg"
             />
           ) : (
