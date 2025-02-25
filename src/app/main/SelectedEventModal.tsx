@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
@@ -116,27 +116,36 @@ const SelectedEventModal: React.FC<EventProps> = ({
   const [customerList, setCustomerList] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const performSearch = debounce(async (keyword: string) => {
-    if (keyword.trim() === "") {
-      setCustomerList([]);
-      setIsSearching(false);
-      return;
-    }
+  const debouncedSearch = useCallback(
+    debounce(async (keyword: string) => {
+      if (!keyword.trim()) {
+        setCustomerList([]);
+        setIsSearching(false);
+        return;
+      }
 
-    try {
-      const response = await searchCustomerName(keyword.trim());
-      setCustomerList(response.data || []);
-    } catch (error) {
-      console.error("Failed to search custoemr name", error);
-    } finally {
-      setIsSearching(false);
-    }
-  }, 300);
+      try {
+        const response = await searchCustomerName(keyword);
+        setCustomerList(response.data || []);
+      } catch (error) {
+        console.error("검색 오류:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
     setIsSearching(true);
-    performSearch(keyword);
+    debouncedSearch(keyword);
   };
 
   const handleSelectCustomer = (customer: any) => {
