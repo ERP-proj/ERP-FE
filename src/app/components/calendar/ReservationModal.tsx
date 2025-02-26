@@ -21,7 +21,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   onClose,
   calendarInstance,
 }) => {
-  const { position } = selectedEvent;
+  const { position } = selectedEvent || {};
 
   const eventDate = useMemo(() => {
     if (!selectedEvent || !selectedEvent.start) return null;
