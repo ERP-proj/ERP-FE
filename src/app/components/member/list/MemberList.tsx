@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MemberRow from "./MemberRow";
-import { memberAPI } from "@/api/member";
+// import { memberAPI } from "@/api/member";
 import { Member } from "@/types/memberType";
 import DetailMember from "../detail/DetailMember";
 import useCustomerStore from "@/store/useCustomerStore";
+import usePaginatedMembers from "@/hooks/member/usePaginatedMembers";
 
 const MemberList = () => {
   const { customers, fetchCustomers, fetchCustomer } = useCustomerStore();
@@ -14,9 +15,41 @@ const MemberList = () => {
     null
   );
 
+  // useEffect(() => {
+  //   fetchCustomers();
+  // }, []);
+
+  // ✅ React Query 무한스크롤 데이터 가져오기
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePaginatedMembers("ACTIVE");
+
+  // ✅ `data.pages`가 존재하는 경우 평탄화
+  const members: Member[] =
+    data?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출
+  // ✅ `fetchNextPage`를 `useCallback`으로 고정
+  const loadMore = useCallback(() => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, fetchNextPage]);
+
+  // ✅ 스크롤 이벤트 감지 (Intersection Observer)
+  const observerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (!observerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore(); // ✅ Intersection Observer에서 `loadMore` 호출
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const handleRowClick = (customerId: number) => {
     console.log("선택된 customerId:", customerId);
@@ -29,14 +62,10 @@ const MemberList = () => {
     setIsModalOpen(false);
     setSelectedCustomerId(null); // 모달 닫기 시 초기화
   };
-  // 상태 변화 확인
-  // useEffect(() => {
-  //   console.log("selectedMember:", selectedMember);
-  // }, [selectedMember, isModalOpen]);
 
   return (
     <div className="grid grid-cols-1 rounded-xl gap-2 p-4 border border-gray-300  h-full overflow-y-auto">
-      {customers.map((member) => (
+      {members.map((member) => (
         <MemberRow
           key={member.customerId}
           member={member}
@@ -44,6 +73,15 @@ const MemberList = () => {
           onClick={() => handleRowClick(member.customerId)}
         />
       ))}
+      {/* ✅ 무한스크롤 트리거 요소 (마지막 요소 감지) */}
+      <div
+        ref={observerRef}
+        className="h-10 w-full flex justify-center items-center"
+      >
+        {isFetchingNextPage && (
+          <span className="text-gray-500">로딩 중...</span>
+        )}
+      </div>
       {/* 모달 */}
       {isModalOpen && selectedCustomerId && (
         <>

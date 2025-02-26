@@ -1,28 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getLabel } from "@/utils/mapping";
 import Accordion from "../../ui/Accordion";
-import useCustomerStore from "@/store/useCustomerStore";
+import { UpdateCustomerDetail } from "@/store/useCustomerStore";
 import { CustomerDetailData } from "@/store/useCustomerStore";
 import { FaRegCircleCheck } from "react-icons/fa6";
 
-const PlanPaymentForm: React.FC = () => {
+interface PlanPaymentFormProps {
+  customer: Partial<CustomerDetailData>;
+  onModify: (
+    updatedData: Partial<CustomerDetailData & UpdateCustomerDetail>
+  ) => void;
+}
+
+const PlanPaymentForm: React.FC<PlanPaymentFormProps> = ({
+  customer,
+  onModify,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPaid, setIsPaid] = useState(customer.planPayment?.status ?? false);
+  useEffect(() => {
+    setIsPaid(customer.planPayment?.status ?? false);
+  }, [customer.planPayment?.status]);
+
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev);
   };
-
-  const { customer, updatePlanPaymentStatus } = useCustomerStore();
 
   if (!customer || !customer.planPayment) {
     return <div>회원 정보를 불러오는 중...</div>;
   }
   const { planPayment } = customer;
 
-  // 결제 상태 변경 핸들러
-  const handleToggle = async () => {
-    await updatePlanPaymentStatus(!planPayment.status);
+  // ✅ 결제 상태 변경 핸들러
+  const handleToggle = () => {
+    const newStatus = !isPaid;
+    setIsPaid(newStatus);
+
+    console.log("📌 기존 결제 상태:", planPayment.status);
+    console.log("✅ 변경된 결제 상태:", newStatus);
+
+    // ✅ `planPaymentStatus`를 `UpdateCustomerDetail` 타입에 맞게 전달
+    onModify({
+      customerId: customer.customerId, // 고객 ID 유지
+      planPaymentStatus: newStatus,
+    });
   };
 
   return (
@@ -45,15 +68,15 @@ const PlanPaymentForm: React.FC = () => {
           >
             <FaRegCircleCheck
               className={`w-5 h-5 ${
-                planPayment.status ? "text-[#3C6229]" : "text-gray-300"
+                isPaid ? "text-[#3C6229]" : "text-gray-300"
               } transition-colors duration-200`}
             />
             <span
               className={`text-sm ${
-                planPayment.status ? "text-[#3C6229]" : "text-gray-600"
+                isPaid ? "text-[#3C6229]" : "text-gray-600"
               }`}
             >
-              {planPayment.status ? "결제완료" : "미납"}
+              {isPaid ? "결제 완료" : "미납"}
             </span>
           </div>
         </div>
@@ -95,7 +118,7 @@ const PlanPaymentForm: React.FC = () => {
             <strong>할인 상품명:</strong> {planPayment.discountName}
           </p>
           <p>
-            <strong>할인 금액:</strong>
+            <strong>할인 금액: </strong>
             {planPayment.discountPrice}원
           </p>
         </div>
