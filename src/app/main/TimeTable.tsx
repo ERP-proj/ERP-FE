@@ -1,7 +1,7 @@
 "use client";
 
 import "../../app/globals.css";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import { calendarSetup } from "../../utils/calendar/calendarSetup";
 import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
@@ -9,12 +9,13 @@ import { useReservations } from "../../hooks/calendar/useDailyReservation";
 
 function TimeTable({
   setSelectedEvent,
+  calendarRef,
+  calendarInstance,
 }: {
   setSelectedEvent: (event: any) => void;
+  calendarRef: React.MutableRefObject<HTMLDivElement | null>;
+  calendarInstance: React.MutableRefObject<Calendar | null>;
 }) {
-  const calendarRef = useRef<HTMLDivElement | null>(null);
-  const calendarInstance = useRef<Calendar | null>(null);
-
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
   const [clickedDate, setClickedDate] = useState<string>("");
 
@@ -28,6 +29,7 @@ function TimeTable({
         setShowMiniCalendar,
         setSelectedEvent
       );
+      console.log("✅ calendarInstance 설정 완료:", calendarInstance.current);
     }
 
     return () => {
@@ -36,7 +38,7 @@ function TimeTable({
         calendarInstance.current = null;
       }
     };
-  }, [setSelectedEvent]);
+  }, [calendarRef, calendarInstance, setSelectedEvent]);
 
   const handleMiniCalendarDateClick = (date: string) => {
     if (calendarInstance.current) {

@@ -35,7 +35,7 @@ export const calendarSetup = (
     timeZone: "local",
     allDaySlot: false,
     slotMinWidth: 30,
-    contentHeight: 700,
+    contentHeight: 800,
 
     // Set calendar resources
     resources: [
@@ -60,10 +60,10 @@ export const calendarSetup = (
       const target = info.jsEvent.target as HTMLElement | null;
 
       if (target && target.getBoundingClientRect) {
-        const rect = target.getBoundingClientRect();
+        const rect = target?.getBoundingClientRect();
         const position = {
-          top: rect.top + window.scrollY + rect.height / 4,
-          left: rect.left + window.scrollX + rect.width * 1.2,
+          top: rect?.top + window?.scrollY + rect?.height / 4,
+          left: rect?.left + window?.scrollX + rect?.width * 1.2,
         };
 
         console.log("clicked event info--------------------");
@@ -143,10 +143,10 @@ export const calendarSetup = (
         day: "numeric",
       };
 
-      // 사용자 local 시간에서 KR 시간으로 변경 및 날짜 00월 00일 포맷팅팅
-      const formattedDate = new Intl.DateTimeFormat("ko-KR", options).format(
-        currentDateDate
-      );
+      const formattedDate = new Intl.DateTimeFormat(
+        navigator.language,
+        options
+      ).format(currentDateDate);
 
       if (currentDate) {
         setClickedDate(currentDate);
@@ -156,7 +156,6 @@ export const calendarSetup = (
         ".fc-customTitle-button.fc-button.fc-button-primary"
       );
 
-      // customTitle에 들어갈 제목 포맷팅
       if (customTitleButton) {
         customTitleButton.textContent = formattedDate;
       }

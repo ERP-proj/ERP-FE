@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 import noUser from "../../assets/noUser.png";
 import { Button } from "../components/ui/button";
@@ -24,9 +24,14 @@ interface EventProps {
     mode: "add" | "edit";
   } | null;
   onClose: () => void;
+  refreshReservations: () => void;
 }
 
-const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
+const SelectedEventModal: React.FC<EventProps> = ({
+  event,
+  onClose,
+  refreshReservations,
+}) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
@@ -36,9 +41,8 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
     if (event?.mode == "add") {
       setUserInfo(event);
     }
-
     // Case 2: Edit Mode
-    if (event?.mode == "edit") {
+    else if (event?.mode == "edit") {
       const fetchUserInfo = async () => {
         const data = await getReservationCustomerDetails(event.reservationId);
         setUserInfo(data?.data || null);
@@ -80,6 +84,14 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       }
     } finally {
       onClose();
+      refreshReservations();
+
+      if (refreshReservations) {
+        console.log("🚀 refreshReservations 실행됨");
+        refreshReservations();
+      } else {
+        console.log("❌ refreshReservations 없음");
+      }
     }
     return response;
   };
@@ -89,9 +101,14 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
       console.error("Reservation ID is missing. Can not Delete");
       return;
     }
-    console.log("-----Delete------");
+    console.log("🚀 -----Delete 요청 보냄------");
     const response = await deleteReservations(event?.reservationId);
+
+    console.log("✅ 삭제 완료, onClose 실행");
     onClose();
+
+    console.log("🚀 refreshReservations 실행");
+    await refreshReservations(); // ✅ 삭제 후 강제 새로고침
     return response;
   };
 
@@ -99,27 +116,36 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
   const [customerList, setCustomerList] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  const performSearch = debounce(async (keyword: string) => {
-    if (keyword.trim() === "") {
-      setCustomerList([]);
-      setIsSearching(false);
-      return;
-    }
+  const debouncedSearch = useCallback(
+    debounce(async (keyword: string) => {
+      if (!keyword.trim()) {
+        setCustomerList([]);
+        setIsSearching(false);
+        return;
+      }
 
-    try {
-      const response = await searchCustomerName(keyword.trim());
-      setCustomerList(response.data || []);
-    } catch (error) {
-      console.error("Failed to search custoemr name", error);
-    } finally {
-      setIsSearching(false);
-    }
-  }, 300);
+      try {
+        const response = await searchCustomerName(keyword);
+        setCustomerList(response.data || []);
+      } catch (error) {
+        console.error("검색 오류:", error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
     setIsSearching(true);
-    performSearch(keyword);
+    debouncedSearch(keyword);
   };
 
   const handleSelectCustomer = (customer: any) => {
@@ -152,6 +178,9 @@ const SelectedEventModal: React.FC<EventProps> = ({ event, onClose }) => {
             <Image
               src={userInfo.photoUrl || noUser}
               alt="User Photo"
+              width={100}
+              height={100}
+              layout="intrinsic"
               className="object-cover rounded-lg"
             />
           ) : (
