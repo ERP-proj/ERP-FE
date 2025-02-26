@@ -1,7 +1,7 @@
 "use client";
 
 import "../../app/globals.css";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import { calendarSetup } from "../../utils/calendar/calendarSetup";
 import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
@@ -38,7 +38,7 @@ function TimeTable({
         calendarInstance.current = null;
       }
     };
-  }, [setSelectedEvent]);
+  }, [calendarRef, calendarInstance, setSelectedEvent]);
 
   const handleMiniCalendarDateClick = (date: string) => {
     if (calendarInstance.current) {

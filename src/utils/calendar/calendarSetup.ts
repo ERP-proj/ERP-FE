@@ -60,10 +60,10 @@ export const calendarSetup = (
       const target = info.jsEvent.target as HTMLElement | null;
 
       if (target && target.getBoundingClientRect) {
-        const rect = target.getBoundingClientRect();
+        const rect = target?.getBoundingClientRect();
         const position = {
-          top: rect.top + window.scrollY + rect.height / 4,
-          left: rect.left + window.scrollX + rect.width * 1.2,
+          top: rect?.top + window?.scrollY + rect?.height / 4,
+          left: rect?.left + window?.scrollX + rect?.width * 1.2,
         };
 
         console.log("clicked event info--------------------");
