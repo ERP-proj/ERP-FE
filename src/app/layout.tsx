@@ -23,6 +23,10 @@ export default function RootLayout({
     }
   }, [isAuthenticated, pathname, router]);
 
+  let backgroundColor = "bg-[hsl(var(--defaultBgColor))]";
+  if (pathname.startsWith("/admin"))
+    backgroundColor = "bg-[hsl(var(--adminBgColor))]";
+
   return (
     <html lang="en">
       <body className="antialiased overflow-hidden h-screen m-0 flex items-center justify-center w-full">
