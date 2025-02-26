@@ -47,6 +47,7 @@ interface OtherPayment {
 
 // ✅ 고객 상세 정보 (API 응답용)
 interface CustomerDetailData {
+  planPaymentStatus?: boolean;
   customerId: number;
   photoUrl: string;
   photoFile?: File | null;
@@ -105,10 +106,13 @@ interface CustomerState {
 }
 
 // ✅ `CustomerDetailData` → `UpdateCustomerDetail` 변환 함수
-const convertToUpdateCustomerDetail = (
+export const convertToUpdateCustomerDetail = (
   data: CustomerDetailData
 ): UpdateCustomerDetail => {
-  return {
+  if (!data.customerId) {
+    throw new Error("customerId가 없습니다.");
+  }
+  const convertedData: UpdateCustomerDetail = {
     customerId: data.customerId,
     name: data.name,
     gender: data.gender,
@@ -119,14 +123,11 @@ const convertToUpdateCustomerDetail = (
     memo: data.memo,
     photoFile: null, // 파일 업로드용
     photoUrl: data.photoUrl,
-    planPaymentStatus: data.planPayment.status,
+    planPaymentStatus:
+      data.planPaymentStatus ?? data.planPayment?.status ?? false,
     progressList: {
       addProgresses: [],
-      updateProgresses: data.progressList.map((progress) => ({
-        progressId: progress.progressId!,
-        date: progress.date,
-        content: progress.content,
-      })),
+      updateProgresses: data.progressList ?? [],
       deleteProgresses: [],
     },
     otherPayment: data.otherPayment.map((payment) => ({
@@ -138,6 +139,8 @@ const convertToUpdateCustomerDetail = (
       status: payment.status,
     })),
   };
+  console.log("📦 변환된 데이터:", convertedData);
+  return convertedData;
 };
 
 const useCustomerStore = create<CustomerState>((set, get) => ({
@@ -161,16 +164,16 @@ const useCustomerStore = create<CustomerState>((set, get) => ({
         `/api/customer/getCustomerDetail/${customerId}`
       );
       const data = response.data.data;
-
       set(
         produce((state) => {
           state.customer = {
             ...data,
-            progressList: {
-              addProgresses: [], // ✅ 추가된 진도 (초기 빈 배열)
-              updateProgresses: data.progressList || [], // ✅ API에서 받은 진도를 업데이트 리스트로 사용
-              deleteProgresses: [], // ✅ 삭제할 진도 (초기 빈 배열)
-            },
+            // progressList: {
+            //   addProgresses: [], // ✅ 추가된 진도 (초기 빈 배열)
+            //   updateProgresses: data.progressList || [], // ✅ API에서 받은 진도를 업데이트 리스트로 사용
+            //   deleteProgresses: [], // ✅ 삭제할 진도 (초기 빈 배열)
+            // },
+            progressList: data.progressList ?? [],
             photoFile: null,
           };
         })
@@ -181,7 +184,7 @@ const useCustomerStore = create<CustomerState>((set, get) => ({
   },
 
   // ✅ 고객 정보 수정
-  updateCustomer: async (updatedData) => {
+  updateCustomer: async (updatedData: Partial<UpdateCustomerDetail>) => {
     try {
       const formData = new FormData();
       const requestData = {

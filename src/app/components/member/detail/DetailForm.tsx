@@ -5,13 +5,18 @@ import Dropdown from "../../ui/Dropdown";
 import Camera from "../create/Camera";
 import { FaTrashAlt } from "react-icons/fa";
 import useCustomerStore from "@/store/useCustomerStore";
-import type { UpdateCustomerDetail } from "@/store/useCustomerStore";
+import type {
+  CustomerDetailData,
+  UpdateCustomerDetail,
+} from "@/store/useCustomerStore";
 interface DetailFormProps {
-  onModify: (updatedData: Partial<UpdateCustomerDetail>) => void;
+  customer: Partial<CustomerDetailData>;
+  onModify: (
+    updatedData: Partial<CustomerDetailData & UpdateCustomerDetail>
+  ) => void;
 }
-const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
+const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
   const {
-    customer,
     updateCustomer,
     addProgressRow,
     updateProgressRow,
@@ -27,7 +32,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
       <div className="flex gap-8 items-start">
         <div className="flex flex-col items-center w-1/3">
           <Camera
-            onCapture={(file) => updateCustomer({ photoFile: file })}
+            onCapture={(file) => onModify({ photoFile: file })}
             photoUrl={
               customer.photoFile
                 ? URL.createObjectURL(customer.photoFile)
@@ -45,7 +50,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
                 type="text"
                 className="input-content w-full"
                 value={customer.name}
-                onChange={(e) => updateCustomer({ name: e.target.value })}
+                onChange={(e) => onModify({ name: e.target.value })}
               />
             </div>
             <div>
@@ -57,7 +62,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
                 ]}
                 defaultValue={customer.gender}
                 onChange={(value) =>
-                  updateCustomer({
+                  onModify({
                     gender: value === "MALE" ? "MALE" : "FEMALE",
                   })
                 }
@@ -71,7 +76,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
                 type="date"
                 className="input-content w-full"
                 value={customer.birthDate || ""}
-                onChange={(e) => updateCustomer({ birthDate: e.target.value })}
+                onChange={(e) => onModify({ birthDate: e.target.value })}
               />
             </div>
             <div>
@@ -82,7 +87,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
                 type="text"
                 className="input-content w-full"
                 value={customer.phone}
-                onChange={(e) => updateCustomer({ phone: e.target.value })}
+                onChange={(e) => onModify({ phone: e.target.value })}
               />
             </div>
           </div>
@@ -95,7 +100,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
             type="text"
             className="input-content w-full mb-4"
             value={customer.address}
-            onChange={(e) => updateCustomer({ address: e.target.value })}
+            onChange={(e) => onModify({ address: e.target.value })}
           />
         </div>
         <div>
@@ -103,7 +108,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
           <textarea
             className="input-content w-full"
             value={customer.visitPath}
-            onChange={(e) => updateCustomer({ visitPath: e.target.value })}
+            onChange={(e) => onModify({ visitPath: e.target.value })}
           ></textarea>
         </div>
         <div>
@@ -111,7 +116,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
           <textarea
             className="input-content w-full"
             value={customer.memo}
-            onChange={(e) => updateCustomer({ memo: e.target.value })}
+            onChange={(e) => onModify({ memo: e.target.value })}
           ></textarea>
         </div>
       </div>
@@ -132,7 +137,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ onModify }) => {
             </thead>
             <tbody>
               {/* ✅ `addProgresses` (새로운 진도, tempId 사용) */}
-              {customer.progressList.map((row) => (
+              {(customer.progressList ?? []).map((row) => (
                 <tr key={row.progressId ?? row.tempId}>
                   <td className="border text-center">
                     {row.progressId ?? "-"}
