@@ -16,7 +16,7 @@ const storeData = [
 
 const MainTable: React.FC<Props> = ({}) => {
   return (
-    <div className="flex w-full max-w-6xl justify-center items-center min-h-screen">
+    <div className="flex w-full max-w-6xl min-h-screen">
       <div className="w-full ">
         <Table columns={storeColumns} data={storeData} selectable />
       </div>
