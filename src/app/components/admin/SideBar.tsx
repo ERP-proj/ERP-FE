@@ -13,8 +13,8 @@ function SideBar() {
     router.push("/admin/plan");
   };
 
-  const handleNavigateBranch = () => {
-    router.push("/admin/branch");
+  const handleNavigateInstitute = () => {
+    router.push("/admin/institute");
   };
 
   const pathname = usePathname()?.split("/")[2];
@@ -24,10 +24,10 @@ function SideBar() {
     <div className="flex flex-col h-full w-[130px] z-999">
       {/* 상단 버튼 그룹 */}
       <div className="flex flex-grow flex-col gap-4 justify-center">
-        <Button className="py-6" onClick={handleNavigateBranch}>
+        <Button className="py-6" onClick={handleNavigateInstitute}>
           <Image
             src={
-              pathname === "branch"
+              pathname === "Institute"
                 ? "/admin/sidebar/branchFocusIcon.png"
                 : "/admin/sidebar/branchIcon.png"
             }
