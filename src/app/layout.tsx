@@ -23,13 +23,22 @@ export default function RootLayout({
     }
   }, [isAuthenticated, pathname, router]);
 
-  let backgroundColor = "bg-[hsl(var(--defaultBgColor))]";
-  if (pathname.startsWith("/admin"))
-    backgroundColor = "bg-[hsl(var(--adminBgColor))]";
+  useEffect(() => {
+    document.body.style.backgroundColor = pathname.startsWith("/admin")
+      ? "white"
+      : "hsl(96, 43%, 73%)";
+  }, [pathname]);
 
   return (
     <html lang="en">
-      <body className="antialiased overflow-hidden h-screen m-0 flex items-center justify-center w-full">
+      <body
+        style={{
+          backgroundColor: pathname.startsWith("/admin")
+            ? "white"
+            : "hsl(96, 43%, 73%)",
+        }}
+        className="antialiased overflow-hidden h-screen m-0 flex items-center justify-center w-full"
+      >
         <main className="flex-1 w-full max-w-[1820px] h-fit">
           {children}
           <Alert />

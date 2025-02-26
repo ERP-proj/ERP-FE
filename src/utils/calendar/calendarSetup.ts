@@ -98,12 +98,6 @@ export const calendarSetup = (
         },
         mode: "add",
       };
-
-      // if (info) {
-      //   calendar.addEvent(newEvent);
-      //   console.log("addEvent 발생");
-      // }
-
       setSelectedEvent(newEvent);
       console.log("newEvent", newEvent);
     },
@@ -113,17 +107,13 @@ export const calendarSetup = (
     headerToolbar: {
       left: "",
       center: "prev, customTitle, next",
-      // right: "nextReservation",
       right: "",
     },
     customButtons: {
-      // customButton : customTitle
       customTitle: {
         text: "",
         click: () => setShowMiniCalendar((prev) => !prev),
       },
-
-      // customButton : nextReservation
       nextReservation: {
         text: "다음 예약",
       },
