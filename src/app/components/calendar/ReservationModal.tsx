@@ -27,10 +27,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
     return selectedEvent.startStr.split("T")[0];
   }, [selectedEvent]);
 
-  // const refreshReservations = useCallback(async () => {
-  //   await loadReservation(eventDate, calendarInstance);
-  // }, [eventDate, calendarInstance]);
-
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50 z-40" />
@@ -47,7 +43,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         </DialogTitle>
         <SelectedEventModal
           event={selectedEvent}
-          // refreshReservations={refreshReservations}
           onClose={onClose}
           calendarInstance={calendarInstance}
         />

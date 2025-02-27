@@ -8,7 +8,6 @@ export default function transformNextTimeReservation(
   nextEndTime: string,
   response: any[]
 ) {
-  // nextStartTime과 nextEndTime을 dayjs 객체로 변환
   const nextEnd = dayjs(nextEndTime);
   return response
     .filter((res) => {
