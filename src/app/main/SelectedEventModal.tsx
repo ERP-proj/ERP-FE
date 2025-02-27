@@ -13,6 +13,7 @@ import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
 import { deleteReservations } from "@/api/reservation/deleteReservations";
 import { searchCustomerName } from "@/api/reservation/searchCustomerName";
 import { debounce } from "lodash";
+import { memberAPI } from "@/api/member";
 
 interface EventProps {
   event: {
@@ -35,8 +36,6 @@ const SelectedEventModal: React.FC<EventProps> = ({
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    console.log("~~~~~~~~~~~event", event);
-
     // Case 1: add Mode
     if (event?.mode == "add") {
       setUserInfo(event);
@@ -51,9 +50,6 @@ const SelectedEventModal: React.FC<EventProps> = ({
       fetchUserInfo();
     }
   }, [event]);
-
-  console.log("response(userInfo)", userInfo);
-  console.log("response(event)", event);
 
   const handleInputChange = (field: string, value: string) => {
     setUserInfo((prev: any) => ({
@@ -108,7 +104,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
     onClose();
 
     console.log("🚀 refreshReservations 실행");
-    await refreshReservations(); // ✅ 삭제 후 강제 새로고침
+    await refreshReservations();
     return response;
   };
 
@@ -148,15 +144,32 @@ const SelectedEventModal: React.FC<EventProps> = ({
     debouncedSearch(keyword);
   };
 
-  const handleSelectCustomer = (customer: any) => {
-    setUserInfo((prev: any) => ({
-      ...prev,
-      name: customer.name,
-      customerId: customer.customerId,
-    }));
-    setSearchKeyword(customer.name);
-    setCustomerList([]);
+  const handleSelectCustomer = async (customer: any) => {
+    if (customer?.customerId) {
+      const customerDetail = await memberAPI?.getCustomerDetail(
+        customer?.customerId
+      );
+      setUserInfo((prev: any) => ({
+        ...prev,
+        photoUrl: customerDetail?.data?.photoUrl,
+        name: customerDetail?.data?.name,
+        phone: customerDetail?.data?.phone,
+        planName: customerDetail?.data?.planPayment?.planName,
+        memo: customerDetail?.data?.memo,
+        progressList: customerDetail?.data?.progressList,
+      }));
+      setSearchKeyword(customer.name);
+      setCustomerList([]);
+    }
   };
+
+  useEffect(() => {
+    console.log("🔄 userInfo 변경됨:", userInfo);
+  }, [userInfo]);
+
+  useEffect(() => {
+    console.log("⚠️ event 변경됨:", userInfo);
+  }, [event]);
 
   return (
     <div className="flex flex-col">
