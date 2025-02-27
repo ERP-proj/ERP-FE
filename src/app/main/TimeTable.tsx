@@ -5,7 +5,8 @@ import React, { useEffect, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import { calendarSetup } from "../../utils/calendar/calendarSetup";
 import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
-import { useReservations } from "../../hooks/calendar/useDailyReservation";
+import { loadReservation } from "@/api/reservation/loadReservation";
+import dayjs from "dayjs";
 
 function TimeTable({
   setSelectedEvent,
@@ -16,10 +17,9 @@ function TimeTable({
   calendarRef: React.MutableRefObject<HTMLDivElement | null>;
   calendarInstance: React.MutableRefObject<Calendar | null>;
 }) {
+  const now = dayjs().format("YYYY-MM-DD");
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
   const [clickedDate, setClickedDate] = useState<string>("");
-
-  const { error } = useReservations(clickedDate, calendarInstance);
 
   useEffect(() => {
     if (calendarRef.current) {
@@ -29,7 +29,6 @@ function TimeTable({
         setShowMiniCalendar,
         setSelectedEvent
       );
-      console.log("✅ calendarInstance 설정 완료:", calendarInstance.current);
     }
 
     return () => {
@@ -39,6 +38,12 @@ function TimeTable({
       }
     };
   }, [calendarRef, calendarInstance, setSelectedEvent]);
+
+  useEffect(() => {
+    if (calendarInstance.current) {
+      loadReservation(now, calendarInstance);
+    }
+  }, [calendarInstance]);
 
   const handleMiniCalendarDateClick = (date: string) => {
     if (calendarInstance.current) {
@@ -56,9 +61,6 @@ function TimeTable({
       {showMiniCalendar && (
         <MiniCalendarPopup onDateClick={handleMiniCalendarDateClick} />
       )}
-
-      {/* 에러 확인 메시지 */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }

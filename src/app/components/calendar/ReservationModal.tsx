@@ -1,4 +1,3 @@
-import { loadReservation } from "@/api/reservation/loadReservation";
 import SelectedEventModal from "@/app/main/SelectedEventModal";
 import {
   Dialog,
@@ -8,7 +7,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Calendar } from "@fullcalendar/core";
-import { useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 interface ReservationModalProps {
   selectedEvent: any;
@@ -23,40 +22,14 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
 }) => {
   const { position } = selectedEvent || {};
 
-  useEffect(() => {
-    console.log("🤖 selectedEvent 변경", selectedEvent);
-  }, [selectedEvent]);
-
   const eventDate = useMemo(() => {
     if (!selectedEvent || !selectedEvent.startStr) return null;
     return selectedEvent.startStr.split("T")[0];
   }, [selectedEvent]);
 
-  const refreshReservations = async () => {
-    if (!eventDate) {
-      console.error("❌ 이벤트 날짜가 없어 refreshReservations 실행 불가!");
-      return;
-    }
-
-    if (!calendarInstance.current) {
-      console.error("❌ calendarInstance.current가 존재하지 않음!");
-      return;
-    }
-
-    try {
-      await loadReservation(eventDate, calendarInstance);
-      console.log("✅ loadReservation 실행 완료!");
-    } catch (error) {
-      console.error("❌ loadReservation 실행 중 오류 발생:", error);
-    }
-  };
-
-  useEffect(() => {
-    console.log(
-      "✅ ReservationModal에서 calendarInstance 확인:",
-      calendarInstance.current
-    );
-  }, [calendarInstance]);
+  // const refreshReservations = useCallback(async () => {
+  //   await loadReservation(eventDate, calendarInstance);
+  // }, [eventDate, calendarInstance]);
 
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
@@ -74,11 +47,9 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
         </DialogTitle>
         <SelectedEventModal
           event={selectedEvent}
-          onClose={() => {
-            onClose();
-            refreshReservations();
-          }}
-          refreshReservations={refreshReservations}
+          // refreshReservations={refreshReservations}
+          onClose={onClose}
+          calendarInstance={calendarInstance}
         />
       </DialogContent>
     </Dialog>

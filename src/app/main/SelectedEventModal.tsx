@@ -14,24 +14,28 @@ import { deleteReservations } from "@/api/reservation/deleteReservations";
 import { searchCustomerName } from "@/api/reservation/searchCustomerName";
 import { debounce } from "lodash";
 import { memberAPI } from "@/api/member";
+import { loadReservation } from "@/api/reservation/loadReservation";
+import { Calendar } from "@fullcalendar/core";
 
 interface EventProps {
   event: {
     startTime: string;
     endTime: string;
+    startStr: string;
+    endStr: string;
     seatNumber: number;
     reservationId: number;
     attendanceStatus: string;
     mode: "add" | "edit";
   } | null;
+  calendarInstance: React.MutableRefObject<Calendar | null>;
   onClose: () => void;
-  refreshReservations: () => void;
 }
 
 const SelectedEventModal: React.FC<EventProps> = ({
   event,
   onClose,
-  refreshReservations,
+  calendarInstance,
 }) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
@@ -58,54 +62,48 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }));
   };
 
-  const handleSubmit = async () => {
-    let response;
-    try {
-      if (userInfo?.mode == "add") {
-        console.log("------Submit ADD------");
-        response = await postAddReservations({
-          ...userInfo,
-          customerId: userInfo.customerId,
-        });
-      } else if (event?.mode == "edit") {
-        console.log("------Submit EDIT------");
-        response = await putUpdateReservations({
-          reservationId: event?.reservationId,
-          startTime: userInfo?.startTime,
-          endTime: userInfo?.endTime,
-          memo: userInfo?.memo,
-          seatNumber: event?.seatNumber,
-          attendanceStatus: userInfo?.attendanceStatus,
-        });
-      }
-    } finally {
-      onClose();
-      refreshReservations();
-
-      if (refreshReservations) {
-        console.log("🚀 refreshReservations 실행됨");
-        refreshReservations();
-      } else {
-        console.log("❌ refreshReservations 없음");
-      }
+  const refreshCalendar = async () => {
+    const eventDate = event?.startStr ? event.startStr.split("T")[0] : "";
+    if (eventDate && calendarInstance) {
+      await loadReservation(eventDate, calendarInstance);
     }
-    return response;
+  };
+
+  const handleAddSubmit = async () => {
+    if (userInfo?.mode === "add") {
+      const response = await postAddReservations({
+        ...userInfo,
+        customerId: userInfo.customerId,
+      });
+      await refreshCalendar();
+      onClose();
+      return response;
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    if (event?.mode == "edit") {
+      const response = await putUpdateReservations({
+        reservationId: event?.reservationId,
+        startTime: userInfo?.startTime,
+        endTime: userInfo?.endTime,
+        memo: userInfo?.memo,
+        seatNumber: event?.seatNumber,
+        attendanceStatus: userInfo?.attendanceStatus,
+      });
+      await refreshCalendar();
+      onClose();
+      return response;
+    }
   };
 
   const handleDelete = async () => {
-    if (!event?.reservationId) {
-      console.error("Reservation ID is missing. Can not Delete");
-      return;
+    if (event?.reservationId) {
+      const response = await deleteReservations(event?.reservationId);
+      await refreshCalendar();
+      onClose();
+      return response;
     }
-    console.log("🚀 -----Delete 요청 보냄------");
-    const response = await deleteReservations(event?.reservationId);
-
-    console.log("✅ 삭제 완료, onClose 실행");
-    onClose();
-
-    console.log("🚀 refreshReservations 실행");
-    await refreshReservations();
-    return response;
   };
 
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -403,7 +401,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
       {event?.mode === "add" && (
         <Button
           className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
-          onClick={handleSubmit}
+          onClick={handleAddSubmit}
         >
           저장
         </Button>
@@ -418,7 +416,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
           </Button>
           <Button
             className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
-            onClick={handleSubmit}
+            onClick={handleEditSubmit}
           >
             수정 완료
           </Button>

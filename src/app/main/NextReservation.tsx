@@ -4,11 +4,7 @@ import { useNextReservation } from "@/hooks/reservation/useNextReservation";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 function NextReservation() {
-  const { nextReservation, error } = useNextReservation();
-
-  if (error) {
-    return <div className="text-red-500">`Error 발생 {error}`</div>;
-  }
+  const { nextReservation } = useNextReservation();
 
   return (
     <div className="m-4">
