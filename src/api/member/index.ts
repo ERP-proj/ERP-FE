@@ -84,7 +84,6 @@ export const memberAPI = {
 
   /**
    * 이용 중인 회원 조회 메서드
-   * @param page 페이지 번호
    * @returns 조회된 회원 데이터 리스트
    */
   getMemberRow: async (page: number) => {

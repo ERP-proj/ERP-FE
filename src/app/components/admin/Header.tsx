@@ -14,7 +14,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="w-full bg-white border-b py-5 px-6 flex justify-between items-center text-sm text-gray-700">
+    <header className="w-full bg-white py-5 px-6 flex justify-between items-center text-sm text-gray-700">
       <div className="w-1/2"></div>
 
       {/* 오른쪽 콘텐츠 */}

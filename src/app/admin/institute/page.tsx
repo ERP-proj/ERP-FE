@@ -18,8 +18,8 @@ export default function Page() {
         <Header />
 
         {/* 메인 콘텐츠 (가운데 정렬) */}
-        <div className="flex flex-1 flex-col items-center p-6">
-          <div className="w-full max-w-5xl bg-white p-6 rounded-lg ">
+        <div className="flex flex-[8_0_0]  flex-col p-6">
+          <div className="w-full max-w-8xl  bg-white p-10 pl-20 rounded-lg ">
             <h2 className="text-lg font-semibold mb-7">매장 조회</h2>
             <MainTable />
           </div>
