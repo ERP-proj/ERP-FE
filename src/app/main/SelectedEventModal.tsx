@@ -13,30 +13,33 @@ import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
 import { deleteReservations } from "@/api/reservation/deleteReservations";
 import { searchCustomerName } from "@/api/reservation/searchCustomerName";
 import { debounce } from "lodash";
+import { memberAPI } from "@/api/member";
+import { loadReservation } from "@/api/reservation/loadReservation";
+import { Calendar } from "@fullcalendar/core";
 
 interface EventProps {
   event: {
     startTime: string;
     endTime: string;
+    startStr: string;
+    endStr: string;
     seatNumber: number;
     reservationId: number;
     attendanceStatus: string;
     mode: "add" | "edit";
   } | null;
+  calendarInstance: React.MutableRefObject<Calendar | null>;
   onClose: () => void;
-  refreshReservations: () => void;
 }
 
 const SelectedEventModal: React.FC<EventProps> = ({
   event,
   onClose,
-  refreshReservations,
+  calendarInstance,
 }) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    console.log("~~~~~~~~~~~event", event);
-
     // Case 1: add Mode
     if (event?.mode == "add") {
       setUserInfo(event);
@@ -52,9 +55,6 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }
   }, [event]);
 
-  console.log("response(userInfo)", userInfo);
-  console.log("response(event)", event);
-
   const handleInputChange = (field: string, value: string) => {
     setUserInfo((prev: any) => ({
       ...prev,
@@ -62,54 +62,48 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }));
   };
 
-  const handleSubmit = async () => {
-    let response;
-    try {
-      if (userInfo?.mode == "add") {
-        console.log("------Submit ADD------");
-        response = await postAddReservations({
-          ...userInfo,
-          customerId: userInfo.customerId,
-        });
-      } else if (event?.mode == "edit") {
-        console.log("------Submit EDIT------");
-        response = await putUpdateReservations({
-          reservationId: event?.reservationId,
-          startTime: userInfo?.startTime,
-          endTime: userInfo?.endTime,
-          memo: userInfo?.memo,
-          seatNumber: event?.seatNumber,
-          attendanceStatus: userInfo?.attendanceStatus,
-        });
-      }
-    } finally {
-      onClose();
-      refreshReservations();
-
-      if (refreshReservations) {
-        console.log("🚀 refreshReservations 실행됨");
-        refreshReservations();
-      } else {
-        console.log("❌ refreshReservations 없음");
-      }
+  const refreshCalendar = async () => {
+    const eventDate = event?.startStr ? event.startStr.split("T")[0] : "";
+    if (eventDate && calendarInstance) {
+      await loadReservation(eventDate, calendarInstance);
     }
-    return response;
+  };
+
+  const handleAddSubmit = async () => {
+    if (userInfo?.mode === "add") {
+      const response = await postAddReservations({
+        ...userInfo,
+        customerId: userInfo.customerId,
+      });
+      await refreshCalendar();
+      onClose();
+      return response;
+    }
+  };
+
+  const handleEditSubmit = async () => {
+    if (event?.mode == "edit") {
+      const response = await putUpdateReservations({
+        reservationId: event?.reservationId,
+        startTime: userInfo?.startTime,
+        endTime: userInfo?.endTime,
+        memo: userInfo?.memo,
+        seatNumber: event?.seatNumber,
+        attendanceStatus: userInfo?.attendanceStatus,
+      });
+      await refreshCalendar();
+      onClose();
+      return response;
+    }
   };
 
   const handleDelete = async () => {
-    if (!event?.reservationId) {
-      console.error("Reservation ID is missing. Can not Delete");
-      return;
+    if (event?.reservationId) {
+      const response = await deleteReservations(event?.reservationId);
+      await refreshCalendar();
+      onClose();
+      return response;
     }
-    console.log("🚀 -----Delete 요청 보냄------");
-    const response = await deleteReservations(event?.reservationId);
-
-    console.log("✅ 삭제 완료, onClose 실행");
-    onClose();
-
-    console.log("🚀 refreshReservations 실행");
-    await refreshReservations(); // ✅ 삭제 후 강제 새로고침
-    return response;
   };
 
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -148,15 +142,33 @@ const SelectedEventModal: React.FC<EventProps> = ({
     debouncedSearch(keyword);
   };
 
-  const handleSelectCustomer = (customer: any) => {
-    setUserInfo((prev: any) => ({
-      ...prev,
-      name: customer.name,
-      customerId: customer.customerId,
-    }));
-    setSearchKeyword(customer.name);
-    setCustomerList([]);
+  const handleSelectCustomer = async (customer: any) => {
+    if (customer?.customerId) {
+      const customerDetail = await memberAPI?.getCustomerDetail(
+        customer?.customerId
+      );
+      setUserInfo((prev: any) => ({
+        ...prev,
+        customerId: customer?.customerId,
+        photoUrl: customerDetail?.data?.photoUrl,
+        name: customerDetail?.data?.name,
+        phone: customerDetail?.data?.phone,
+        planName: customerDetail?.data?.planPayment?.planName,
+        memo: customerDetail?.data?.memo,
+        progressList: customerDetail?.data?.progressList,
+      }));
+      setSearchKeyword(customer.name);
+      setCustomerList([]);
+    }
   };
+
+  useEffect(() => {
+    console.log("🔄 userInfo 변경됨:", userInfo);
+  }, [userInfo]);
+
+  useEffect(() => {
+    console.log("⚠️ event 변경됨:", userInfo);
+  }, [event]);
 
   return (
     <div className="flex flex-col">
@@ -389,7 +401,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
       {event?.mode === "add" && (
         <Button
           className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
-          onClick={handleSubmit}
+          onClick={handleAddSubmit}
         >
           저장
         </Button>
@@ -404,7 +416,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
           </Button>
           <Button
             className="flex flex-1 font-light bg-[#D1D1D1] border-0 rounded-lg text-[#FFFFFF] p-2 mt-4 mr-2 hover:bg-[#3C6229] hover:text-[#FFFFFF]"
-            onClick={handleSubmit}
+            onClick={handleEditSubmit}
           >
             수정 완료
           </Button>

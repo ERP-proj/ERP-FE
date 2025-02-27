@@ -2,8 +2,8 @@ import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
 
 export const postAddReservations = async (userInfo: {
-  start: string;
-  end: string;
+  startStr: string;
+  endStr: string;
   resourceId: number;
   memo: string;
   customerId: number;
@@ -11,8 +11,8 @@ export const postAddReservations = async (userInfo: {
   try {
     const response = await apiClient.post("/api/reservation/addReservation", {
       customerId: userInfo.customerId,
-      startTime: userInfo.start,
-      endTime: userInfo.end,
+      startTime: userInfo.startStr,
+      endTime: userInfo.endStr,
       resourceId: userInfo.resourceId,
       memo: userInfo.memo,
       seatNumber: userInfo.resourceId,
