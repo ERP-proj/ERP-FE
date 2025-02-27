@@ -23,9 +23,13 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
 }) => {
   const { position } = selectedEvent || {};
 
+  useEffect(() => {
+    console.log("🤖 selectedEvent 변경", selectedEvent);
+  }, [selectedEvent]);
+
   const eventDate = useMemo(() => {
-    if (!selectedEvent || !selectedEvent.start) return null;
-    return selectedEvent.start.split("T")[0];
+    if (!selectedEvent || !selectedEvent.startStr) return null;
+    return selectedEvent.startStr.split("T")[0];
   }, [selectedEvent]);
 
   const refreshReservations = async () => {

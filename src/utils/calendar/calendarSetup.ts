@@ -54,6 +54,8 @@ export const calendarSetup = (
       const eventObj = info.event;
       const userName = eventObj?.title;
       const startDate = eventObj?.start;
+      const startStr = eventObj?.startStr;
+      const endStr = eventObj?.endStr;
       const endDate = eventObj?.end;
       const seatNumber = eventObj?.id;
       const reservationId = eventObj.extendedProps?.reservationId;
@@ -74,6 +76,8 @@ export const calendarSetup = (
           seatNumber,
           startDate,
           endDate,
+          startStr,
+          endStr,
           reservationId,
           position,
           mode: "edit",
@@ -88,8 +92,8 @@ export const calendarSetup = (
       console.log("infoooo", info);
 
       const newEvent = {
-        start: dayjs(info.start).format("YYYY-MM-DDTHH:mm:ss"),
-        end: dayjs(info.end).format("YYYY-MM-DDTHH:mm:ss"),
+        startStr: dayjs(info.start).format("YYYY-MM-DDTHH:mm:ss"),
+        endStr: dayjs(info.end).format("YYYY-MM-DDTHH:mm:ss"),
         formattedStartTime: dayjs(info.start).format("HH:mm"),
         formattedEndTime: dayjs(info.end).format("HH:mm"),
         resourceId,
@@ -113,9 +117,6 @@ export const calendarSetup = (
       customTitle: {
         text: "",
         click: () => setShowMiniCalendar((prev) => !prev),
-      },
-      nextReservation: {
-        text: "다음 예약",
       },
     },
 

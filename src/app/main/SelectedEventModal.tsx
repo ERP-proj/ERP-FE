@@ -151,6 +151,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
       );
       setUserInfo((prev: any) => ({
         ...prev,
+        customerId: customer?.customerId,
         photoUrl: customerDetail?.data?.photoUrl,
         name: customerDetail?.data?.name,
         phone: customerDetail?.data?.phone,
