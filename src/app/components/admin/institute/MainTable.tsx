@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Table from "../../ui/Table";
 import { adminAPI } from "@/api/admin/institute";
+import { useRouter } from "next/navigation";
 
 const storeColumns = [
   { name: "매장명", width: "70%" },
@@ -10,6 +11,7 @@ const storeColumns = [
 const MainTable: React.FC = () => {
   const [institutes, setInstitutes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchInstitutes = async () => {
@@ -35,13 +37,23 @@ const MainTable: React.FC = () => {
     fetchInstitutes();
   }, []);
 
+  // ✅ 행 클릭 시 상세 페이지 이동
+  const handleRowClick = (id: number) => {
+    router.push(`/admin/institute/${id}`); // ✅ 동적 라우팅
+  };
+
   return (
     <div className="flex w-full max-w-6xl min-h-screen">
       <div className="w-full">
         {loading ? (
           <p className="text-center py-4">⏳ 데이터 불러오는 중...</p>
         ) : (
-          <Table columns={storeColumns} data={institutes} selectable />
+          <Table
+            columns={storeColumns}
+            data={institutes}
+            selectable
+            onRowClick={handleRowClick} // ✅ 추가된 props
+          />
         )}
       </div>
     </div>
