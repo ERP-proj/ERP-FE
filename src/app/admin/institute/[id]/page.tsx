@@ -6,6 +6,7 @@ import { MdModeEdit } from "react-icons/md";
 import Table from "@/app/components/ui/Table";
 import BasicButton from "@/app/components/ui/BasicButton";
 import OwnerRegisterButton from "@/app/components/admin/institute/OwnerRegisterButton";
+import EditOwnerModal from "@/app/components/admin/institute/EditOwnerModal";
 
 const mockStoreDetails = {
   id: 6,
@@ -25,14 +26,15 @@ const mockStoreDetails = {
 };
 
 const columns = [
-  { name: "점주명", width: "40%" },
+  { name: "점주명", width: "45%" },
   { name: "아이디", width: "50%" },
-  { name: "정보 수정", width: "10%" },
+  { name: "수정", width: "15%" },
 ];
 
 const InstituteDetailPage = () => {
   const { id } = useParams();
   const [store, setStore] = useState<any>(null);
+  const [selectedOwner, setSelectedOwner] = useState<any>(null); // 수정할 점주
 
   useEffect(() => {
     if (id === "6") {
@@ -48,7 +50,12 @@ const InstituteDetailPage = () => {
     store?.owners?.map((owner: any) => ({
       점주명: owner.name,
       아이디: owner.username,
-      "정보 수정": <MdModeEdit className="text-gray-500 cursor-pointer" />,
+      수정: (
+        <MdModeEdit
+          className="text-gray-500 text-xl cursor-pointer hover:text-[#3C6229] transition"
+          onClick={() => setSelectedOwner(owner)}
+        />
+      ),
     })) || [];
 
   return (
@@ -63,6 +70,14 @@ const InstituteDetailPage = () => {
       </div>
       {/* 점주 목록 테이블 */}
       <Table columns={columns} data={formattedData} selectable />
+      {/* 점주 수정 모달 */}
+      {selectedOwner && (
+        <EditOwnerModal
+          isOpen={!!selectedOwner}
+          onClose={() => setSelectedOwner(null)}
+          owner={selectedOwner}
+        />
+      )}
     </div>
   );
 };
