@@ -17,7 +17,7 @@ interface DetailFormProps {
 }
 const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
   const {
-    updateCustomer,
+    // updateCustomer,
     addProgressRow,
     updateProgressRow,
     deleteProgressRow,
@@ -137,7 +137,10 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
             </thead>
             <tbody>
               {/* ✅ `addProgresses` (새로운 진도, tempId 사용) */}
-              {(customer.progressList ?? []).map((row) => (
+              {(Array.isArray(customer.progressList)
+                ? customer.progressList
+                : []
+              ).map((row) => (
                 <tr key={row.progressId ?? row.tempId}>
                   <td className="border text-center">
                     {row.progressId ?? "-"}
