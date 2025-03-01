@@ -47,7 +47,6 @@ interface OtherPayment {
 
 // ✅ 고객 상세 정보 (API 응답용)
 interface CustomerDetailData {
-  planPaymentStatus?: boolean;
   customerId: number;
   photoUrl: string;
   photoFile?: File | null;
@@ -61,6 +60,7 @@ interface CustomerDetailData {
   progressList: Progress[];
   planPayment: PlanPayment;
   otherPayment: OtherPayment[];
+  planPaymentStatus?: any;
 }
 
 // ✅ 고객 정보 수정 요청 DTO
@@ -109,10 +109,7 @@ interface CustomerState {
 export const convertToUpdateCustomerDetail = (
   data: CustomerDetailData
 ): UpdateCustomerDetail => {
-  if (!data.customerId) {
-    throw new Error("customerId가 없습니다.");
-  }
-  const convertedData: UpdateCustomerDetail = {
+  return {
     customerId: data.customerId,
     name: data.name,
     gender: data.gender,
@@ -123,11 +120,14 @@ export const convertToUpdateCustomerDetail = (
     memo: data.memo,
     photoFile: null, // 파일 업로드용
     photoUrl: data.photoUrl,
-    planPaymentStatus:
-      data.planPaymentStatus ?? data.planPayment?.status ?? false,
+    planPaymentStatus: data.planPayment.status,
     progressList: {
       addProgresses: [],
-      updateProgresses: data.progressList ?? [],
+      updateProgresses: data.progressList.map((progress) => ({
+        progressId: progress.progressId!,
+        date: progress.date,
+        content: progress.content,
+      })),
       deleteProgresses: [],
     },
     otherPayment: data.otherPayment.map((payment) => ({
@@ -139,8 +139,6 @@ export const convertToUpdateCustomerDetail = (
       status: payment.status,
     })),
   };
-  console.log("📦 변환된 데이터:", convertedData);
-  return convertedData;
 };
 
 const useCustomerStore = create<CustomerState>((set, get) => ({
@@ -164,16 +162,16 @@ const useCustomerStore = create<CustomerState>((set, get) => ({
         `/api/customer/getCustomerDetail/${customerId}`
       );
       const data = response.data.data;
+
       set(
         produce((state) => {
           state.customer = {
             ...data,
-            // progressList: {
-            //   addProgresses: [], // ✅ 추가된 진도 (초기 빈 배열)
-            //   updateProgresses: data.progressList || [], // ✅ API에서 받은 진도를 업데이트 리스트로 사용
-            //   deleteProgresses: [], // ✅ 삭제할 진도 (초기 빈 배열)
-            // },
-            progressList: data.progressList ?? [],
+            progressList: {
+              addProgresses: [], // ✅ 추가된 진도 (초기 빈 배열)
+              updateProgresses: data.progressList || [], // ✅ API에서 받은 진도를 업데이트 리스트로 사용
+              deleteProgresses: [], // ✅ 삭제할 진도 (초기 빈 배열)
+            },
             photoFile: null,
           };
         })
@@ -184,7 +182,7 @@ const useCustomerStore = create<CustomerState>((set, get) => ({
   },
 
   // ✅ 고객 정보 수정
-  updateCustomer: async (updatedData: Partial<UpdateCustomerDetail>) => {
+  updateCustomer: async (updatedData) => {
     try {
       const formData = new FormData();
       const requestData = {

@@ -10,12 +10,11 @@ import PlanPaymentForm from "./PlanPaymentForm";
 // import useAutoFocus from "@/hooks/plan/useAutoFocus";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getLabel } from "@/utils/mapping";
-import useCustomerStore, {
-  convertToUpdateCustomerDetail,
-} from "@/store/useCustomerStore";
+import useCustomerStore from "@/store/useCustomerStore";
 import {
   CustomerDetailData,
   UpdateCustomerDetail,
+  convertToUpdateCustomerDetail,
 } from "@/store/useCustomerStore";
 interface DetailMemberProps {
   customerId: number;

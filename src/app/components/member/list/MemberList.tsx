@@ -25,7 +25,7 @@ const MemberList = () => {
 
   // ✅ `data.pages`가 존재하는 경우 평탄화
   const members: Member[] =
-    data?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출
+    (data as any)?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출
   // ✅ `fetchNextPage`를 `useCallback`으로 고정
   const loadMore = useCallback(() => {
     if (hasNextPage) {
