@@ -1,42 +1,42 @@
 "use client";
 
 import React from "react";
-import { UpdateCustomerDetail } from "@/types/memberType";
 import Dropdown from "../../ui/Dropdown";
 import Camera from "../create/Camera";
 import { FaTrashAlt } from "react-icons/fa";
-import { useProgressList } from "@/hooks/progress/useProgressList";
-
+import useCustomerStore from "@/store/useCustomerStore";
+import type {
+  CustomerDetailData,
+  UpdateCustomerDetail,
+} from "@/store/useCustomerStore";
 interface DetailFormProps {
-  customerInfo: UpdateCustomerDetail;
-  onModify: (key: keyof UpdateCustomerDetail, value: any) => void;
+  customer: Partial<CustomerDetailData>;
+  onModify: (
+    updatedData: Partial<CustomerDetailData & UpdateCustomerDetail>
+  ) => void;
 }
+const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
+  const {
+    // updateCustomer,
+    addProgressRow,
+    updateProgressRow,
+    deleteProgressRow,
+  } = useCustomerStore();
 
-const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
-  const { rows, addRow, deleteRow, updateRow } = useProgressList({
-    data: customerInfo,
-    onModify,
-  });
+  if (!customer) {
+    return <div>회원 정보를 불러오는 중...</div>;
+  }
 
-  const handleInputChange = (key: keyof UpdateCustomerDetail, value: any) => {
-    onModify(key, value);
-  };
-
-  // const handleCapture = (photoFile: File) => {
-  //   setCustomerInfo((prevData) => ({ ...prevData, photoFile }));
-  //   onModify();
-  // };
-  // console.log("디테일 데이터", customerInfo);
   return (
     <div className="space-y-6 p-6">
       <div className="flex gap-8 items-start">
         <div className="flex flex-col items-center w-1/3">
           <Camera
-            onCapture={(file) => onModify("photoFile", file)}
+            onCapture={(file) => onModify({ photoFile: file })}
             photoUrl={
-              customerInfo.photoFile
-                ? URL.createObjectURL(customerInfo.photoFile)
-                : customerInfo.photoUrl
+              customer.photoFile
+                ? URL.createObjectURL(customer.photoFile)
+                : customer.photoUrl
             }
           />
         </div>
@@ -49,8 +49,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
               <input
                 type="text"
                 className="input-content w-full"
-                value={customerInfo.name}
-                onChange={(e) => handleInputChange("name", e.target.value)}
+                value={customer.name}
+                onChange={(e) => onModify({ name: e.target.value })}
               />
             </div>
             <div>
@@ -60,12 +60,11 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
                   { label: "여", value: "FEMALE" },
                   { label: "남", value: "MALE" },
                 ]}
-                defaultValue={customerInfo.gender}
+                defaultValue={customer.gender}
                 onChange={(value) =>
-                  handleInputChange(
-                    "gender",
-                    value === "MALE" ? "MALE" : "FEMALE"
-                  )
+                  onModify({
+                    gender: value === "MALE" ? "MALE" : "FEMALE",
+                  })
                 }
               />
             </div>
@@ -76,8 +75,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
               <input
                 type="date"
                 className="input-content w-full"
-                value={customerInfo.birthDate || ""}
-                onChange={(e) => handleInputChange("birthDate", e.target.value)}
+                value={customer.birthDate || ""}
+                onChange={(e) => onModify({ birthDate: e.target.value })}
               />
             </div>
             <div>
@@ -87,39 +86,37 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
               <input
                 type="text"
                 className="input-content w-full"
-                value={customerInfo.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
+                value={customer.phone}
+                onChange={(e) => onModify({ phone: e.target.value })}
               />
             </div>
           </div>
         </div>
       </div>
-
-      {/* 추가 입력 필드 */}
       <div>
         <div>
           <label className="block text-sm text-gray-600 mb-1">주소</label>
           <input
             type="text"
             className="input-content w-full mb-4"
-            value={customerInfo.address}
-            onChange={(e) => handleInputChange("address", e.target.value)}
+            value={customer.address}
+            onChange={(e) => onModify({ address: e.target.value })}
           />
         </div>
         <div>
           <label className="block text-sm text-gray-600 mb-1">방문 경로</label>
           <textarea
             className="input-content w-full"
-            value={customerInfo.visitPath}
-            onChange={(e) => handleInputChange("visitPath", e.target.value)}
+            value={customer.visitPath}
+            onChange={(e) => onModify({ visitPath: e.target.value })}
           ></textarea>
         </div>
         <div>
           <label className="block text-sm text-gray-600 mb-1">메모</label>
           <textarea
             className="input-content w-full"
-            value={customerInfo.memo}
-            onChange={(e) => handleInputChange("memo", e.target.value)}
+            value={customer.memo}
+            onChange={(e) => onModify({ memo: e.target.value })}
           ></textarea>
         </div>
       </div>
@@ -139,15 +136,25 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <tr key={row.progressId}>
-                  <td className="border text-center">{row.progressId}</td>
+              {/* ✅ `addProgresses` (새로운 진도, tempId 사용) */}
+              {(Array.isArray(customer.progressList)
+                ? customer.progressList
+                : []
+              ).map((row) => (
+                <tr key={row.progressId ?? row.tempId}>
+                  <td className="border text-center">
+                    {row.progressId ?? "-"}
+                  </td>
                   <td className="border">
                     <input
                       type="date"
                       value={row.date}
                       onChange={(e) =>
-                        updateRow(row.progressId, "date", e.target.value)
+                        updateProgressRow(
+                          row.progressId ?? row.tempId!,
+                          "date",
+                          e.target.value
+                        )
                       }
                       className="input-content w-full border-gray-300"
                     />
@@ -158,16 +165,21 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
                       value={row.content}
                       placeholder="내용 입력"
                       onChange={(e) =>
-                        updateRow(row.progressId, "content", e.target.value)
+                        updateProgressRow(
+                          row.progressId ?? row.tempId!,
+                          "content",
+                          e.target.value
+                        )
                       }
                       className="input-content w-full border-gray-300"
                     />
                   </td>
                   <td className="border text-center">
                     <button
-                      onClick={() => deleteRow(row.progressId)}
-                      className="text-gray-500 hover:text-red-600 transition duration-200"
-                      disabled={rows.length === 1} // 최소 한 줄 유지
+                      onClick={() =>
+                        deleteProgressRow(row.progressId ?? row.tempId!)
+                      }
+                      className="text-gray-500 hover:text-red-600"
                     >
                       <FaTrashAlt className="w-5 h-5" />
                     </button>
@@ -178,7 +190,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ customerInfo, onModify }) => {
           </table>
           <button
             className="absolute w-8 h-8 border border-1 left-1/2 transform -translate-x-1/2 translate-y-0 text-gray-500 bg-white hover:text-[#3C6229] hover:border-[#3C6229] rounded-full shadow-md flex items-center justify-center"
-            onClick={addRow}
+            onClick={addProgressRow}
           >
             +
           </button>

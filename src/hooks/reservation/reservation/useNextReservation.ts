@@ -21,14 +21,6 @@ export const useNextReservation = () => {
     .endOf("hour")
     .format("YYYY-MM-DDTHH:mm:ss");
 
-  // Time for testing
-  // const nextStartTime = "2024-12-02T10:00:00.000";
-  // const nextEndTime = "2024-12-02T10:59:59.000";
-
-  // console.log("currentTime", currentTime);
-  // console.log("nextStart", nextStartTime);
-  // console.log("nextEnd", nextEndTime);
-
   useEffect(() => {
     const loadNextTimeReservation = async () => {
       try {

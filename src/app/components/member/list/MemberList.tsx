@@ -1,67 +1,90 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MemberRow from "./MemberRow";
-import { memberAPI } from "@/api/member";
+// import { memberAPI } from "@/api/member";
 import { Member } from "@/types/memberType";
 import DetailMember from "../detail/DetailMember";
+import useCustomerStore from "@/store/useCustomerStore";
+import usePaginatedMembers from "@/hooks/member/usePaginatedMembers";
 
 const MemberList = () => {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [selectedMember, setSelectedMember] = useState<any>(null); // 선택된 회원 데이터
+  const { customers, fetchCustomers, fetchCustomer } = useCustomerStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
+    null
+  );
 
-  useEffect(() => {
-    const fetchMemberRow = async () => {
-      try {
-        const response = await memberAPI.getMemberRow(0);
-        setMembers(response.data || []);
-        console.log("회원 데이터:", response.data);
-      } catch (error) {
-        console.error("회원 데이터 조회 오류:", error);
-      }
-    };
-    fetchMemberRow();
-  }, []);
+  // useEffect(() => {
+  //   fetchCustomers();
+  // }, []);
 
-  const handleRowClick = async (customerId: number) => {
-    console.log("선택된 customerId:", customerId);
-    try {
-      const memberDetail = await memberAPI.getCustomerDetail(customerId); // API 호출로 상세정보 가져오기
-      console.log("상세 데이터의 data 필드:", memberDetail.data); // data 필드 확인
+  // ✅ React Query 무한스크롤 데이터 가져오기
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePaginatedMembers("ACTIVE");
 
-      // customerId를 포함하도록 데이터 가공
-      const enrichedMember = { ...memberDetail.data, customerId };
-
-      // 선택된 회원 정보 설정
-      setSelectedMember(enrichedMember);
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error("회원 상세 조회 오류:", error);
+  // ✅ `data.pages`가 존재하는 경우 평탄화
+  const members: Member[] =
+    (data as any)?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출
+  // ✅ `fetchNextPage`를 `useCallback`으로 고정
+  const loadMore = useCallback(() => {
+    if (hasNextPage) {
+      fetchNextPage();
     }
+  }, [hasNextPage, fetchNextPage]);
+
+  // ✅ 스크롤 이벤트 감지 (Intersection Observer)
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!observerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore(); // ✅ Intersection Observer에서 `loadMore` 호출
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  const handleRowClick = (customerId: number) => {
+    console.log("선택된 customerId:", customerId);
+    fetchCustomer(customerId); // Zustand에서 API 호출
+    setSelectedCustomerId(customerId);
+    setIsModalOpen(true);
   };
+
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedMember(null); // 모달 닫기 시 초기화
+    setSelectedCustomerId(null); // 모달 닫기 시 초기화
   };
-  // 상태 변화 확인
-  useEffect(() => {
-    console.log("selectedMember:", selectedMember);
-  }, [selectedMember, isModalOpen]);
 
   return (
-    <div className="grid grid-cols-1 rounded-xl gap-4 p-4 border border-gray-300  h-full overflow-y-auto">
+    <div className="grid grid-cols-1 rounded-xl gap-2 p-4 border border-gray-300  h-full overflow-y-auto">
       {members.map((member) => (
         <MemberRow
           key={member.customerId}
           member={member}
-          onClick={handleRowClick}
+          // onClick={handleRowClick}
+          onClick={() => handleRowClick(member.customerId)}
         />
       ))}
+      {/* ✅ 무한스크롤 트리거 요소 (마지막 요소 감지) */}
+      <div
+        ref={observerRef}
+        className="h-10 w-full flex justify-center items-center"
+      >
+        {isFetchingNextPage && (
+          <span className="text-gray-500">로딩 중...</span>
+        )}
+      </div>
       {/* 모달 */}
-      {isModalOpen && selectedMember && (
+      {isModalOpen && selectedCustomerId && (
         <>
-          {console.log("모달 렌더링 중")}
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative">
               <button
@@ -70,7 +93,10 @@ const MemberList = () => {
               >
                 닫기
               </button>
-              <DetailMember member={selectedMember} onClose={closeModal} />
+              <DetailMember
+                customerId={selectedCustomerId}
+                onClose={closeModal}
+              />
             </div>
           </div>
         </>

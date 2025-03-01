@@ -1,209 +1,187 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Accordion from "../../ui/Accordion";
 import BasicButton from "../../ui/BasicButton";
-import { CustomerDetailData, UpdateCustomerDetail } from "@/types/memberType";
 import Modal from "../../ui/Modal";
 import DetailForm from "./DetailForm";
 import { FaRegCircleCheck } from "react-icons/fa6";
-import { memberAPI } from "@/api/member";
 import PlanPaymentForm from "./PlanPaymentForm";
-import useAutoFocus from "@/hooks/plan/useAutoFocus";
+// import useAutoFocus from "@/hooks/plan/useAutoFocus";
 import { useAlertStore } from "@/store/useAlertStore";
-
-// ✅ `CustomerDetailData` → `UpdateCustomerDetail` 변환 함수
-const convertToUpdateCustomerDetail = (
-  data: CustomerDetailData
-): UpdateCustomerDetail => {
-  return {
-    customerId: data.customerId,
-    name: data.name,
-    gender: data.gender,
-    birthDate: data.birthDate,
-    phone: data.phone,
-    address: data.address,
-    visitPath: data.visitPath,
-    memo: data.memo,
-    photoFile: null, // 파일은 새로 업로드하는 경우만 포함
-    photoUrl: data.photoUrl,
-    planPaymentStatus: data.planPayment.status,
-    progressList: {
-      addProgresses: [],
-      updateProgresses: [],
-      deleteProgresses: [],
-    },
-    otherPayment: data.otherPayment.map((payment) => ({
-      paymentsMethod: payment.paymentsMethod || null,
-      otherPaymentMethod: payment.otherPaymentMethod || "",
-      registrationAt: payment.registrationAt,
-      content: payment.content,
-      price: payment.price,
-      status: payment.status,
-    })),
-  };
-};
+import { getLabel } from "@/utils/mapping";
+import useCustomerStore from "@/store/useCustomerStore";
+import {
+  CustomerDetailData,
+  UpdateCustomerDetail,
+  convertToUpdateCustomerDetail,
+} from "@/store/useCustomerStore";
 interface DetailMemberProps {
-  member: CustomerDetailData;
+  customerId: number;
   onClose: () => void;
 }
 
-const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
+const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
   const { showAlert } = useAlertStore();
   const [isOpen, setIsOpen] = useState(false);
   const [isModified, setIsModified] = useState(false);
-  // ✅ `CustomerDetailData` → `UpdateCustomerDetail`로 변환하여 상태 관리
-  const [customerInfo, setCustomerInfo] = useState<UpdateCustomerDetail>(
-    convertToUpdateCustomerDetail(member)
-  );
+  const { customer, fetchCustomer, updateCustomer, updateCustomerStatus } =
+    useCustomerStore();
+  // ✅ 수정용 임시 상태 추가
+  const [tempCustomer, setTempCustomer] =
+    useState<Partial<CustomerDetailData> | null>(null);
+
+  const loadCustomer = useCallback(() => {
+    fetchCustomer(customerId);
+  }, [customerId]);
+
+  useEffect(() => {
+    loadCustomer();
+  }, [loadCustomer]);
+
+  useEffect(() => {
+    if (customer) {
+      setTempCustomer((prev) => ({
+        ...prev!,
+        ...customer,
+        customerId: customer.customerId ?? prev?.customerId ?? customerId,
+        otherPayment: customer.otherPayment ?? [],
+      }));
+      setIsModified(false);
+    }
+  }, [customer]);
+
+  if (!tempCustomer) {
+    return <div className="p-6 text-center">⏳ 고객 정보를 불러오는 중...</div>;
+  }
 
   const toggleAccordion = () => {
     setIsOpen((prev) => !prev);
   };
 
   // ✅ 수정 핸들러
-  const handleModify = (key: keyof UpdateCustomerDetail, value: any) => {
-    setCustomerInfo((prev) => ({ ...prev, [key]: value }));
-    setIsModified(true);
-  };
+  const handleModify = (
+    updatedData: Partial<CustomerDetailData & UpdateCustomerDetail>
+  ) => {
+    console.log("🛠 수정된 데이터:", updatedData);
 
-  //✅ 저장 핸들러
-  const handleSave = async () => {
-    showAlert("변경된 정보를 저장하시겠습니까?", async () => {
-      const formData = new FormData();
-
-      const filteredAddProgresses =
-        customerInfo.progressList.addProgresses.filter(
-          (p) => p.date.trim() !== "" && p.content.trim() !== ""
-        );
-      const uniqueUpdateProgresses = Array.from(
-        new Map(
-          customerInfo.progressList.updateProgresses.map((p) => [
-            p.progressId,
-            p,
-          ])
-        ).values()
-      );
-      // 날짜 형식 변환
-      const formattedOtherPayment = customerInfo.otherPayment.map(
-        (payment) => ({
-          ...payment,
-          registrationAt: new Date(payment.registrationAt).toISOString(),
-        })
-      );
-
-      // JSON 데이터 Blob 변환
-      const requestData = {
-        customerId: customerInfo.customerId,
-        name: customerInfo.name,
-        gender: customerInfo.gender,
-        birthDate: customerInfo.birthDate,
-        phone: customerInfo.phone,
-        address: customerInfo.address,
-        visitPath: customerInfo.visitPath,
-        memo: customerInfo.memo,
-        planPaymentStatus: customerInfo.planPaymentStatus,
-        progressList: {
-          addProgresses: filteredAddProgresses,
-          updateProgresses: uniqueUpdateProgresses,
-          deleteProgresses: customerInfo.progressList.deleteProgresses,
-        },
-        otherPayment: formattedOtherPayment,
+    setTempCustomer((prev) => {
+      const newState = {
+        ...prev!,
+        ...updatedData,
+        planPaymentStatus:
+          updatedData.planPaymentStatus ?? prev?.planPaymentStatus,
+        otherPayment: updatedData.otherPayment ?? prev?.otherPayment,
+        progressList: Array.isArray(updatedData.progressList)
+          ? updatedData.progressList
+          : prev?.progressList ?? [],
       };
 
-      const jsonBlob = new Blob([JSON.stringify(requestData)], {
-        type: "application/json",
-      });
-      formData.append("req", jsonBlob);
+      console.log("✅ 업데이트된 tempCustomer:", newState);
+      return newState;
+    });
 
-      // 파일 추가 (선택적)
-      if (customerInfo.photoFile) {
-        formData.append("file", customerInfo.photoFile);
-      }
+    setIsModified(true); // 변경 감지
+  };
 
+  // ✅ 저장 핸들러
+  const handleSave = async () => {
+    if (!tempCustomer) return;
+
+    // ✅ tempCustomer가 CustomerDetailData 타입임을 보장
+    if (!tempCustomer.customerId) {
+      console.error("customerId가 없습니다.");
+      return;
+    }
+
+    showAlert("변경된 정보를 저장하시겠습니까?", async () => {
       try {
-        await memberAPI.updateCustomerDetail(formData as any);
-        alert("회원 정보가 성공적으로 수정되었습니다.");
-        setIsModified(false);
-        window.location.reload();
+        // ✅ tempCustomer를 CustomerDetailData로 타입 단언
+        const updateData = convertToUpdateCustomerDetail(
+          tempCustomer as CustomerDetailData
+        );
+        console.log("📦 서버로 보낼 데이터:", updateData);
+        await updateCustomer(updateData);
+        setIsModified(false); // 저장 후 변경 상태 초기화
+        fetchCustomer(customerId); // 최신 데이터 다시 불러오기
         onClose();
       } catch (error) {
         console.error("❌ 회원 정보 수정 실패:", error);
-        alert("회원 정보 수정 중 오류가 발생했습니다.");
       }
     });
   };
-
-  //✅ 회원삭제 핸들러
+  // ✅ 회원 삭제 핸들러
   const handleDelete = async () => {
     showAlert("정말 회원을 삭제하시겠습니까?", async () => {
       try {
-        await memberAPI.updateCustomerStatus(member.customerId, "DELETED");
-        alert("회원이 삭제되었습니다.");
+        await updateCustomerStatus(customerId, "DELETED");
         window.location.reload();
-        onClose();
+        onClose(); // 모달 닫기
       } catch (error) {
-        console.error("❌ 회원 정보 수정 실패:", error);
+        console.error("❌ 회원 삭제 실패:", error);
         alert("회원 삭제 중 오류가 발생했습니다.");
       }
     });
   };
+  // ✅ 기타 결제 수정
+  const modifyOtherPayment = (index: number, key: string, value: any) => {
+    setTempCustomer((prev) => {
+      if (!prev) return prev;
+
+      // ✅ 기존 상태를 복사하여 새로운 객체 생성 (강제 렌더링 유도)
+      const updatedPayments = prev.otherPayment
+        ? prev.otherPayment.map((payment, i) =>
+            i === index ? { ...payment, [key]: value } : payment
+          )
+        : [];
+
+      const newState = { ...prev, otherPayment: updatedPayments };
+
+      console.log("🛠 기타 결제 수정됨 (강제 렌더링 유도):", newState);
+      return { ...newState }; // 새로운 객체 반환
+    });
+  };
+  // ✅ 기타 결제 추가
   const addPayment = () => {
-    setCustomerInfo((prev) => ({
-      ...prev,
-      otherPayment: [
-        ...prev.otherPayment,
-        {
-          paymentsMethod: "CASH",
-          otherPaymentMethod: "",
-          registrationAt: new Date().toISOString(),
-          content: "",
-          price: 0,
-          status: false,
-        },
-      ],
-    }));
-    setIsModified(true);
+    if (!tempCustomer) return;
+
+    const newPayment = {
+      paymentsMethod: "CASH",
+      otherPaymentMethod: "",
+      registrationAt: new Date().toISOString(),
+      content: "",
+      price: 0,
+      status: false,
+    };
+
+    handleModify({
+      otherPayment: [...(tempCustomer.otherPayment ?? []), newPayment],
+    });
   };
 
-  // ✅ 기타 결제 추가
-  const updatePayment = (
-    index: number,
-    key: keyof UpdateCustomerDetail["otherPayment"][0],
-    value: any
-  ) => {
-    setCustomerInfo((prev) => {
-      const updatedPayments = prev.otherPayment.map((payment, i) =>
-        i === index ? { ...payment, [key]: value } : payment
-      );
-      return { ...prev, otherPayment: updatedPayments };
-    });
-    setIsModified(true);
-  };
   // ✅ 기타 결제 삭제
   const deletePayment = (index: number) => {
-    setCustomerInfo((prev) => ({
-      ...prev,
-      otherPayment: prev.otherPayment.filter((_, i) => i !== index),
-    }));
-    setIsModified(true);
+    if (!tempCustomer) return;
+
+    const updatedPayments =
+      tempCustomer.otherPayment?.filter((_, i) => i !== index) ?? [];
+
+    handleModify({ otherPayment: updatedPayments });
   };
-  // ✅ 첫 번째 결제 내역에 포커스를 맞출 수 있도록 useAutoFocus 사용
-  const firstPaymentInputRef = useAutoFocus<HTMLInputElement>(isOpen);
-  console.log("디테일 데이터", customerInfo);
+
   return (
     <Modal
-      isOpen={!!member}
+      isOpen={!!customer}
       onClose={onClose}
       leftChildren={
-        <DetailForm customerInfo={customerInfo} onModify={handleModify} />
+        <DetailForm customer={tempCustomer} onModify={handleModify} />
       }
       rightChildren={
         <div className="relative h-full flex flex-col">
           <div className="flex-grow">
             {/* 이용권 결제 정보 */}
 
-            <PlanPaymentForm planPayment={member.planPayment} />
+            <PlanPaymentForm customer={tempCustomer} onModify={handleModify} />
             {/* 기타 결제 정보 */}
             <Accordion
               title="기타 결제 내역"
@@ -211,7 +189,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
               toggleOpen={toggleAccordion}
             >
               <div className="bg-white rounded-lg p-4 space-y-4">
-                {customerInfo.otherPayment.map((payment, index) => (
+                {customer?.otherPayment.map((payment, index) => (
                   <div
                     key={index}
                     className="border p-4 rounded shadow-sm relative bg-gray-50"
@@ -219,15 +197,10 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                     <div className="mb-4">
                       <h4 className="text-sm font-bold my-2">결제 내용</h4>
                       <input
-                        ref={
-                          index === customerInfo.otherPayment.length - 1
-                            ? firstPaymentInputRef
-                            : null
-                        }
                         type="text"
                         value={payment.content}
                         onChange={(e) =>
-                          updatePayment(index, "content", e.target.value)
+                          modifyOtherPayment(index, "content", e.target.value)
                         }
                         className="p-4 input-content"
                       />
@@ -238,7 +211,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         type="text"
                         value={payment.price}
                         onChange={(e) =>
-                          updatePayment(
+                          modifyOtherPayment(
                             index,
                             "price",
                             Number(e.target.value) || 0
@@ -256,7 +229,11 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                             key={method}
                             value={payment.paymentsMethod || ""}
                             onClick={() =>
-                              updatePayment(index, "paymentsMethod", method)
+                              modifyOtherPayment(
+                                index,
+                                "paymentsMethod",
+                                method
+                              )
                             }
                             className={`flex items-center justify-center py-2 rounded-md text-sm font-semibold border ${
                               payment.paymentsMethod === method
@@ -264,13 +241,14 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                                 : "bg-white text-gray-600 border-gray-300"
                             }`}
                           >
-                            {method === "CASH"
+                            {getLabel(method)}
+                            {/* {method === "CASH"
                               ? "현금"
                               : method === "CARD"
                               ? "카드"
                               : method === "TRANSFER"
                               ? "계좌이체"
-                              : "기타"}
+                              : "기타"} */}
                           </button>
                         ))}
                       </div>
@@ -281,7 +259,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                           placeholder="기타 입력"
                           value={payment.otherPaymentMethod || ""}
                           onChange={(e) =>
-                            updatePayment(
+                            modifyOtherPayment(
                               index,
                               "otherPaymentMethod",
                               e.target.value
@@ -298,7 +276,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                         type="date"
                         value={payment.registrationAt.split("T")[0]}
                         onChange={(e) =>
-                          updatePayment(
+                          modifyOtherPayment(
                             index,
                             "registrationAt",
                             new Date(e.target.value).toISOString()
@@ -322,7 +300,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ member, onClose }) => {
                     <div
                       className="flex items-center gap-2 cursor-pointer"
                       onClick={() =>
-                        updatePayment(index, "status", !payment.status)
+                        modifyOtherPayment(index, "status", !payment.status)
                       }
                     >
                       <FaRegCircleCheck

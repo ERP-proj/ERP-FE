@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { usePathname } from "next/navigation";
 import Alert from "./components/ui/Alert";
+import Providers from "./providers";
 
 export default function RootLayout({
   children,
@@ -40,7 +41,7 @@ export default function RootLayout({
         className="antialiased overflow-hidden h-screen m-0 flex items-center justify-center w-full"
       >
         <main className="flex-1 w-full max-w-[1820px] h-fit">
-          {children}
+          <Providers>{children}</Providers>
           <Alert />
         </main>
       </body>
