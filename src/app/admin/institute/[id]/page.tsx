@@ -7,6 +7,8 @@ import Table from "@/app/components/ui/Table";
 import BasicButton from "@/app/components/ui/BasicButton";
 import OwnerRegisterButton from "@/app/components/admin/institute/OwnerRegisterButton";
 import EditOwnerModal from "@/app/components/admin/institute/EditOwnerModal";
+import Header from "@/app/components/admin/Header";
+import SideBar from "@/app/components/admin/SideBar";
 
 const mockStoreDetails = {
   id: 6,
@@ -59,25 +61,42 @@ const InstituteDetailPage = () => {
     })) || [];
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold mb-4">{store.name}</h2>
-      {/* 버튼 영역 */}
-      <div className="flex justify-end mt-4 mb-4 gap-4">
-        <OwnerRegisterButton />
-        <BasicButton color="danger" size="medium" border>
-          삭제
-        </BasicButton>
+    <div className="flex h-screen">
+      {/* 사이드바 */}
+      <div className="flex-shrink-0">
+        <SideBar />
       </div>
-      {/* 점주 목록 테이블 */}
-      <Table columns={columns} data={formattedData} selectable />
-      {/* 점주 수정 모달 */}
-      {selectedOwner && (
-        <EditOwnerModal
-          isOpen={!!selectedOwner}
-          onClose={() => setSelectedOwner(null)}
-          owner={selectedOwner}
-        />
-      )}
+
+      {/* 오른쪽 메인 레이아웃 */}
+      <div className="flex flex-col flex-1">
+        {/* 헤더 (고정, 가로 전체) */}
+        <Header />
+
+        {/* 버튼 영역 */}
+        <div className="flex flex-1 flex-col items-center p-6">
+          <div className="w-full max-w-5xl bg-white p-6 rounded-lg ">
+            <div className="flex flex-row justify-between">
+              <h2 className="text-lg font-semibold mb-4">{store.name}</h2>
+              <div className="flex gap-2">
+                <OwnerRegisterButton />
+                <BasicButton color="danger" size="medium" border>
+                  삭제
+                </BasicButton>
+              </div>
+            </div>
+            {/* 점주 목록 테이블 */}
+            <Table columns={columns} data={formattedData} selectable />
+            {/* 점주 수정 모달 */}
+            {selectedOwner && (
+              <EditOwnerModal
+                isOpen={!!selectedOwner}
+                onClose={() => setSelectedOwner(null)}
+                owner={selectedOwner}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
