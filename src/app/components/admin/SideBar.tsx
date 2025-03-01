@@ -21,7 +21,7 @@ function SideBar() {
   console.log(pathname);
 
   return (
-    <div className="flex flex-col h-full w-[130px] z-999">
+    <div className="flex flex-col h-full w-[130px] z-999 ">
       {/* 상단 버튼 그룹 */}
       <div className="flex flex-grow flex-col gap-4 justify-center">
         <Button className="py-6" onClick={handleNavigateInstitute}>

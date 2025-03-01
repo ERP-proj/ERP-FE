@@ -8,6 +8,11 @@ export const putUpdateReservations = async (data: {
   memo: string;
   seatNumber: number;
   attendanceStatus: string;
+  progressList: {
+    addProgresses: { date: string; content: string }[];
+    updateProgresses: { progressId: number; date: string; content: string };
+    deleteProgresses: { progressId: number };
+  };
 }) => {
   try {
     const response = await apiClient.put(
@@ -19,10 +24,11 @@ export const putUpdateReservations = async (data: {
         memo: data?.memo,
         seatNumber: data?.seatNumber,
         attendanceStatus: data?.attendanceStatus,
+        progressList: data?.progressList,
       }
     );
     if (response.status === 200) {
-      console.log("수정 성공");
+      console.log("🥹 putUpdateReservations 성공");
     }
   } catch (error: unknown) {
     const errorMessage = errorHandler(error);

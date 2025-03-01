@@ -10,9 +10,15 @@ interface TableProps {
   columns: Column[]; // 열 정보 배열
   data: any[]; // 데이터 배열
   selectable?: boolean; // 체크박스 여부
+  onRowClick?: (id: number) => void;
 }
 
-const Table: React.FC<TableProps> = ({ columns, data, selectable = false }) => {
+const Table: React.FC<TableProps> = ({
+  onRowClick,
+  columns,
+  data,
+  selectable = false,
+}) => {
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
   const toggleRow = (index: number) => {
@@ -50,6 +56,7 @@ const Table: React.FC<TableProps> = ({ columns, data, selectable = false }) => {
                 className={`border-b transition-colors duration-200 ${
                   isSelected ? "bg-[#F2F8ED]" : "hover:bg-[#F2F8ED]"
                 }`}
+                onClick={() => onRowClick && onRowClick(row.id)}
               >
                 {selectable && (
                   <td className="p-3 border text-center">

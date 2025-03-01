@@ -16,7 +16,7 @@ const Alert = () => {
         <GoAlert className="text-yellow-500 text-4xl mb-2" />
         <p className="text-lg text-gray-800">{message}</p>
         <div className="flex justify-center gap-4 mt-4">
-          <BasicButton onClick={closeAlert} color="secondary">
+          <BasicButton onClick={closeAlert} color="secondary" border>
             취소
           </BasicButton>
           <BasicButton
