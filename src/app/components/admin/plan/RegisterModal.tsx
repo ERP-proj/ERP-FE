@@ -108,7 +108,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
           <p className="text-sm font-medium mb-2">이용가능시간</p>
           <input
             type="text"
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full input-content"
             placeholder="이용가능시간을 입력해주세요"
             value={availableTime}
             onChange={(e) => setAvailableTime(e.target.value)}
@@ -139,7 +139,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
           <p className="text-sm font-medium mb-2">금액</p>
           <input
             type="number"
-            className="w-full p-2 border border-gray-300 rounded-lg"
+            className="w-full input-content"
             placeholder="이용권 금액을 입력해주세요"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
