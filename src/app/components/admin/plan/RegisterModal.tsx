@@ -148,10 +148,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ isOpen, onClose }) => {
 
         {/* 버튼 */}
         <div className="flex justify-end gap-2">
-          <BasicButton color="gray" onClick={onClose}>
+          <BasicButton color="secondary" size="large" border onClick={onClose}>
             취소
           </BasicButton>
-          <BasicButton color="primary" onClick={handleRegister}>
+          <BasicButton color="primary" size="large" onClick={handleRegister}>
             등록 완료
           </BasicButton>
         </div>

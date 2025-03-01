@@ -2,9 +2,10 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { MdModeEdit } from "react-icons/md"; // 연필 아이콘
+import { MdModeEdit } from "react-icons/md";
 import Table from "@/app/components/ui/Table";
 import BasicButton from "@/app/components/ui/BasicButton";
+import OwnerRegisterButton from "@/app/components/admin/institute/OwnerRegisterButton";
 
 const mockStoreDetails = {
   id: 6,
@@ -30,31 +31,32 @@ const columns = [
 ];
 
 const InstituteDetailPage = () => {
-  const { id } = useParams(); // URL에서 ID 가져오기
-  //   const router = useRouter();
+  const { id } = useParams();
   const [store, setStore] = useState<any>(null);
 
   useEffect(() => {
-    // ✅ API 대신 목데이터 적용
     if (id === "6") {
       setStore(mockStoreDetails);
     }
   }, [id]);
 
-  const formattedData = store.owners.map((owner: any) => ({
-    점주명: owner.name,
-    아이디: owner.username,
-    "정보 수정": <MdModeEdit className="text-gray-500 cursor-pointer" />,
-  }));
+  if (!store) {
+    return <p className="text-center py-4">⏳ 데이터를 불러오는 중...</p>;
+  }
+
+  const formattedData =
+    store?.owners?.map((owner: any) => ({
+      점주명: owner.name,
+      아이디: owner.username,
+      "정보 수정": <MdModeEdit className="text-gray-500 cursor-pointer" />,
+    })) || [];
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg">
       <h2 className="text-2xl font-semibold mb-4">{store.name}</h2>
       {/* 버튼 영역 */}
       <div className="flex justify-end mt-4 mb-4 gap-4">
-        <BasicButton color="primary" size="medium">
-          점주 등록
-        </BasicButton>
+        <OwnerRegisterButton />
         <BasicButton color="danger" size="medium" border>
           삭제
         </BasicButton>

@@ -52,7 +52,7 @@ const MainTable: React.FC = () => {
             columns={storeColumns}
             data={institutes}
             selectable
-            onRowClick={handleRowClick} // ✅ 추가된 props
+            onRowClick={handleRowClick}
           />
         )}
       </div>
