@@ -2,15 +2,19 @@ import React, { useEffect, useState } from "react";
 import Table from "../../ui/Table";
 import { adminAPI } from "@/api/admin/institute";
 import { useRouter } from "next/navigation";
+import { MdModeEdit } from "react-icons/md";
+import EditStoreModal from "./EditStoreModal";
 
 const storeColumns = [
-  { name: "매장명", width: "70%" },
-  { name: "영업시간", width: "40%" },
+  { name: "매장명", width: "45%" },
+  { name: "영업시간", width: "50%" },
+  { name: "수정", width: "15%" },
 ];
 
 const MainTable: React.FC = () => {
   const [institutes, setInstitutes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedStore, setSelectedStore] = useState<any>(null); // 수정할 매장
   const router = useRouter();
 
   useEffect(() => {
@@ -24,6 +28,17 @@ const MainTable: React.FC = () => {
             0,
             5
           )}`, // HH:MM 형식으로 변환
+          수정: (
+            <div className="flex justify-center items-center h-full">
+              <MdModeEdit
+                className="text-gray-500 text-xl cursor-pointer hover:text-[#3C6229] transition"
+                onClick={(e) => {
+                  e.stopPropagation(); // ✅ 행 클릭과 수정 클릭 이벤트 분리
+                  setSelectedStore(store); // 선택한 매장 정보 저장
+                }}
+              />
+            </div>
+          ),
         }));
 
         setInstitutes(formattedData);
@@ -39,7 +54,7 @@ const MainTable: React.FC = () => {
 
   // ✅ 행 클릭 시 상세 페이지 이동
   const handleRowClick = (id: number) => {
-    router.push(`/admin/institute/${id}`); // ✅ 동적 라우팅
+    router.push(`/admin/institute/${id}`);
   };
 
   return (
@@ -53,6 +68,14 @@ const MainTable: React.FC = () => {
             data={institutes}
             selectable
             onRowClick={handleRowClick}
+          />
+        )}
+        {/* 점주 수정 모달 */}
+        {selectedStore && (
+          <EditStoreModal
+            isOpen={!!selectedStore}
+            onClose={() => setSelectedStore(null)}
+            store={selectedStore}
           />
         )}
       </div>
