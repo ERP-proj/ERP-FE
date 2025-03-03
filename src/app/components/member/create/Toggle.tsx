@@ -50,6 +50,7 @@ const Toggle: React.FC<ToggleProps> = ({
       onClick={handleToggleChange}
     >
       <FaRegCircleCheck
+        data-testid="toggle-icon"
         className={`w-5 h-5 ${
           status ? "text-[#3C6229]" : "text-gray-300"
         } transition-colors duration-200`}
