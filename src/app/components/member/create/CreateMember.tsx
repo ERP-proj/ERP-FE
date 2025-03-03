@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
-import Toggle from "../../ui/Toggle";
+import Toggle from "./Toggle";
 import RegisterForm from "./RegisterForm";
 import { memberAPI } from "@/api/member";
 import Plan from "./Plan";

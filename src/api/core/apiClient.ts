@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
       try {
         // Refresh Token을 이용한 새로운 Access Token 요청
         const refreshResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/reissueToken`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}api/account/reissueToken`,
           null,
           {
             params: { refreshToken },
