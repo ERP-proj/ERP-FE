@@ -10,11 +10,12 @@ import PlanPaymentForm from "./PlanPaymentForm";
 // import useAutoFocus from "@/hooks/plan/useAutoFocus";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getLabel } from "@/utils/mapping";
-import useCustomerStore from "@/store/useCustomerStore";
+import useCustomerStore, {
+  convertToUpdateCustomerDetail,
+} from "@/store/useCustomerStore";
 import {
   CustomerDetailData,
   UpdateCustomerDetail,
-  convertToUpdateCustomerDetail,
 } from "@/store/useCustomerStore";
 interface DetailMemberProps {
   customerId: number;
@@ -33,6 +34,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
 
   const loadCustomer = useCallback(() => {
     fetchCustomer(customerId);
+    console.log("상세데이터", customer);
   }, [customerId]);
 
   useEffect(() => {
@@ -65,30 +67,21 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
   ) => {
     console.log("🛠 수정된 데이터:", updatedData);
 
-    setTempCustomer((prev) => {
-      const newState = {
-        ...prev!,
-        ...updatedData,
-        planPaymentStatus:
-          updatedData.planPaymentStatus ?? prev?.planPaymentStatus,
-        otherPayment: updatedData.otherPayment ?? prev?.otherPayment,
-        progressList: Array.isArray(updatedData.progressList)
-          ? updatedData.progressList
-          : prev?.progressList ?? [],
-      };
+    setTempCustomer((prev) => ({
+      ...prev!,
+      ...updatedData,
+      progressList: Array.isArray(updatedData.progressList)
+        ? updatedData.progressList
+        : prev?.progressList ?? [],
+    }));
 
-      console.log("✅ 업데이트된 tempCustomer:", newState);
-      return newState;
-    });
-
-    setIsModified(true); // 변경 감지
+    setIsModified(true);
   };
 
   // ✅ 저장 핸들러
   const handleSave = async () => {
     if (!tempCustomer) return;
 
-    // ✅ tempCustomer가 CustomerDetailData 타입임을 보장
     if (!tempCustomer.customerId) {
       console.error("customerId가 없습니다.");
       return;
@@ -96,20 +89,22 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
 
     showAlert("변경된 정보를 저장하시겠습니까?", async () => {
       try {
-        // ✅ tempCustomer를 CustomerDetailData로 타입 단언
         const updateData = convertToUpdateCustomerDetail(
           tempCustomer as CustomerDetailData
         );
         console.log("📦 서버로 보낼 데이터:", updateData);
         await updateCustomer(updateData);
-        setIsModified(false); // 저장 후 변경 상태 초기화
-        fetchCustomer(customerId); // 최신 데이터 다시 불러오기
+        // ✅ 최신 데이터 다시 불러오기
+
+        setIsModified(false);
+        fetchCustomer(customerId);
         onClose();
       } catch (error) {
         console.error("❌ 회원 정보 수정 실패:", error);
       }
     });
   };
+
   // ✅ 회원 삭제 핸들러
   const handleDelete = async () => {
     showAlert("정말 회원을 삭제하시겠습니까?", async () => {
