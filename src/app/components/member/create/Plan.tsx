@@ -44,18 +44,23 @@ const Plan: React.FC<{
   useEffect(() => {
     if (plans.length > 0) {
       const filtered = plans.filter((plan) => {
-        if (selectedGroup2 === "시간제") {
-          return plan.planType === "TIME_BASED";
-        } else if (selectedGroup2 === "기간제") {
-          return plan.planType === "PERIOD_BASED";
-        } else {
-          return true;
-        }
+        const matchesPlanType =
+          selectedGroup2 === "시간제"
+            ? plan.planType === "TIME_BASED"
+            : plan.planType === "PERIOD_BASED";
+
+        const matchesCourseType =
+          selectedGroup3 === "취득"
+            ? plan.courseType === "ACQUISITION"
+            : selectedGroup3 === "장롱"
+            ? plan.courseType === "REFRESHER"
+            : plan.courseType === "STANDARD";
+
+        return matchesPlanType && matchesCourseType;
       });
-      console.log("Filtered Plans:", filtered);
       setFilteredPlans(filtered);
     }
-  }, [selectedGroup2, plans]);
+  }, [selectedGroup2, selectedGroup3, plans]);
 
   return (
     <div className="mb-4 p-4">
