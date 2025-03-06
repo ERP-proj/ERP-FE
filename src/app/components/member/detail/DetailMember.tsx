@@ -235,7 +235,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
                             e.target.value
                           )
                         }
-                        min="0" // HTML5 기본 검증 추가 (음수 입력 방지)
+                        min="0"
                         className="w-full input-content"
                       />
                     </div>

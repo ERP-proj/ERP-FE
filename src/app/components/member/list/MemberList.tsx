@@ -9,7 +9,7 @@ import useCustomerStore from "@/store/useCustomerStore";
 import usePaginatedMembers from "@/hooks/member/usePaginatedMembers";
 
 const MemberList = () => {
-  const { customers, fetchCustomers, fetchCustomer } = useCustomerStore();
+  const { fetchCustomer } = useCustomerStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
     null

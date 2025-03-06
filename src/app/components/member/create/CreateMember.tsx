@@ -93,7 +93,7 @@ const CreateMember: React.FC<{
   // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
-  const { discountRate, finalPrice, errorMessage, handleDiscountChange } =
+  const { discountRate, finalPrice, handleDiscountChange } =
     useDiscount(selectedPlanPrice);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;

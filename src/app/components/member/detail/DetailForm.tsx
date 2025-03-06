@@ -27,16 +27,16 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
     { progressId: null, date: "", content: "" },
   ]);
 
+  // ✅ 고객 데이터 변경 시, 진도 리스트도 업데이트
+  useEffect(() => {
+    if (customer?.progressList) {
+      setProgressList(customer.progressList);
+    }
+  }, [customer?.progressList]);
+
   if (!customer) {
     return <div>회원 정보를 불러오는 중...</div>;
   }
-
-  // ✅ 고객 데이터 변경 시, 진도 리스트도 업데이트
-  useEffect(() => {
-    if (customer.progressList) {
-      setProgressList(customer.progressList);
-    }
-  }, [customer.progressList]);
 
   // ✅ 신규 진도 추가
   const addRow = () => {
