@@ -250,6 +250,7 @@ const CreateMember: React.FC<{
 
                   <div className="mb-4">
                     <Plan
+                      selectedPlanId={formData.planId}
                       onSelectPlan={(planId, planName, price) => {
                         handleInputChange("planId", planId);
                         setSelectedPlanPrice(price);

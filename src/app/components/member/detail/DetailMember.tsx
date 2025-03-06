@@ -7,7 +7,6 @@ import Modal from "../../ui/Modal";
 import DetailForm from "./DetailForm";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import PlanPaymentForm from "./PlanPaymentForm";
-// import useAutoFocus from "@/hooks/plan/useAutoFocus";
 import { useAlertStore } from "@/store/useAlertStore";
 import { getLabel } from "@/utils/mapping";
 import useCustomerStore, {

@@ -14,8 +14,9 @@ interface PlanOption {
 }
 
 const Plan: React.FC<{
+  selectedPlanId: number;
   onSelectPlan: (planId: number, planName: string, price: number) => void;
-}> = ({ onSelectPlan }) => {
+}> = ({ onSelectPlan, selectedPlanId }) => {
   const [plans, setPlans] = useState<PlanOption[]>([]);
   const [filteredPlans, setFilteredPlans] = useState<PlanOption[]>([]);
   const [selectedGroup1, setSelectedGroup1] = useState("1종");
@@ -156,7 +157,7 @@ const Plan: React.FC<{
           value: plan.id.toString(), // ID를 value로 사용
         }))}
         placeholder="이용권 선택"
-        defaultValue=""
+        defaultValue={selectedPlanId ? selectedPlanId.toString() : ""}
         className="w-full"
         onChange={(selectedOption) => {
           const selectedPlan = filteredPlans.find(
