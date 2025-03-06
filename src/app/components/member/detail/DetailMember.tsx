@@ -233,9 +233,10 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
                           handleOtherPaymentChange(
                             index,
                             "price",
-                            Number(e.target.value)
+                            e.target.value
                           )
                         }
+                        min="0" // HTML5 기본 검증 추가 (음수 입력 방지)
                         className="w-full input-content"
                       />
                     </div>

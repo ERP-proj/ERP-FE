@@ -253,7 +253,6 @@ const CreateMember: React.FC<{
                       onSelectPlan={(planId, planName, price) => {
                         handleInputChange("planId", planId);
                         setSelectedPlanPrice(price);
-                        // setSelectedPlanName(planName);
                       }}
                     />
                   </div>
@@ -282,16 +281,11 @@ const CreateMember: React.FC<{
                         <h4 className="text-sm font-bold mb-2">할인율 (%)</h4>
                         <input
                           type="number"
-                          placeholder="할인율 입력"
                           className="w-full input-content"
                           value={discountRate}
+                          min="0"
                           onChange={(e) => handleDiscountChange(e)}
                         />
-                        {errorMessage && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errorMessage}
-                          </p>
-                        )}
                       </div>
 
                       <div className="w-1/2">
