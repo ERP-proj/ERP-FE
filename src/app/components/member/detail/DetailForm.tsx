@@ -13,7 +13,7 @@ interface Progress {
   progressId: number | null;
   date: string;
   content: string;
-  isDeleted?: boolean;
+  deleted?: boolean;
 }
 
 interface DetailFormProps {
@@ -33,10 +33,10 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
 
   // ✅ 고객 데이터 변경 시, 진도 리스트도 업데이트
   useEffect(() => {
-    if (progressList) {
-      setProgressList(progressList);
+    if (customer.progressList) {
+      setProgressList(customer.progressList);
     }
-  }, [progressList]);
+  }, [customer.progressList]);
 
   // ✅ 신규 진도 추가
   const addRow = () => {
@@ -54,10 +54,10 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
     onModify({ progressList: updatedList });
   };
 
-  // ✅ 진도 삭제 (isDeleted = true 추가)
+  // ✅ 진도 삭제
   const deleteRow = (index: number) => {
     const updatedList = progressList.map((item, i) =>
-      i === index ? { ...item, isDeleted: true } : item
+      i === index ? { ...item, deleted: true } : item
     );
     setProgressList(updatedList);
     onModify({ progressList: updatedList });
@@ -173,7 +173,7 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
             </thead>
             <tbody>
               {progressList
-                .filter((row) => !row.isDeleted) // ✅ 삭제된 진도 숨김
+                .filter((row) => !row.deleted) // ✅ 삭제된 진도 숨김
                 .map((row, index) => (
                   <tr key={row.progressId ?? `temp-${index}`}>
                     <td className="border text-center">{index + 1}</td>

@@ -86,12 +86,18 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
       console.error("customerId가 없습니다.");
       return;
     }
+    // ✅ progressList에서 빈 행을 필터링
+    const filteredProgressList =
+      tempCustomer.progressList?.filter(
+        (item) => item.date.trim() !== "" && item.content.trim() !== ""
+      ) ?? [];
 
     showAlert("변경된 정보를 저장하시겠습니까?", async () => {
       try {
-        const updateData = convertToUpdateCustomerDetail(
-          tempCustomer as CustomerDetailData
-        );
+        const updateData = {
+          ...convertToUpdateCustomerDetail(tempCustomer as CustomerDetailData),
+          progressList: filteredProgressList,
+        };
         console.log("📦 서버로 보낼 데이터:", updateData);
         await updateCustomer(updateData);
         // ✅ 최신 데이터 다시 불러오기
