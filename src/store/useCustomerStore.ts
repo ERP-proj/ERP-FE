@@ -161,10 +161,6 @@ const useCustomerStore = create<CustomerState>((set, get) => ({
 
       const requestData = {
         ...updatedData,
-        otherPayment: updatedData.otherPayment?.map((payment) => ({
-          ...payment,
-          registrationAt: new Date(payment.registrationAt).toISOString(),
-        })),
       };
 
       // ✅ 진도표 데이터가 있으면 추가
