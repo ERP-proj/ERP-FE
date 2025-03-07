@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
     if (isAuthenticated) {
       router.push("/");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
