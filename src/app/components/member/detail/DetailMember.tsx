@@ -110,6 +110,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
           ...convertToUpdateCustomerDetail(tempCustomer as CustomerDetailData),
           progressList: filteredProgressList,
           otherPayment: filteredOtherPayment ?? [],
+          planPaymentStatus: tempCustomer.planPaymentStatus,
         };
         console.log("📦 서버로 보낼 데이터:", updateData);
         await updateCustomer(updateData);
