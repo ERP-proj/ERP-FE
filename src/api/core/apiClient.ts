@@ -8,11 +8,13 @@ const apiClient = axios.create({
   },
   timeout: 10000,
 });
+// ✅ 최신 상태 가져오기 (함수 사용)
+const getAccessToken = () => useAuthStore.getState().accessToken;
 
 // 요청 인터셉터: 모든 API 요청에 Access Token 자동 추가
 apiClient.interceptors.request.use(
   (config) => {
-    const accessToken = useAuthStore.getState().accessToken;
+    const accessToken = getAccessToken();
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -35,7 +37,7 @@ apiClient.interceptors.response.use(
       try {
         // Refresh Token을 이용한 새로운 Access Token 요청
         const refreshResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}api/account/reissueToken`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/account/reissueToken`,
           null,
           {
             params: { refreshToken },

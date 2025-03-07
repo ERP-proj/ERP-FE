@@ -1,14 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Dropdown from "../../ui/Dropdown";
 import Camera from "../create/Camera";
 import { FaTrashAlt } from "react-icons/fa";
-import useCustomerStore from "@/store/useCustomerStore";
 import type {
   CustomerDetailData,
   UpdateCustomerDetail,
 } from "@/store/useCustomerStore";
+
+interface Progress {
+  progressId: number | null;
+  date: string;
+  content: string;
+  deleted?: boolean;
+}
+
 interface DetailFormProps {
   customer: Partial<CustomerDetailData>;
   onModify: (
@@ -16,16 +23,45 @@ interface DetailFormProps {
   ) => void;
 }
 const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
-  const {
-    // updateCustomer,
-    addProgressRow,
-    updateProgressRow,
-    deleteProgressRow,
-  } = useCustomerStore();
+  const [progressList, setProgressList] = useState<Progress[]>([
+    { progressId: null, date: "", content: "" },
+  ]);
+
+  // ✅ 고객 데이터 변경 시, 진도 리스트도 업데이트
+  useEffect(() => {
+    if (customer?.progressList) {
+      setProgressList(customer.progressList);
+    }
+  }, [customer?.progressList]);
 
   if (!customer) {
     return <div>회원 정보를 불러오는 중...</div>;
   }
+
+  // ✅ 신규 진도 추가
+  const addRow = () => {
+    const newRow = { progressId: null, date: "", content: "" };
+    setProgressList([...progressList, newRow]);
+    onModify({ progressList: [...progressList, newRow] });
+  };
+
+  // ✅ 진도 내용 수정
+  const updateRow = (index: number, field: keyof Progress, value: string) => {
+    const updatedList = progressList.map((item, i) =>
+      i === index ? { ...item, [field]: value } : item
+    );
+    setProgressList(updatedList);
+    onModify({ progressList: updatedList });
+  };
+
+  // ✅ 진도 삭제
+  const deleteRow = (index: number) => {
+    const updatedList = progressList.map((item, i) =>
+      i === index ? { ...item, deleted: true } : item
+    );
+    setProgressList(updatedList);
+    onModify({ progressList: updatedList });
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -120,9 +156,9 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
           ></textarea>
         </div>
       </div>
-      {/* 진도표 */}
+      {/* ✅ 진도표 */}
       <div>
-        <label className="w-full block text-sm text-gray-600 mb-1 ">
+        <label className="w-full block text-sm text-gray-600 mb-1">
           진도표
         </label>
         <div className="relative">
@@ -136,61 +172,49 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
               </tr>
             </thead>
             <tbody>
-              {/* ✅ `addProgresses` (새로운 진도, tempId 사용) */}
-              {(Array.isArray(customer.progressList)
-                ? customer.progressList
-                : []
-              ).map((row) => (
-                <tr key={row.progressId ?? row.tempId}>
-                  <td className="border text-center">
-                    {row.progressId ?? "-"}
-                  </td>
-                  <td className="border">
-                    <input
-                      type="date"
-                      value={row.date}
-                      onChange={(e) =>
-                        updateProgressRow(
-                          row.progressId ?? row.tempId!,
-                          "date",
-                          e.target.value
-                        )
-                      }
-                      className="input-content w-full border-gray-300"
-                    />
-                  </td>
-                  <td className="border p-0">
-                    <input
-                      type="text"
-                      value={row.content}
-                      placeholder="내용 입력"
-                      onChange={(e) =>
-                        updateProgressRow(
-                          row.progressId ?? row.tempId!,
-                          "content",
-                          e.target.value
-                        )
-                      }
-                      className="input-content w-full border-gray-300"
-                    />
-                  </td>
-                  <td className="border text-center">
-                    <button
-                      onClick={() =>
-                        deleteProgressRow(row.progressId ?? row.tempId!)
-                      }
-                      className="text-gray-500 hover:text-red-600"
-                    >
-                      <FaTrashAlt className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {progressList
+                .filter((row) => !row.deleted) // ✅ 삭제된 진도 숨김
+                .map((row, index) => (
+                  <tr key={row.progressId ?? `temp-${index}`}>
+                    <td className="border text-center">{index + 1}</td>
+                    <td className="border">
+                      <input
+                        type="date"
+                        value={row.date}
+                        onChange={(e) =>
+                          updateRow(index, "date", e.target.value)
+                        }
+                        className="input-content w-full border-gray-300"
+                      />
+                    </td>
+                    <td className="border p-0">
+                      <input
+                        type="text"
+                        value={row.content}
+                        placeholder="내용 입력"
+                        onChange={(e) =>
+                          updateRow(index, "content", e.target.value)
+                        }
+                        className="input-content w-full border-gray-300"
+                      />
+                    </td>
+                    <td className="border text-center">
+                      <button
+                        onClick={() => deleteRow(index)}
+                        className="text-gray-500 hover:text-red-600"
+                      >
+                        <FaTrashAlt className="w-5 h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
+
+          {/* ✅ 진도 추가 버튼 */}
           <button
             className="absolute w-8 h-8 border border-1 left-1/2 transform -translate-x-1/2 translate-y-0 text-gray-500 bg-white hover:text-[#3C6229] hover:border-[#3C6229] rounded-full shadow-md flex items-center justify-center"
-            onClick={addProgressRow}
+            onClick={addRow}
           >
             +
           </button>

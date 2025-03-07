@@ -93,7 +93,7 @@ const CreateMember: React.FC<{
   // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
-  const { discountRate, finalPrice, errorMessage, handleDiscountChange } =
+  const { discountRate, finalPrice, handleDiscountChange } =
     useDiscount(selectedPlanPrice);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;
@@ -250,10 +250,10 @@ const CreateMember: React.FC<{
 
                   <div className="mb-4">
                     <Plan
+                      selectedPlanId={formData.planId}
                       onSelectPlan={(planId, planName, price) => {
                         handleInputChange("planId", planId);
                         setSelectedPlanPrice(price);
-                        // setSelectedPlanName(planName);
                       }}
                     />
                   </div>
@@ -282,16 +282,11 @@ const CreateMember: React.FC<{
                         <h4 className="text-sm font-bold mb-2">할인율 (%)</h4>
                         <input
                           type="number"
-                          placeholder="할인율 입력"
                           className="w-full input-content"
                           value={discountRate}
+                          min="0"
                           onChange={(e) => handleDiscountChange(e)}
                         />
-                        {errorMessage && (
-                          <p className="text-red-500 text-xs mt-1">
-                            {errorMessage}
-                          </p>
-                        )}
                       </div>
 
                       <div className="w-1/2">

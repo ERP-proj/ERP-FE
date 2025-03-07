@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import BasicButton from "../components/ui/BasicButton";
 import { useForm } from "react-hook-form";
 // import { yupResolver } from "@hookform/resolvers/yup";
 // import * as yup from "yup";
 import { auth } from "@/api/auth";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface LoginFormInputs {
   account: string;
@@ -20,6 +21,14 @@ const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
   const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+
+  // ✅ 로그인 상태가 변경되면 자동으로 페이지 이동
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
