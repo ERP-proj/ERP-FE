@@ -82,7 +82,7 @@ export const convertToUpdateCustomerDetail = (
     address: data.address,
     visitPath: data.visitPath,
     memo: data.memo,
-    photoFile: null,
+    photoFile: data.photoFile || null,
     photoUrl: data.photoUrl,
 
     // ✅ GET에서는 planPayment 객체지만, PUT에서는 boolean 값만 필요

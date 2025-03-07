@@ -35,7 +35,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
 
   const loadCustomer = useCallback(() => {
     fetchCustomer(customerId);
-    console.log("상세데이터", customer);
+    console.log("상세데이터", tempCustomer);
   }, [customerId]);
 
   useEffect(() => {
@@ -69,6 +69,8 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
     setTempCustomer((prev) => ({
       ...prev!,
       ...updatedData,
+      planPaymentStatus:
+        updatedData.planPaymentStatus ?? prev?.planPaymentStatus ?? false,
       progressList: Array.isArray(updatedData.progressList)
         ? updatedData.progressList
         : prev?.progressList ?? [],
