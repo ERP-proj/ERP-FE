@@ -131,7 +131,7 @@ const MemberRow = ({
             지각/결석
           </span>
           <span className="text-gray-800 font-bold text-sm sm:text-lg">
-            {member.tardinessCount}/{member.absenceCount}
+            {member.lateCount}/{member.absenceCount}
           </span>
         </div>
       </div>

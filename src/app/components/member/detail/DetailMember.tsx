@@ -35,11 +35,11 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
 
   const loadCustomer = useCallback(() => {
     fetchCustomer(customerId);
-    console.log("상세데이터", tempCustomer);
   }, [customerId]);
 
   useEffect(() => {
     loadCustomer();
+    console.log("상세데이터", tempCustomer);
   }, [loadCustomer]);
 
   useEffect(() => {

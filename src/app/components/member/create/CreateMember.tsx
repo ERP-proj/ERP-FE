@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
@@ -10,7 +10,6 @@ import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
-import useDiscount from "@/hooks/plan/useDiscount";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -90,17 +89,39 @@ const CreateMember: React.FC<{
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
   const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
-  const { discountRate, finalPrice, handleDiscountChange } =
-    useDiscount(selectedPlanPrice);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;
   }>({
     planPayment: "",
     otherPayment: "",
   });
+  // 할인율 변경 시 자동으로 할인 가격을 계산
+  useEffect(() => {
+    const discountedPrice = Math.round(
+      selectedPlanPrice * (1 - formData.planPayment.discountRate / 100)
+    );
+    setFormData((prev) => ({
+      ...prev,
+      planPayment: {
+        ...prev.planPayment,
+        discountPrice: discountedPrice,
+      },
+    }));
+  }, [selectedPlanPrice, formData.planPayment.discountRate, setFormData]);
+
+  // 할인율 입력 핸들러
+  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value) || 0;
+    setFormData((prevData) => ({
+      ...prevData,
+      planPayment: {
+        ...prevData.planPayment,
+        discountRate: value,
+      },
+    }));
+  };
 
   const toggleAccordion = (key: string) => {
     setAccordionOpenKey((prevKey) => (prevKey === key ? null : key));
@@ -164,6 +185,7 @@ const CreateMember: React.FC<{
 
   const handleRegister = async () => {
     try {
+      console.info("회원 등록 요청 데이터:", formData);
       if (
         formData.planPayment.paymentsMethod === "OTHER" &&
         !formData.planPayment.otherPaymentMethod
@@ -230,7 +252,7 @@ const CreateMember: React.FC<{
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
-                        {finalPrice}원
+                        {formData.planPayment.discountPrice}원
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -283,9 +305,9 @@ const CreateMember: React.FC<{
                         <input
                           type="number"
                           className="w-full input-content"
-                          value={discountRate}
+                          value={formData.planPayment.discountRate}
                           min="0"
-                          onChange={(e) => handleDiscountChange(e)}
+                          onChange={handleDiscountChange}
                         />
                       </div>
 
@@ -297,7 +319,7 @@ const CreateMember: React.FC<{
                           type="text"
                           placeholder="할인 금액"
                           className="w-full mb-2 input-content"
-                          value={finalPrice}
+                          value={formData.planPayment.discountPrice}
                           readOnly
                         />
                       </div>
