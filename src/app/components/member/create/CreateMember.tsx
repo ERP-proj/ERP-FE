@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import BasicButton from "../../ui/BasicButton";
 import Modal from "../../ui/Modal";
 import Accordion from "../../ui/Accordion";
@@ -10,7 +10,7 @@ import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
-import useDiscount from "@/hooks/plan/useDiscount";
+import { useQueryClient } from "@tanstack/react-query";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -53,6 +53,8 @@ const CreateMember: React.FC<{
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }> = ({ formData = initialFormData, setFormData }) => {
+  const queryClient = useQueryClient(); //React Query 캐시 사용
+
   const handleInputChange = (key: string, value: any, index?: number) => {
     const keys = key.split(".");
     setFormData((prevData) => {
@@ -90,20 +92,48 @@ const CreateMember: React.FC<{
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [selectedPlanName, setSelectedPlanName] = useState<string>("");
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
-  const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
-  const { discountRate, finalPrice, handleDiscountChange } =
-    useDiscount(selectedPlanPrice);
+  const [accordionOpenKey, setAccordionOpenKey] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;
   }>({
     planPayment: "",
     otherPayment: "",
   });
+  // 할인율 변경 시 자동으로 할인 가격을 계산
+  useEffect(() => {
+    const discountedPrice = Math.round(
+      selectedPlanPrice * (1 - formData.planPayment.discountRate / 100)
+    );
+    setFormData((prev) => ({
+      ...prev,
+      planPayment: {
+        ...prev.planPayment,
+        discountPrice: discountedPrice,
+      },
+    }));
+  }, [selectedPlanPrice, formData.planPayment.discountRate, setFormData]);
 
+  // 할인율 입력 핸들러
+  const handleDiscountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(e.target.value) || 0;
+    setFormData((prevData) => ({
+      ...prevData,
+      planPayment: {
+        ...prevData.planPayment,
+        discountRate: value,
+      },
+    }));
+  };
+
+  // 아코디언 토글 함수
   const toggleAccordion = (key: string) => {
-    setAccordionOpenKey((prevKey) => (prevKey === key ? null : key));
+    setAccordionOpenKey(
+      (prevKeys) =>
+        prevKeys.includes(key)
+          ? prevKeys.filter((item) => item !== key) // 이미 열려 있으면 닫기
+          : [...prevKeys, key] // 닫혀 있으면 추가하여 열기
+    );
   };
   const getPaymentMethod = (
     method: string
@@ -164,6 +194,7 @@ const CreateMember: React.FC<{
 
   const handleRegister = async () => {
     try {
+      console.info("회원 등록 요청 데이터:", formData);
       if (
         formData.planPayment.paymentsMethod === "OTHER" &&
         !formData.planPayment.otherPaymentMethod
@@ -192,7 +223,8 @@ const CreateMember: React.FC<{
       console.info("회원 등록 요청 데이터:", formattedData);
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
-      window.location.reload();
+      // ✅ MemberList 데이터 다시 가져오기 (React Query 캐시 무효화)
+      queryClient.invalidateQueries({ queryKey: ["members", "ACTIVE"] });
       closeModal();
     } catch (error) {
       console.error("회원 등록 실패:", error);
@@ -219,18 +251,18 @@ const CreateMember: React.FC<{
           <RegisterForm formData={formData} setFormData={setFormData} />
         }
         rightChildren={
-          <div className="relative h-full flex flex-col">
+          <div className="relative h-full flex flex-col overflow-y-scroll">
             <div className="flex-grow">
               <Accordion
                 title="이용권 결제"
-                isOpen={accordionOpenKey === "이용권결제"}
+                isOpen={accordionOpenKey.includes("이용권결제")}
                 toggleOpen={() => toggleAccordion("이용권결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold">총 금액</h4>
                       <p className="text-2xl font-bold text-[#DB5461]">
-                        {finalPrice}원
+                        {formData.planPayment.discountPrice}원
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -283,9 +315,9 @@ const CreateMember: React.FC<{
                         <input
                           type="number"
                           className="w-full input-content"
-                          value={discountRate}
+                          value={formData.planPayment.discountRate}
                           min="0"
-                          onChange={(e) => handleDiscountChange(e)}
+                          onChange={handleDiscountChange}
                         />
                       </div>
 
@@ -297,7 +329,7 @@ const CreateMember: React.FC<{
                           type="text"
                           placeholder="할인 금액"
                           className="w-full mb-2 input-content"
-                          value={finalPrice}
+                          value={formData.planPayment.discountPrice}
                           readOnly
                         />
                       </div>
@@ -345,7 +377,7 @@ const CreateMember: React.FC<{
                             />
                           )}
                         </div>
-                        <div className="mb-4">
+                        <div>
                           <h4 className="text-sm font-bold mb-2 pt-4">
                             등록일
                           </h4>
@@ -373,7 +405,7 @@ const CreateMember: React.FC<{
 
               <Accordion
                 title="기타 결제"
-                isOpen={accordionOpenKey === "기타결제"}
+                isOpen={accordionOpenKey.includes("기타결제")}
                 toggleOpen={() => toggleAccordion("기타결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
@@ -476,7 +508,7 @@ const CreateMember: React.FC<{
                           )}
                         </div>
 
-                        <div className="mb-4">
+                        <div>
                           <h4 className="text-sm font-bold mb-3 pt-4">
                             등록일
                           </h4>

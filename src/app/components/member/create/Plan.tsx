@@ -27,7 +27,11 @@ const Plan: React.FC<{
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const licenseType = selectedGroup1 === "1종" ? "TYPE_1" : "TYPE_2";
+        let licenseType = "";
+        if (selectedGroup1 === "1종") licenseType = "TYPE_1";
+        else if (selectedGroup1 === "1종 자동") licenseType = "TYPE_1_AUTO";
+        else if (selectedGroup1 === "2종") licenseType = "TYPE_2";
+
         const response = await memberAPI.getPlans(licenseType);
         if (response && response.data) {
           setPlans(response.data);
@@ -70,7 +74,7 @@ const Plan: React.FC<{
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setSelectedGroup1("1종")}
-          className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+          className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
             selectedGroup1 === "1종"
               ? "bg-[#3C6229] text-white"
               : "bg-gray-200 text-gray-600"
@@ -79,8 +83,18 @@ const Plan: React.FC<{
           1종
         </button>
         <button
+          onClick={() => setSelectedGroup1("1종 자동")}
+          className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
+            selectedGroup1 === "1종 자동"
+              ? "bg-[#3C6229] text-white"
+              : "bg-gray-200 text-gray-600"
+          }`}
+        >
+          1종 자동
+        </button>
+        <button
           onClick={() => setSelectedGroup1("2종")}
-          className={`w-1/2 py-2 rounded-md text-sm font-semibold ${
+          className={`w-1/3 py-2 rounded-md text-sm font-semibold ${
             selectedGroup1 === "2종"
               ? "bg-[#3C6229] text-white"
               : "bg-gray-200 text-gray-600"

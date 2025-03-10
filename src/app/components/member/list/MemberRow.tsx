@@ -56,7 +56,7 @@ const MemberRow = ({
             </div>
             <div
               className={`px-2 py-1 text-xs sm:text-sm rounded ${
-                member.licenseType === "TYPE_1"
+                member.licenseType === "TYPE_1" || "TYPE_1_AUTO"
                   ? "bg-white text-gray-500"
                   : "bg-gray-300 text-gray-800"
               }`}
@@ -126,12 +126,12 @@ const MemberRow = ({
         </div>
 
         {/* 지각/결석 */}
-        <div className="square ml-4 border-green-500">
+        <div className="square ml-4 border-[#B4D89C]">
           <span className="text-gray-500 text-xs sm:text-sm leading-tight">
             지각/결석
           </span>
           <span className="text-gray-800 font-bold text-sm sm:text-lg">
-            {member.tardinessCount}/{member.absenceCount}
+            {member.lateCount}/{member.absenceCount}
           </span>
         </div>
       </div>

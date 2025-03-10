@@ -15,10 +15,6 @@ const MemberList = () => {
     null
   );
 
-  // useEffect(() => {
-  //   fetchCustomers();
-  // }, []);
-
   // ✅ React Query 무한스크롤 데이터 가져오기
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePaginatedMembers("ACTIVE");
@@ -69,7 +65,6 @@ const MemberList = () => {
         <MemberRow
           key={member.customerId}
           member={member}
-          // onClick={handleRowClick}
           onClick={() => handleRowClick(member.customerId)}
         />
       ))}
@@ -87,12 +82,6 @@ const MemberList = () => {
         <>
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white w-full max-w-4xl p-6 rounded-lg shadow-lg relative">
-              <button
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-                onClick={closeModal}
-              >
-                닫기
-              </button>
               <DetailMember
                 customerId={selectedCustomerId}
                 onClose={closeModal}

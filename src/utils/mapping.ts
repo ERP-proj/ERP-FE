@@ -2,6 +2,7 @@
 export const getLabel = (type: string) => {
   const mapping: { [key: string]: string } = {
     TYPE_1: "1종",
+    TYPE_1_AUTO: "1종 자동",
     TYPE_2: "2종",
     MALE: "남",
     FEMALE: "여",

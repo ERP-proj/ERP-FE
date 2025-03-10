@@ -17,6 +17,7 @@ import {
   CustomerDetailData,
   UpdateCustomerDetail,
 } from "@/store/useCustomerStore";
+import { useQueryClient } from "@tanstack/react-query";
 interface DetailMemberProps {
   customerId: number;
   onClose: () => void;
@@ -32,14 +33,15 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
   const [tempCustomer, setTempCustomer] = useState<Partial<
     CustomerDetailData & { otherPayment: OtherPayment[] }
   > | null>(null);
+  const queryClient = useQueryClient(); //React Query 캐시 사용
 
   const loadCustomer = useCallback(() => {
     fetchCustomer(customerId);
-    console.log("상세데이터", tempCustomer);
   }, [customerId]);
 
   useEffect(() => {
     loadCustomer();
+    console.log("상세데이터", tempCustomer);
   }, [loadCustomer]);
 
   useEffect(() => {
@@ -97,11 +99,12 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
     // ✅ 빈 행을 필터링
     const filteredProgressList =
       tempCustomer.progressList?.filter(
-        (item) => item.date.trim() !== "" && item.content.trim() !== ""
+        (item) => item?.date?.trim() !== "" && item?.content?.trim() !== ""
       ) ?? [];
+
     const filteredOtherPayment =
       tempCustomer.otherPayment?.filter(
-        (item) => item.content.trim() !== "" && item.price > 0
+        (item) => item?.content?.trim() !== "" && item?.price > 0
       ) ?? [];
 
     showAlert("변경된 정보를 저장하시겠습니까?", async () => {
@@ -129,7 +132,8 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
     showAlert("정말 회원을 삭제하시겠습니까?", async () => {
       try {
         await updateCustomerStatus(customerId, "DELETED");
-        window.location.reload();
+        // ✅ MemberList 데이터 다시 가져오기 (React Query 캐시 무효화)
+        queryClient.invalidateQueries({ queryKey: ["members", "ACTIVE"] });
         onClose();
       } catch (error) {
         console.error("❌ 회원 삭제 실패:", error);
@@ -191,7 +195,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
         <DetailForm customer={tempCustomer} onModify={handleModify} />
       }
       rightChildren={
-        <div className="relative h-full flex flex-col">
+        <div className="relative overflow-y-scroll h-full flex flex-col">
           <div className="flex-grow">
             {/* 이용권 결제 정보 */}
 
