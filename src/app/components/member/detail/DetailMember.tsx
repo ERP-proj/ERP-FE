@@ -191,7 +191,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
         <DetailForm customer={tempCustomer} onModify={handleModify} />
       }
       rightChildren={
-        <div className="relative h-full flex flex-col">
+        <div className="relative overflow-y-scroll h-full flex flex-col">
           <div className="flex-grow">
             {/* 이용권 결제 정보 */}
 

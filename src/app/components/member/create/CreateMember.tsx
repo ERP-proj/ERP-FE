@@ -90,7 +90,7 @@ const CreateMember: React.FC<{
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPlanPrice, setSelectedPlanPrice] = useState<number>(0);
-  const [accordionOpenKey, setAccordionOpenKey] = useState<string | null>(null);
+  const [accordionOpenKey, setAccordionOpenKey] = useState<string[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<{
     [key: string]: string;
   }>({
@@ -123,8 +123,14 @@ const CreateMember: React.FC<{
     }));
   };
 
+  // 아코디언 토글 함수
   const toggleAccordion = (key: string) => {
-    setAccordionOpenKey((prevKey) => (prevKey === key ? null : key));
+    setAccordionOpenKey(
+      (prevKeys) =>
+        prevKeys.includes(key)
+          ? prevKeys.filter((item) => item !== key) // 이미 열려 있으면 닫기
+          : [...prevKeys, key] // 닫혀 있으면 추가하여 열기
+    );
   };
   const getPaymentMethod = (
     method: string
@@ -241,11 +247,11 @@ const CreateMember: React.FC<{
           <RegisterForm formData={formData} setFormData={setFormData} />
         }
         rightChildren={
-          <div className="relative h-full flex flex-col">
+          <div className="relative h-full flex flex-col overflow-y-scroll">
             <div className="flex-grow">
               <Accordion
                 title="이용권 결제"
-                isOpen={accordionOpenKey === "이용권결제"}
+                isOpen={accordionOpenKey.includes("이용권결제")}
                 toggleOpen={() => toggleAccordion("이용권결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
@@ -265,7 +271,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[1100px] ">
+                <div className="bg-white rounded-lg h-[1070px] ">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     이용권 정보
                   </h3>
@@ -367,7 +373,7 @@ const CreateMember: React.FC<{
                             />
                           )}
                         </div>
-                        <div className="mb-4">
+                        <div>
                           <h4 className="text-sm font-bold mb-2 pt-4">
                             등록일
                           </h4>
@@ -395,7 +401,7 @@ const CreateMember: React.FC<{
 
               <Accordion
                 title="기타 결제"
-                isOpen={accordionOpenKey === "기타결제"}
+                isOpen={accordionOpenKey.includes("기타결제")}
                 toggleOpen={() => toggleAccordion("기타결제")}
                 footer={
                   <div className="flex flex-col w-full gap-4 bg-gradient-to-t from-white via-white to-transparent px-4 py-2">
@@ -414,7 +420,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[700px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[670px] overflow-y-scroll">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     결제 정보
                   </h3>
@@ -498,7 +504,7 @@ const CreateMember: React.FC<{
                           )}
                         </div>
 
-                        <div className="mb-4">
+                        <div>
                           <h4 className="text-sm font-bold mb-3 pt-4">
                             등록일
                           </h4>
