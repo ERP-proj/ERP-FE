@@ -56,7 +56,7 @@ const MemberRow = ({
             </div>
             <div
               className={`px-2 py-1 text-xs sm:text-sm rounded ${
-                member.licenseType === "TYPE_1"
+                member.licenseType === "TYPE_1" || "TYPE_1_AUTO"
                   ? "bg-white text-gray-500"
                   : "bg-gray-300 text-gray-800"
               }`}
