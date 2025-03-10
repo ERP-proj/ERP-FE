@@ -17,6 +17,7 @@ import {
   CustomerDetailData,
   UpdateCustomerDetail,
 } from "@/store/useCustomerStore";
+import { useQueryClient } from "@tanstack/react-query";
 interface DetailMemberProps {
   customerId: number;
   onClose: () => void;
@@ -32,6 +33,7 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
   const [tempCustomer, setTempCustomer] = useState<Partial<
     CustomerDetailData & { otherPayment: OtherPayment[] }
   > | null>(null);
+  const queryClient = useQueryClient(); //React Query 캐시 사용
 
   const loadCustomer = useCallback(() => {
     fetchCustomer(customerId);
@@ -95,7 +97,6 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
       return;
     }
     // ✅ 빈 행을 필터링
-    // ✅ 빈 행을 필터링 (null 값 안전 처리)
     const filteredProgressList =
       tempCustomer.progressList?.filter(
         (item) => item?.date?.trim() !== "" && item?.content?.trim() !== ""
@@ -131,7 +132,8 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
     showAlert("정말 회원을 삭제하시겠습니까?", async () => {
       try {
         await updateCustomerStatus(customerId, "DELETED");
-        window.location.reload();
+        // ✅ MemberList 데이터 다시 가져오기 (React Query 캐시 무효화)
+        queryClient.invalidateQueries({ queryKey: ["members", "ACTIVE"] });
         onClose();
       } catch (error) {
         console.error("❌ 회원 삭제 실패:", error);

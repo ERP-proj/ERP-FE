@@ -10,6 +10,7 @@ import { memberAPI } from "@/api/member";
 import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
+import { useQueryClient } from "@tanstack/react-query";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -52,6 +53,8 @@ const CreateMember: React.FC<{
   formData: FormData;
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }> = ({ formData = initialFormData, setFormData }) => {
+  const queryClient = useQueryClient(); //React Query 캐시 사용
+
   const handleInputChange = (key: string, value: any, index?: number) => {
     const keys = key.split(".");
     setFormData((prevData) => {
@@ -220,7 +223,8 @@ const CreateMember: React.FC<{
       console.info("회원 등록 요청 데이터:", formattedData);
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
-      window.location.reload();
+      // ✅ MemberList 데이터 다시 가져오기 (React Query 캐시 무효화)
+      queryClient.invalidateQueries({ queryKey: ["members", "ACTIVE"] });
       closeModal();
     } catch (error) {
       console.error("회원 등록 실패:", error);
@@ -271,7 +275,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[1070px] ">
+                <div className="bg-white rounded-lg h-[1100px] ">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     이용권 정보
                   </h3>
@@ -420,7 +424,7 @@ const CreateMember: React.FC<{
                   </div>
                 }
               >
-                <div className="bg-white rounded-lg h-[670px] overflow-y-scroll">
+                <div className="bg-white rounded-lg h-[700px] overflow-y-scroll">
                   <h3 className="text-md bg-[#F6F6F6] p-2 m-0 text-[#0D0D0D] font-bold">
                     결제 정보
                   </h3>
