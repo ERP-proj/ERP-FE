@@ -126,7 +126,7 @@ const MemberRow = ({
         </div>
 
         {/* 지각/결석 */}
-        <div className="square ml-4 border-green-500">
+        <div className="square ml-4 border-[#B4D89C]">
           <span className="text-gray-500 text-xs sm:text-sm leading-tight">
             지각/결석
           </span>

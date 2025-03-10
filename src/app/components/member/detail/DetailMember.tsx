@@ -95,13 +95,15 @@ const DetailMember: React.FC<DetailMemberProps> = ({ customerId, onClose }) => {
       return;
     }
     // ✅ 빈 행을 필터링
+    // ✅ 빈 행을 필터링 (null 값 안전 처리)
     const filteredProgressList =
       tempCustomer.progressList?.filter(
-        (item) => item.date.trim() !== "" && item.content.trim() !== ""
+        (item) => item?.date?.trim() !== "" && item?.content?.trim() !== ""
       ) ?? [];
+
     const filteredOtherPayment =
       tempCustomer.otherPayment?.filter(
-        (item) => item.content.trim() !== "" && item.price > 0
+        (item) => item?.content?.trim() !== "" && item?.price > 0
       ) ?? [];
 
     showAlert("변경된 정보를 저장하시겠습니까?", async () => {

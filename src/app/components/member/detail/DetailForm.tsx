@@ -41,8 +41,8 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
   // ✅ 신규 진도 추가
   const addRow = () => {
     const newRow = { progressId: null, date: "", content: "" };
-    setProgressList([...progressList, newRow]);
-    onModify({ progressList: [...progressList, newRow] });
+    setProgressList([newRow, ...progressList]);
+    onModify({ progressList: [newRow, ...progressList] });
   };
 
   // ✅ 진도 내용 수정
@@ -56,11 +56,24 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
 
   // ✅ 진도 삭제
   const deleteRow = (index: number) => {
-    const updatedList = progressList.map((item, i) =>
-      i === index ? { ...item, deleted: true } : item
-    );
-    setProgressList(updatedList);
-    onModify({ progressList: updatedList });
+    setProgressList((prevList) => {
+      const updatedList = prevList.filter((_, i) => i !== index);
+
+      // 서버에 `deleted: true`를 보내야 하는 경우 (progressId가 존재하는 기존 진도)
+      const isExistingProgress = prevList[index].progressId !== null;
+
+      if (isExistingProgress) {
+        onModify({
+          progressList: prevList.map((item, i) =>
+            i === index ? { ...item, deleted: true } : item
+          ),
+        });
+      } else {
+        onModify({ progressList: updatedList });
+      }
+
+      return updatedList;
+    });
   };
 
   return (
@@ -173,10 +186,16 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
             </thead>
             <tbody>
               {progressList
-                .filter((row) => !row.deleted) // ✅ 삭제된 진도 숨김
-                .map((row, index) => (
+                .filter((row) => !row.deleted) // 삭제된 진도 숨김
+                .sort(
+                  (a, b) =>
+                    new Date(b.date).getTime() - new Date(a.date).getTime()
+                ) // 최신순 정렬
+                .map((row, index, sortedList) => (
                   <tr key={row.progressId ?? `temp-${index}`}>
-                    <td className="border text-center">{index + 1}</td>
+                    <td className="border text-center">
+                      {sortedList.length - index}
+                    </td>
                     <td className="border">
                       <input
                         type="date"
