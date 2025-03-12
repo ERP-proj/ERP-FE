@@ -9,23 +9,7 @@ import OwnerRegisterButton from "@/app/components/admin/institute/OwnerRegisterB
 import EditOwnerModal from "@/app/components/admin/institute/EditOwnerModal";
 import Header from "@/app/components/admin/Header";
 import SideBar from "@/app/components/admin/SideBar";
-
-const mockStoreDetails = {
-  id: 6,
-  name: "매장 6",
-  owners: [
-    { id: 1, name: "점주 1", username: "aowkd123" },
-    { id: 2, name: "점주 2", username: "aowkdaowkd12" },
-    { id: 3, name: "점주 3", username: "maejang22" },
-    { id: 4, name: "점주 4", username: "maejang567" },
-    { id: 5, name: "점주 5", username: "maejang_1211" },
-    { id: 6, name: "점주 6", username: "immaejang" },
-    { id: 7, name: "점주 7", username: "owner88" },
-    { id: 8, name: "점주 8", username: "hihi333" },
-    { id: 9, name: "점주 9", username: "qwer12345" },
-    { id: 10, name: "점주 10", username: "asdf111" },
-  ],
-};
+import { adminAPI } from "@/api/admin/institute";
 
 const columns = [
   { name: "점주명", width: "45%" },
@@ -34,16 +18,27 @@ const columns = [
 ];
 
 const InstituteDetailPage = () => {
-  const { id } = useParams();
+  const { instituteId } = useParams();
   const [store, setStore] = useState<any>(null);
   const [selectedOwner, setSelectedOwner] = useState<any>(null); // 수정할 점주
 
   useEffect(() => {
-    if (id === "6") {
-      setStore(mockStoreDetails);
-    }
-  }, [id]);
+    const fetchInstituteDetails = async () => {
+      try {
+        const storeData = await adminAPI.getAccounts(Number(instituteId)); // ✅ API 호출
+        setStore({
+          ...storeData,
+          owners: storeData.owners || [],
+        });
+      } catch (error) {
+        console.error("매장 상세 정보 불러오기 실패:", error);
+      }
+    };
 
+    if (instituteId) {
+      fetchInstituteDetails();
+    }
+  }, [instituteId]);
   if (!store) {
     return <p className="text-center py-4">⏳ 데이터를 불러오는 중...</p>;
   }
@@ -51,7 +46,7 @@ const InstituteDetailPage = () => {
   const formattedData =
     store?.owners?.map((owner: any) => ({
       점주명: owner.name,
-      아이디: owner.username,
+      아이디: owner.identifier,
       수정: (
         <MdModeEdit
           className="text-gray-500 text-xl cursor-pointer hover:text-[#3C6229] transition"

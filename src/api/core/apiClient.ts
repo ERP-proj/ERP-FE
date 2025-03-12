@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
@@ -28,10 +29,11 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { logout, refreshToken, login } = useAuthStore.getState();
-
+    const router = useRouter();
     if (error.response && error.response.status === 401) {
       if (!refreshToken) {
         logout();
+        router.push("/login");
         return Promise.reject(error);
       }
       try {
