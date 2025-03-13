@@ -32,20 +32,18 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginFormInputs) => {
     try {
-      await auth.login(data.account, data.password);
-      router.push("/");
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        try {
-          // ✅ 일반 로그인 실패 시, 자동으로 관리자 로그인 시도
-          await auth.adminLogin(data.account, data.password);
-          router.push("/admin/institute"); // 성공 시 관리자 페이지 이동
-        } catch (adminError: any) {
-          alert("로그인 실패. 계정 정보를 확인하세요.");
+      const result = await auth.login(data.account, data.password);
+
+      if (result.success) {
+        // ✅ 일반 사용자 로그인 시 메인 페이지 이동
+        if (result.isAdmin) {
+          router.push("/admin/institute"); // ✅ 관리자 로그인 시 관리자 페이지로 이동
+        } else {
+          router.push("/");
         }
-      } else {
-        alert("로그인 실패. 네트워크 상태를 확인하세요.");
       }
+    } catch (error: any) {
+      alert(error.message);
     }
   };
 
