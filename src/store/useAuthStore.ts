@@ -4,7 +4,12 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  login: (accessToken: string, refreshToken: string) => void;
+  isAdmin: boolean; // ✅ 관리자 여부 상태 추가
+  login: (
+    accessToken: string | null,
+    refreshToken: string | null,
+    isAdmin: boolean
+  ) => void;
   logout: () => void;
 }
 
@@ -17,19 +22,26 @@ export const useAuthStore = create<AuthState>((set) => ({
     typeof window !== "undefined"
       ? !!localStorage.getItem("accessToken")
       : false,
+  isAdmin: false, // ✅ 기본값 설정
 
-  login: (accessToken, refreshToken) => {
+  login: (accessToken, refreshToken, isAdmin) => {
     if (accessToken && refreshToken) {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-      set({ accessToken, refreshToken, isAuthenticated: true });
+      set({ accessToken, refreshToken, isAuthenticated: true, isAdmin });
     } else {
-      set({ isAuthenticated: true }); // 관리자 로그인 시 토큰 없이 인증 처리
+      set({ isAuthenticated: true, isAdmin: true }); // ✅ 관리자 로그인 시 isAdmin 설정
     }
   },
+
   logout: () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
-    set({ accessToken: null, refreshToken: null, isAuthenticated: false });
+    set({
+      accessToken: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      isAdmin: false,
+    });
   },
 }));

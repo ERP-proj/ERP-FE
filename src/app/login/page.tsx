@@ -35,9 +35,10 @@ const LoginPage: React.FC = () => {
       const result = await auth.login(data.account, data.password);
 
       if (result.success) {
-        // ✅ 일반 사용자 로그인 시 메인 페이지 이동
-        if (result.isAdmin) {
-          router.push("/admin/institute"); // ✅ 관리자 로그인 시 관리자 페이지로 이동
+        console.log("isAdmin 상태:", useAuthStore.getState().isAdmin);
+        if (useAuthStore.getState().isAdmin) {
+          console.log("✅ 관리자 로그인 성공, 페이지 이동");
+          router.push("/admin/institute");
         } else {
           router.push("/");
         }
@@ -46,7 +47,6 @@ const LoginPage: React.FC = () => {
       alert(error.message);
     }
   };
-
   return (
     <div className="flex items-center justify-center min-h-screen ">
       <form

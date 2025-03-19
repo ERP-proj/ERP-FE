@@ -8,7 +8,9 @@ export const adminAPI = {
    */
   getInstitutes: async () => {
     try {
-      const response = await apiClient.get("/api/admin/getInstitutes");
+      const response = await apiClient.get("/api/admin/getInstitutes", {
+        withCredentials: true, // ✅ 쿠키 포함 요청
+      });
       return response.data.data; // 서버 응답의 `data` 필드에 리스트가 포함됨
     } catch (error: unknown) {
       const errorMessage = errorHandler(error);

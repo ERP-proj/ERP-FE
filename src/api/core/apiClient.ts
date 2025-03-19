@@ -51,7 +51,11 @@ apiClient.interceptors.response.use(
           const newRefreshToken = refreshResponse.data.data.refreshToken;
 
           // Zustand에 새로운 토큰 저장
-          login(newAccessToken, newRefreshToken);
+          login(
+            newAccessToken,
+            newRefreshToken,
+            useAuthStore.getState().isAdmin
+          );
 
           // 실패한 요청을 새로운 Access Token으로 다시 실행
           error.config.headers["Authorization"] = `Bearer ${newAccessToken}`;
