@@ -1,6 +1,13 @@
 import React from "react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useAlertStore } from "@/store/useAlertStore";
+import { useRouter } from "next/navigation";
 
 const Header: React.FC = () => {
+  const router = useRouter();
+  const { logout } = useAuthStore(); // ✅ 로그아웃 함수 가져오기
+  const { showAlert } = useAlertStore(); // ✅ Alert 함수 가져오기
+
   // 현재 날짜를 YYYY-MM-DD (요일) 형식으로 변환하는 함수
   const getFormattedDate = () => {
     const today = new Date();
@@ -13,6 +20,12 @@ const Header: React.FC = () => {
     return today.toLocaleDateString("ko-KR", options).replace(/\./g, "-");
   };
 
+  const handleLogout = () => {
+    showAlert("정말 로그아웃하시겠습니까?", () => {
+      logout();
+      router.push("/");
+    });
+  };
   return (
     <header className="w-full bg-white py-5 px-6 flex justify-between items-center text-sm text-gray-700">
       <div className="w-1/2"></div>

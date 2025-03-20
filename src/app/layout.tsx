@@ -18,8 +18,8 @@ export default function RootLayout({
   const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated && pathname !== "/login") {
-      router.push("/login");
+    if (!isAuthenticated && pathname !== "/") {
+      router.push("/");
     } else {
     }
   }, [isAuthenticated, pathname, router]);

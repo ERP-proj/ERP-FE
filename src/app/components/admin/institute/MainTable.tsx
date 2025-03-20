@@ -23,6 +23,7 @@ const MainTable: React.FC = () => {
         const data = await adminAPI.getInstitutes();
         // ✅ API 데이터 변환 (openTime, closeTime 조합)
         const formattedData = data.map((store: any) => ({
+          아이디: store.id,
           매장명: store.name,
           영업시간: `${store.openTime.slice(0, 5)} ~ ${store.closeTime.slice(
             0,
@@ -53,8 +54,8 @@ const MainTable: React.FC = () => {
   }, []);
 
   // ✅ 행 클릭 시 상세 페이지 이동
-  const handleRowClick = (id: number) => {
-    router.push(`/admin/institute/${id}`);
+  const handleRowClick = (instituteId: number) => {
+    router.push(`/admin/institute/${instituteId}`);
   };
 
   return (

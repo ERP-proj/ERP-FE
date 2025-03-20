@@ -15,14 +15,38 @@ export const auth = {
         const { login } = useAuthStore.getState();
 
         // Zustand 상태 업데이트
-        login(accessToken, refreshToken);
+        login(accessToken, refreshToken, false);
         return response.data;
       } else {
         throw new Error("로그인 실패. 다시 시도해주세요.");
       }
-    } catch (error: unknown) {
-      const errorMessage = errorHandler(error);
-      throw new Error(errorMessage);
+    } catch (error: any) {
+      if (error.response && error.response.status === 401) {
+        try {
+          // 관리자 로그인 시도 (세션 방식)
+          const adminResponse = await apiClient.post(
+            "/api/admin/login",
+            {
+              identifier: account,
+              password,
+            },
+            { withCredentials: true }
+          ); // 세션 유지 옵션 추가
+
+          if (adminResponse.data.code === "OK") {
+            useAuthStore.getState().login("", "", true);
+            return adminResponse.data; // 세션 방식 로그인은 토큰 저장 불필요
+          }
+        } catch (adminError: any) {
+          if (adminError.response && adminError.response.status === 401) {
+            throw new Error("로그인 실패: 일반 및 관리자 계정 인증 실패.");
+          } else {
+            throw new Error(errorHandler(adminError));
+          }
+        }
+      } else {
+        throw new Error(errorHandler(error));
+      }
     }
   },
 };
