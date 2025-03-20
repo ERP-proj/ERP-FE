@@ -23,7 +23,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     showAlert("정말 로그아웃하시겠습니까?", () => {
       logout();
-      router.push("/login");
+      router.push("/");
     });
   };
   return (
