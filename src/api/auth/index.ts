@@ -24,15 +24,10 @@ export const auth = {
       if (error.response && error.response.status === 401) {
         try {
           // 관리자 로그인 시도 (세션 방식)
-          const adminResponse = await apiClient.post(
-            "/api/admin/login",
-            {
-              identifier: account,
-              password,
-            },
-            { withCredentials: true }
-          ); // 세션 유지 옵션 추가
-
+          const adminResponse = await apiClient.post("/api/admin/login", {
+            identifier: account,
+            password,
+          });
           if (adminResponse.data.code === "OK") {
             useAuthStore.getState().login("", "", true);
             return adminResponse.data; // 세션 방식 로그인은 토큰 저장 불필요
