@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@locator/babel-jsx": "^0.4.4",
+    "@locator/runtime": "^0.4.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/jest": "^29.5.14",
