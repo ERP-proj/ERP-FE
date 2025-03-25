@@ -1,42 +1,3 @@
-// "use client";
-// import { useRef, useState } from "react";
-// import SideBar from "./components/SideBar";
-// import TimeTable from "./main/TimeTable";
-// import NextReservation from "./main/NextReservation";
-// import ReservationModal from "./components/calendar/ReservationModal";
-// import { Calendar } from "@fullcalendar/core";
-
-// export default function Home() {
-//   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-//   const calendarRef = useRef<HTMLDivElement | null>(null);
-//   const calendarInstance = useRef<Calendar | null>(null);
-
-//   return (
-//     <div className="flex h-screen">
-//       <div className="h-full flex-[5_0_0]">
-//         <SideBar />
-//       </div>
-//       <div className="flex-[65_0_0] place-self-center">
-//         <TimeTable
-//           setSelectedEvent={setSelectedEvent}
-//           calendarRef={calendarRef}
-//           calendarInstance={calendarInstance}
-//         />
-//       </div>
-//       <div className="flex flex-col mt-16 flex-[30_0_0] ">
-//         <NextReservation />
-//       </div>
-
-//       {/* 모달 컴포넌트 */}
-//       <ReservationModal
-//         selectedEvent={selectedEvent}
-//         onClose={() => setSelectedEvent(null)}
-//         calendarInstance={calendarInstance}
-//       />
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useEffect } from "react";
@@ -62,13 +23,18 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuthStore();
 
-  // ✅ 로그인 상태가 변경되면 자동으로 페이지 이동
+  // 로그인 상태가 변경되면 페이지 이동
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/reservation");
+      // isAdmin 상태에 따라 페이지 이동 처리
+      const isAdmin = useAuthStore.getState().isAdmin;
+      if (isAdmin) {
+        router.push("/admin/institute"); // 관리자 로그인 시 관리자 페이지로 이동
+      } else {
+        router.push("/reservation"); // 일반 로그인 시 예약 페이지로 이동
+      }
     }
   }, [isAuthenticated, router]);
-
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       const result = await auth.login(data.account, data.password);
