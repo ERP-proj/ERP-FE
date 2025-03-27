@@ -41,7 +41,7 @@ function TimeTable({
 
   useEffect(() => {
     if (calendarInstance.current) {
-      loadReservation(now, calendarInstance);
+      // (now, calendarInstance);
     }
   }, [calendarInstance]);
 
