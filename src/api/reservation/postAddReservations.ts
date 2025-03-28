@@ -1,5 +1,6 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
+import timeMapping from "@/utils/reservation/timeMapping";
 
 export const postAddReservations = async (userInfo: {
   startStr: string;
@@ -11,8 +12,10 @@ export const postAddReservations = async (userInfo: {
   try {
     const response = await apiClient.post("/api/reservation/addReservation", {
       customerId: userInfo.customerId,
-      startTime: userInfo.startStr,
-      endTime: userInfo.endStr,
+      reservationDate: userInfo.startStr.split("T")[0],
+      startIndex:
+        timeMapping[`${userInfo?.startStr.split("T")[1].slice(0, 5)}`],
+      endIndex: timeMapping[`${userInfo?.endStr.split("T")[1].slice(0, 5)}`],
       resourceId: userInfo.resourceId,
       memo: userInfo.memo,
       seatNumber: userInfo.resourceId,

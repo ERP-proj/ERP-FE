@@ -1,5 +1,6 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
+import timeMapping from "@/utils/reservation/timeMapping";
 
 export const putUpdateReservations = async (data: {
   reservationId: number;
@@ -19,8 +20,8 @@ export const putUpdateReservations = async (data: {
       "/api/reservation/updatedReservation",
       {
         reservationId: data?.reservationId,
-        startTime: data?.startTime,
-        endTime: data?.endTime,
+        startIndex: timeMapping[`${data?.startTime.split("T")[1].slice(0, 5)}`],
+        endIndex: timeMapping[`${data?.endTime.split("T")[1].slice(0, 5)}`],
         memo: data?.memo,
         seatNumber: data?.seatNumber,
         attendanceStatus: data?.attendanceStatus,
