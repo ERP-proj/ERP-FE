@@ -33,6 +33,9 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       if (!refreshToken) {
         logout();
+        if (typeof window !== "undefined") {
+          window.location.href = "/";
+        }
         return Promise.reject(error);
       }
       try {
@@ -63,6 +66,9 @@ apiClient.interceptors.response.use(
         }
       } catch (refreshError) {
         logout(); // Refresh Token 재발급 실패 시 로그아웃
+        if (typeof window !== "undefined") {
+          window.location.href = "/"; // ✅ 재발급 실패 시 이동
+        }
         return Promise.reject(refreshError);
       }
     }
