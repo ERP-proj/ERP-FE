@@ -9,7 +9,7 @@ import useCustomerStore from "@/store/useCustomerStore";
 import usePaginatedMembers from "@/hooks/member/usePaginatedMembers";
 
 const MemberList = () => {
-  const { fetchCustomer } = useCustomerStore();
+  const { fetchCustomer, fetchCustomers } = useCustomerStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
     null
@@ -19,6 +19,7 @@ const MemberList = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePaginatedMembers("ACTIVE");
 
+  console.log("회원리스트", data);
   // ✅ `data.pages`가 존재하는 경우 평탄화
   const members: Member[] =
     (data as any)?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출

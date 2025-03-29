@@ -1,7 +1,6 @@
 import { useAuthStore } from "@/store/useAuthStore";
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
-import { useRouter } from "next/navigation";
 
 export const auth = {
   login: async (account: string, password: string) => {

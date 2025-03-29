@@ -11,6 +11,7 @@ import Plan from "./Plan";
 import { FormData } from "@/types/memberType";
 import { getCurrentDate } from "@/utils/formatDate";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRegisterMember } from "@/hooks/member/useRegisterMember";
 
 const initialFormData: FormData = {
   planId: 0,
@@ -54,6 +55,7 @@ const CreateMember: React.FC<{
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
 }> = ({ formData = initialFormData, setFormData }) => {
   const queryClient = useQueryClient(); //React Query 캐시 사용
+  // const registerMemberMutation = useRegisterMember();
 
   const handleInputChange = (key: string, value: any, index?: number) => {
     const keys = key.split(".");
@@ -224,6 +226,7 @@ const CreateMember: React.FC<{
       const response = await memberAPI.registMember(formattedData);
       console.info("회원 등록 성공:", response);
       // ✅ MemberList 데이터 다시 가져오기 (React Query 캐시 무효화)
+      // await registerMemberMutation.mutateAsync(formData);
       queryClient.invalidateQueries({ queryKey: ["members", "ACTIVE"] });
       closeModal();
     } catch (error) {
