@@ -2,24 +2,22 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import MemberRow from "./MemberRow";
-// import { memberAPI } from "@/api/member";
 import { Member } from "@/types/memberType";
 import DetailMember from "../detail/DetailMember";
 import useCustomerStore from "@/store/useCustomerStore";
 import usePaginatedMembers from "@/hooks/member/usePaginatedMembers";
+import MemberRowSkeleton from "./MemberRowSkeleton";
 
 const MemberList = () => {
-  const { fetchCustomer, fetchCustomers } = useCustomerStore();
+  const { fetchCustomer } = useCustomerStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | null>(
     null
   );
 
   // ✅ React Query 무한스크롤 데이터 가져오기
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     usePaginatedMembers("ACTIVE");
-
-  console.log("회원리스트", data);
   // ✅ `data.pages`가 존재하는 경우 평탄화
   const members: Member[] =
     (data as any)?.pages?.flatMap((page: { data: any }) => page.data) || []; // ✅ pages에서 data만 추출
@@ -62,13 +60,15 @@ const MemberList = () => {
 
   return (
     <div className="grid grid-cols-1 rounded-xl gap-2 p-4 border border-gray-300  h-full overflow-y-auto">
-      {members.map((member) => (
-        <MemberRow
-          key={member.customerId}
-          member={member}
-          onClick={() => handleRowClick(member.customerId)}
-        />
-      ))}
+      {isLoading
+        ? Array.from({ length: 6 }).map((_, i) => <MemberRowSkeleton key={i} />)
+        : members.map((member) => (
+            <MemberRow
+              key={member.customerId}
+              member={member}
+              onClick={() => handleRowClick(member.customerId)}
+            />
+          ))}
       {/* ✅ 무한스크롤 트리거 요소 (마지막 요소 감지) */}
       <div
         ref={observerRef}
