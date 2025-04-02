@@ -16,16 +16,16 @@ export default function Home() {
       <div className="h-full flex-[5_0_0]">
         <SideBar />
       </div>
-      <div className="flex-[65_0_0] place-self-center">
+      <div className="flex-[65_0_0] place-self-center mr-[130px]">
         <TimeTable
           setSelectedEvent={setSelectedEvent}
           calendarRef={calendarRef}
           calendarInstance={calendarInstance}
         />
       </div>
-      <div className="flex flex-col mt-16 flex-[30_0_0] ">
+      {/* <div className="flex flex-col mt-16 flex-[30_0_0] ">
         <NextReservation />
-      </div>
+      </div> */}
 
       {/* 모달 컴포넌트 */}
       <ReservationModal
