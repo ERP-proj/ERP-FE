@@ -13,6 +13,8 @@ export default function Page() {
   const calendarRef = useRef<HTMLDivElement>(null);
   const calendarInstance = useRef<Calendar>(null);
 
+  console.log("selectedEvent", selectedEvent);
+
   return (
     <div className="flex h-screen overflow-hidden">
       {/* SideBar */}

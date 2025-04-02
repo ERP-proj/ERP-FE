@@ -2,18 +2,24 @@ import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import { CalendarSetupProps } from "@/types/eventType";
+import timezone from "dayjs/plugin/timezone";
 
-export const calendarSetup = (
-  calendarRef: React.RefObject<HTMLDivElement>,
-  setClickedDate: React.Dispatch<React.SetStateAction<string>>,
-  setShowMiniCalendar: React.Dispatch<React.SetStateAction<boolean>>,
-  setSelectedEvent: React.Dispatch<React.SetStateAction<any>>,
-  now: Dayjs
-) => {
+dayjs.extend(timezone);
+
+export const calendarSetup = ({
+  calendarRef,
+  clickedDate,
+  setClickedDate,
+  setShowMiniCalendar,
+  setSelectedEvent,
+  now,
+}: CalendarSetupProps) => {
   if (!calendarRef.current) return null;
 
   const currentTime = now?.format("HH:mm:ss");
+  console.log("clickedDate", clickedDate);
 
   const calendar = new Calendar(calendarRef.current, {
     // Set library plugins and initial View
@@ -33,6 +39,7 @@ export const calendarSetup = (
     allDaySlot: false,
     slotMinWidth: 5,
     height: "100%",
+    slotEventOverlap: false,
 
     // Set calendar resources
     resources: [
@@ -49,44 +56,22 @@ export const calendarSetup = (
     // Set event click Callback
     eventClick: function (info) {
       const eventObj = info.event;
-      const userName = eventObj?.title;
-      const startDate = eventObj?.start;
-      const startStr = eventObj?.startStr;
-      const endStr = eventObj?.endStr;
-      const endDate = eventObj?.end;
-      const seatNumber = eventObj?.id;
-      const reservationId = eventObj.extendedProps?.reservationId;
-      const target = info.jsEvent.target as HTMLElement | null;
-
-      if (target && target.getBoundingClientRect) {
-        const rect = target?.getBoundingClientRect();
-        const position = {
-          top: rect?.top + window?.scrollY + rect?.height / 4,
-          left: rect?.left + window?.scrollX + rect?.width * 1.2,
-        };
-
-        console.log("clicked event info--------------------");
-        console.log(info);
-
-        setSelectedEvent({
-          userName,
-          seatNumber,
-          startDate,
-          endDate,
-          startStr,
-          endStr,
-          reservationId,
-          position,
-          mode: "edit",
-        });
-      }
+      console.log("eventObj", eventObj);
+      setSelectedEvent({
+        userName: eventObj?.title,
+        startDate: eventObj?.start,
+        endDate: eventObj?.end,
+        startStr: eventObj?.startStr,
+        endStr: eventObj?.endStr,
+        seatNumber: Number(eventObj?.id),
+        reservationId: eventObj.extendedProps?.reservationId,
+        mode: "edit",
+      });
     },
 
     // Set drag Callback
     select: function (info) {
       const resourceId = info.resource?.id;
-
-      console.log("infoooo", info);
 
       const newEvent = {
         startStr: dayjs(info.start).format("YYYY-MM-DDTHH:mm:ss"),
@@ -97,10 +82,9 @@ export const calendarSetup = (
         extendedProps: {
           seatNumber: resourceId,
         },
-        mode: "add",
+        mode: "add" as const,
       };
       setSelectedEvent(newEvent);
-      console.log("newEvent", newEvent);
     },
 
     // default design setting
@@ -119,37 +103,16 @@ export const calendarSetup = (
 
     // Set customTitle button based on currentDate
     datesSet: (info) => {
-      const currentDate = info.view.calendar
-        ?.getDate()
-        ?.toISOString()
-        ?.slice(0, 10);
-
-      const currentDateDate = new Date(currentDate);
-
-      const options: Intl.DateTimeFormatOptions = {
-        month: "long",
-        day: "numeric",
-      };
-
-      const formattedDate = new Intl.DateTimeFormat(
-        navigator.language,
-        options
-      ).format(currentDateDate);
-
-      if (currentDate) {
-        setClickedDate(currentDate);
-      }
+      const currentDate = dayjs(info.view.currentStart).tz("Asia/Seoul");
+      const formatted = dayjs(currentDate).format("M월 D일");
 
       const customTitleButton = calendarRef.current?.querySelector(
         ".fc-customTitle-button.fc-button.fc-button-primary"
       );
 
-      if (customTitleButton) {
-        customTitleButton.textContent = formattedDate;
-      }
-
-      if (currentDate) {
-        setClickedDate(currentDate);
+      if (formatted && customTitleButton && currentDate) {
+        customTitleButton.textContent = formatted;
+        setClickedDate(dayjs(currentDate));
       }
     },
   });

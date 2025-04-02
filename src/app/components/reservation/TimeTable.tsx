@@ -12,24 +12,25 @@ function TimeTable({
   calendarRef,
   calendarInstance,
 }: {
-  setSelectedEvent: (event: SelectedEvent | null) => void;
+  setSelectedEvent: React.Dispatch<React.SetStateAction<SelectedEvent | null>>;
   calendarRef: React.MutableRefObject<HTMLDivElement | null>;
   calendarInstance: React.MutableRefObject<Calendar | null>;
 }) {
   const now = dayjs();
-  const nowDate = now.format("YYYY-MM-DD");
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
-  const [clickedDate, setClickedDate] = useState<string>("");
+  const [clickedDate, setClickedDate] = useState<dayjs.Dayjs>(now);
+  const nowDate = clickedDate?.format("YYYY-MM-DD");
 
   useEffect(() => {
     if (calendarRef.current) {
-      calendarInstance.current = calendarSetup(
+      calendarInstance.current = calendarSetup({
         calendarRef,
+        clickedDate,
         setClickedDate,
         setShowMiniCalendar,
         setSelectedEvent,
-        now
-      );
+        now,
+      });
     }
 
     return () => {
@@ -42,16 +43,16 @@ function TimeTable({
 
   useEffect(() => {
     if (calendarInstance.current) {
+      console.log("calendarInstance", calendarInstance.current);
       loadReservation(nowDate, calendarInstance);
     }
-  }, [calendarInstance]);
+  }, [calendarInstance?.current, nowDate]);
 
   const handleMiniCalendarDateClick = (date: string) => {
-    if (calendarInstance.current) {
-      calendarInstance.current.gotoDate(date);
-    }
-    setClickedDate(date);
+    const selected = dayjs(date);
+    setClickedDate(selected);
     setShowMiniCalendar(false);
+    calendarInstance.current?.gotoDate(date);
   };
 
   return (

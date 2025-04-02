@@ -12,6 +12,10 @@ import { debounce } from "lodash";
 import { memberAPI } from "@/api/member";
 import { loadReservation } from "@/api/reservation/loadReservation";
 import { Calendar } from "@fullcalendar/core";
+import {
+  reverseTimeMapping,
+  timeMapping,
+} from "@/utils/reservation/timeMapping";
 import BasicButton from "../ui/BasicButton";
 
 interface EventProps {
@@ -37,34 +41,22 @@ const SelectedEventModal: React.FC<EventProps> = ({
   const [userInfo, setUserInfo] = useState<any>(null);
 
   useEffect(() => {
-    // Case 1: add Mode
     if (event?.mode == "add") {
-      setUserInfo(event);
-    }
-    // Case 2: Edit Mode
-    else if (event?.mode == "edit") {
+      setUserInfo({ ...event, progressList: [] });
+    } else if (event?.mode == "edit") {
       const fetchUserInfo = async () => {
         const data = await getReservationCustomerDetails(event.reservationId);
         if (data?.data) {
           setUserInfo({
             ...data.data,
-            progressList: {
-              addProgresses: data.data.progressList || [],
-              updateProgresses: [],
-              deleteProgresses: [],
-            } as {
-              addProgresses: { date: string; content: string }[];
-              updateProgresses: {
-                progressId: number;
-                date: string;
-                content: string;
-              }[];
-              deleteProgresses: { progressId: number }[];
-            },
+            progressList: Array.isArray(data.data.progressList)
+              ? data.data.progressList
+              : data.data.progressList
+              ? [data.data.progressList]
+              : [],
           });
         }
       };
-
       fetchUserInfo();
     }
   }, [event]);
@@ -98,18 +90,16 @@ const SelectedEventModal: React.FC<EventProps> = ({
   const handleEditSubmit = async () => {
     if (event?.mode == "edit") {
       const response = await putUpdateReservations({
-        reservationId: event?.reservationId,
-        startTime: userInfo?.startTime,
-        endTime: userInfo?.endTime,
+        reservationId: Number(event?.reservationId),
+        reservationDate: userInfo?.reservationDate,
+        startIndex: userInfo?.startIndex,
+        endIndex: userInfo?.endIndex,
         memo: userInfo?.memo,
         seatNumber: event?.seatNumber,
-        attendanceStatus: userInfo?.attendanceStatus,
-        progressList: {
-          addProgresses: userInfo?.progressList?.addProgresses || [],
-          updateProgresses: userInfo?.progressList?.updateProgresses || [],
-          deleteProgresses: userInfo?.progressList?.deleteProgresses || [],
-        },
+        attendanceStatus: userInfo?.attendanceStatus || "NORMAL",
+        progressList: userInfo?.progressList || [],
       });
+
       await refreshCalendar();
       onClose();
       return response;
@@ -124,6 +114,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
       return response;
     }
   };
+
+  console.log("event", event);
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressContent, setProgressContent] = useState("");
@@ -148,13 +140,15 @@ const SelectedEventModal: React.FC<EventProps> = ({
 
     setUserInfo((prev: any) => ({
       ...prev,
-      progressList: {
-        ...prev?.progressList,
-        addProgresses: [
-          ...(prev?.progressList?.addProgresses || []),
-          { date: currentDate, content: progressContent },
-        ],
-      },
+      progressList: [
+        ...(prev?.progressList || []),
+        {
+          progressId: 0,
+          date: currentDate,
+          content: progressContent,
+          deleted: false,
+        },
+      ],
     }));
 
     setProgressContent("");
@@ -166,32 +160,16 @@ const SelectedEventModal: React.FC<EventProps> = ({
     date: string;
     content: string;
   }) => {
-    setUserInfo((prev: any) => {
-      if (!prev?.progressList) return prev;
-
-      const {
-        addProgresses = [],
-        updateProgresses = [],
-        deleteProgresses = [],
-      } = prev.progressList;
-
-      return {
-        ...prev,
-        progressList: {
-          addProgresses: addProgresses.filter(
-            (p: any) =>
-              !(p.date === progress.date && p.content === progress.content)
-          ),
-          updateProgresses: updateProgresses.filter(
-            (p: any) =>
-              !(p.date === progress.date && p.content === progress.content)
-          ),
-          deleteProgresses: progress.progressId
-            ? [...deleteProgresses, { progressId: progress.progressId }]
-            : deleteProgresses,
-        },
-      };
-    });
+    setUserInfo((prev: any) => ({
+      ...prev,
+      progressList: prev.progressList.map((p: any) =>
+        p.progressId === progress.progressId &&
+        p.date === progress.date &&
+        p.content === progress.content
+          ? { ...p, deleted: true }
+          : p
+      ),
+    }));
   };
 
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -250,6 +228,21 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }
   };
 
+  const [startTimeInput, setStartTimeInput] = useState("");
+  const [endTimeInput, setEndTimeInput] = useState("");
+
+  useEffect(() => {
+    if (userInfo?.startIndex !== undefined) {
+      setStartTimeInput(reverseTimeMapping[userInfo.startIndex] || "");
+    }
+  }, [userInfo?.startIndex]);
+
+  useEffect(() => {
+    if (userInfo?.endIndex !== undefined) {
+      setEndTimeInput(reverseTimeMapping[userInfo.endIndex] || "");
+    }
+  }, [userInfo?.endIndex]);
+
   useEffect(() => {
     console.log("🔄 userInfo 변경됨:", userInfo);
   }, [userInfo]);
@@ -273,6 +266,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 <Image
                   src="/reservationModal/closeIcon.png"
                   alt="progressCloseIcon"
+                  width={100}
+                  height={100}
                 />
               </Button>
             </div>
@@ -354,27 +349,34 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
                 type="text"
                 maxLength={5}
-                value={userInfo?.formattedStartTime || ""}
+                value={startTimeInput}
                 placeholder="00:00"
                 readOnly={event?.mode === "add"}
                 onChange={(e) => {
-                  const input = e.target.value.replace(/[^0-9]/g, "");
-                  if (input.length <= 4) {
-                    const formattedTime =
-                      input.length > 2
-                        ? `${input.slice(0, 2)}:${input.slice(2)}`
-                        : input;
+                  const input = e.target.value;
+                  const numericOnly = input.replace(/[^0-9]/g, "");
+                  let formattedTime = input;
 
-                    const updatedStartTime = `${userInfo.startTime.slice(
-                      0,
-                      11
-                    )}${formattedTime}:00`;
+                  if (numericOnly.length <= 4) {
+                    if (numericOnly.length > 2) {
+                      formattedTime = `${numericOnly.slice(
+                        0,
+                        2
+                      )}:${numericOnly.slice(2)}`;
+                    } else {
+                      formattedTime = numericOnly;
+                    }
 
-                    setUserInfo((prev: any) => ({
-                      ...prev,
-                      formattedStartTime: formattedTime,
-                      startTime: updatedStartTime,
-                    }));
+                    setStartTimeInput(formattedTime);
+
+                    const updatedEndIndex = timeMapping[formattedTime];
+
+                    if (updatedEndIndex !== undefined) {
+                      setUserInfo((prev: any) => ({
+                        ...prev,
+                        startIndex: updatedEndIndex,
+                      }));
+                    }
                   }
                 }}
               />
@@ -385,26 +387,33 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
                 type="text"
                 maxLength={5}
-                value={userInfo?.formattedEndTime || ""}
+                value={endTimeInput}
                 placeholder="00:00"
                 onChange={(e) => {
-                  const input = e.target.value.replace(/[^0-9]/g, "");
-                  if (input.length <= 4) {
-                    const formattedTime =
-                      input.length > 2
-                        ? `${input.slice(0, 2)}:${input.slice(2)}`
-                        : input;
+                  const input = e.target.value;
+                  const numericOnly = input.replace(/[^0-9]/g, "");
+                  let formattedTime = input;
 
-                    const updatedEndTime = `${userInfo.endTime.slice(
-                      0,
-                      11
-                    )}${formattedTime}:00`;
+                  if (numericOnly.length <= 4) {
+                    if (numericOnly.length > 2) {
+                      formattedTime = `${numericOnly.slice(
+                        0,
+                        2
+                      )}:${numericOnly.slice(2)}`;
+                    } else {
+                      formattedTime = numericOnly;
+                    }
 
-                    setUserInfo((prev: any) => ({
-                      ...prev,
-                      formattedEndTime: formattedTime,
-                      endTime: updatedEndTime,
-                    }));
+                    setEndTimeInput(formattedTime);
+
+                    const updatedEndIndex = timeMapping[formattedTime];
+
+                    if (updatedEndIndex !== undefined) {
+                      setUserInfo((prev: any) => ({
+                        ...prev,
+                        endIndex: updatedEndIndex,
+                      }));
+                    }
                   }
                 }}
               />
@@ -484,10 +493,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
                   <Image
                     src={
                       userInfo?.attendanceStatus === "LATE"
-                        ? "/reservation/checked.png"
-                        : "/reservation/unchecked.png"
+                        ? "/reservationModal/checked.png"
+                        : "/reservationModal/unchecked.png"
                     }
                     alt="late"
+                    width={100}
+                    height={100}
                     className="flex self-center size-5"
                     onClick={() =>
                       setUserInfo((prev: any) => ({
@@ -501,10 +512,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
                   <Image
                     src={
                       userInfo?.attendanceStatus === "ABSENT"
-                        ? "/reservation/checked.png"
-                        : "/reservation/unchecked.png"
+                        ? "/reservationModal/checked.png"
+                        : "/reservationModal/unchecked.png"
                     }
                     alt="absent"
+                    width={100}
+                    height={100}
                     className="flex self-center size-5"
                     onClick={() =>
                       setUserInfo((prev: any) => ({
@@ -547,29 +560,34 @@ const SelectedEventModal: React.FC<EventProps> = ({
             </div>
 
             <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] overflow-y-auto max-h-40">
-              {userInfo?.progressList?.addProgresses?.length > 0 ? (
-                userInfo?.progressList?.addProgresses.map(
-                  (
-                    progress: { date: string; content: string },
-                    index: number
-                  ) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center py-1 border-b border-gray-200"
-                    >
-                      <span>{progress.date}</span> {progress.content}
-                      <button
-                        className="size-3"
-                        onClick={() => handleDeleteProgress(progress)}
+              {Array.isArray(userInfo?.progressList) &&
+              userInfo.progressList.length > 0 ? (
+                userInfo.progressList
+                  .filter((p: any) => !p.deleted)
+                  .map(
+                    (
+                      progress: { date: string; content: string },
+                      index: number
+                    ) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center py-1 border-b border-gray-200"
                       >
-                        <Image
-                          src="/reservationModal/closeIcon.png"
-                          alt="삭제"
-                        />
-                      </button>
-                    </div>
+                        <span>{progress.date}</span> {progress.content}
+                        <button
+                          className="size-3"
+                          onClick={() => handleDeleteProgress(progress)}
+                        >
+                          <Image
+                            src="/reservationModal/closeIcon.png"
+                            alt="close Icon"
+                            width={100}
+                            height={100}
+                          />
+                        </button>
+                      </div>
+                    )
                   )
-                )
               ) : (
                 <span className="text-gray-400">진도표 없음</span>
               )}
