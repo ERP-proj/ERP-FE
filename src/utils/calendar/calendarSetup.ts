@@ -2,21 +2,18 @@ import { Calendar } from "@fullcalendar/core";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export const calendarSetup = (
   calendarRef: React.RefObject<HTMLDivElement>,
   setClickedDate: React.Dispatch<React.SetStateAction<string>>,
   setShowMiniCalendar: React.Dispatch<React.SetStateAction<boolean>>,
-  setSelectedEvent: React.Dispatch<React.SetStateAction<any>>
+  setSelectedEvent: React.Dispatch<React.SetStateAction<any>>,
+  now: Dayjs
 ) => {
   if (!calendarRef.current) return null;
 
-  // Declare now time
-  const now = new Date();
-  const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(
-    now.getMinutes()
-  ).padStart(2, "0")}:00`;
+  const currentTime = now?.format("HH:mm:ss");
 
   const calendar = new Calendar(calendarRef.current, {
     // Set library plugins and initial View
@@ -32,10 +29,10 @@ export const calendarSetup = (
     selectable: true,
 
     // default basic setting
-    timeZone: "local",
+    timeZone: "Asia/Seoul",
     allDaySlot: false,
-    slotMinWidth: 30,
-    contentHeight: 800,
+    slotMinWidth: 5,
+    height: "100%",
 
     // Set calendar resources
     resources: [

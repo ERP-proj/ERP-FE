@@ -3,12 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
-import noUser from "../../assets/noUser.png";
-import { Button } from "../components/ui/button";
-import addIcon from "../../../public/reservationModal/addIcon.png";
-import closeIcon from "../../../public/reservationModal/closeIcon.png";
-import unchecked from "../../../public/reservationModal/unchecked.png";
-import checked from "../../../public/reservationModal/checked.png";
+import { Button } from "../ui/button";
 import { postAddReservations } from "@/api/reservation/postAddReservations";
 import { putUpdateReservations } from "@/api/reservation/putUpdateReservations";
 import { deleteReservations } from "@/api/reservation/deleteReservations";
@@ -17,7 +12,7 @@ import { debounce } from "lodash";
 import { memberAPI } from "@/api/member";
 import { loadReservation } from "@/api/reservation/loadReservation";
 import { Calendar } from "@fullcalendar/core";
-import BasicButton from "../components/ui/BasicButton";
+import BasicButton from "../ui/BasicButton";
 
 interface EventProps {
   event: {
@@ -275,7 +270,10 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="size-12"
                 onClick={() => setShowProgressModal(false)}
               >
-                <Image src={closeIcon} alt="progressCloseIcon" />
+                <Image
+                  src="/reservationModal/closeIcon.png"
+                  alt="progressCloseIcon"
+                />
               </Button>
             </div>
 
@@ -314,7 +312,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
           </div>
           {/* Modal close button */}
           <Button className="size-12" onClick={onClose}>
-            <Image src={closeIcon} alt="closeIcon" />
+            <Image
+              src="/reservationModal/closeIcon.png"
+              width={100}
+              height={100}
+              alt="closeIcon"
+            />
           </Button>
         </div>
         <div className="flex gap-3">
@@ -322,7 +325,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
           <div className="justify-center m-1 size-32">
             {userInfo?.photoUrl !== undefined ? (
               <Image
-                src={userInfo.photoUrl || noUser}
+                src={userInfo.photoUrl || "/reservationModal/noUser.png"}
                 alt="User Photo"
                 width={100}
                 height={100}
@@ -330,7 +333,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="object-cover rounded-lg"
               />
             ) : (
-              <Image src={noUser} alt="noUser" />
+              <Image
+                src="/reservationModal/noUser.png"
+                alt="noUser"
+                width={100}
+                height={100}
+              />
             )}
           </div>
 
@@ -476,8 +484,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
                   <Image
                     src={
                       userInfo?.attendanceStatus === "LATE"
-                        ? checked
-                        : unchecked
+                        ? "/reservation/checked.png"
+                        : "/reservation/unchecked.png"
                     }
                     alt="late"
                     className="flex self-center size-5"
@@ -493,8 +501,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
                   <Image
                     src={
                       userInfo?.attendanceStatus === "ABSENT"
-                        ? checked
-                        : unchecked
+                        ? "/reservation/checked.png"
+                        : "/reservation/unchecked.png"
                     }
                     alt="absent"
                     className="flex self-center size-5"
@@ -529,7 +537,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
             <div className="flex items-center justify-between font-semibold">
               <div>진도표</div>
               <Button className="size-12" onClick={handleAddIcon}>
-                <Image src={addIcon} alt="addIcon" />
+                <Image
+                  src="/reservationModal/addIcon.png"
+                  alt="addIcon"
+                  width={100}
+                  height={100}
+                />
               </Button>
             </div>
 
@@ -549,7 +562,10 @@ const SelectedEventModal: React.FC<EventProps> = ({
                         className="size-3"
                         onClick={() => handleDeleteProgress(progress)}
                       >
-                        <Image src={closeIcon} alt="삭제" />
+                        <Image
+                          src="/reservationModal/closeIcon.png"
+                          alt="삭제"
+                        />
                       </button>
                     </div>
                   )

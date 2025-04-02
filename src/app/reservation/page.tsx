@@ -2,32 +2,34 @@
 import { useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import SideBar from "../components/SideBar";
-import TimeTable from "../main/TimeTable";
-import NextReservation from "../main/NextReservation";
-import ReservationModal from "../components/calendar/ReservationModal";
+import TimeTable from "../components/reservation/TimeTable";
+import ReservationModal from "../components/reservation/ReservationModal";
+import { SelectedEvent } from "@/types/eventType";
 
-export default function Home() {
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
-  const calendarRef = useRef<HTMLDivElement | null>(null);
-  const calendarInstance = useRef<Calendar | null>(null);
+export default function Page() {
+  const [selectedEvent, setSelectedEvent] = useState<null | SelectedEvent>(
+    null
+  );
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const calendarInstance = useRef<Calendar>(null);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen overflow-hidden">
+      {/* SideBar */}
       <div className="h-full flex-[5_0_0]">
         <SideBar />
       </div>
-      <div className="flex-[65_0_0] place-self-center mr-[130px]">
+
+      {/* TimeTable */}
+      <div className="h-full flex-[95_0_0] self-center mr-[130px] py-10 overflow-hidden">
         <TimeTable
           setSelectedEvent={setSelectedEvent}
           calendarRef={calendarRef}
           calendarInstance={calendarInstance}
         />
       </div>
-      {/* <div className="flex flex-col mt-16 flex-[30_0_0] ">
-        <NextReservation />
-      </div> */}
 
-      {/* 모달 컴포넌트 */}
+      {/* Reservation Modal */}
       <ReservationModal
         selectedEvent={selectedEvent}
         onClose={() => setSelectedEvent(null)}

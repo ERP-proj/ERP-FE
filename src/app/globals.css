@@ -57,6 +57,16 @@
     @apply hidden;
   }
 
+  /* 헤더와 캘린더 사이 여백 제거 */
+  .fc-toolbar {
+    @apply mb-0 !important;
+  }
+
+  /* Slot 높이 조절절 */
+  .fc .fc-timegrid-slot {
+    @apply h-[4] text-sm;
+  }
+
   /* FullCalendar Background Colors */
   .fc .fc-scrollgrid-sync-inner,
   .fc .fc-timegrid-axis,

@@ -1,4 +1,4 @@
-import SelectedEventModal from "@/app/main/SelectedEventModal";
+import SelectedEventModal from "@/app/components/reservation/SelectedEventModal";
 import {
   Dialog,
   DialogContent,

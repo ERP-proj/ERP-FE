@@ -4,7 +4,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import Image from "next/image";
 import dayjs from "dayjs";
 import { useState, useEffect } from "react";
-import { Button } from "../components/ui/button";
+import { Button } from "../ui/button";
 import getReservationCustomerDetails from "@/utils/reservation/getReservationCustomerDetails";
 
 interface EventProps {
