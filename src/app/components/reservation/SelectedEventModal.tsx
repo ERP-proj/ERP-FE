@@ -52,8 +52,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
             progressList: Array.isArray(data.data.progressList)
               ? data.data.progressList
               : data.data.progressList
-              ? [data.data.progressList]
-              : [],
+                ? [data.data.progressList]
+                : [],
           });
         }
       };
@@ -164,8 +164,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
       ...prev,
       progressList: prev.progressList.map((p: any) =>
         p.progressId === progress.progressId &&
-        p.date === progress.date &&
-        p.content === progress.content
+          p.date === progress.date &&
+          p.content === progress.content
           ? { ...p, deleted: true }
           : p
       ),
@@ -322,17 +322,17 @@ const SelectedEventModal: React.FC<EventProps> = ({
               <Image
                 src={userInfo.photoUrl || "/reservationModal/noUser.png"}
                 alt="User Photo"
-                width={100}
-                height={100}
-                layout="intrinsic"
-                className="object-cover rounded-lg"
+                width={96}
+                height={96}
+                className="w-full h-full object-cover rounded-full"
               />
             ) : (
               <Image
                 src="/reservationModal/noUser.png"
                 alt="noUser"
-                width={100}
-                height={100}
+                width={96}
+                height={96}
+                className="w-full h-full object-cover rounded-full"
               />
             )}
           </div>
@@ -561,7 +561,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
 
             <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] overflow-y-auto max-h-40">
               {Array.isArray(userInfo?.progressList) &&
-              userInfo.progressList.length > 0 ? (
+                userInfo.progressList.length > 0 ? (
                 userInfo.progressList
                   .filter((p: any) => !p.deleted)
                   .map(
