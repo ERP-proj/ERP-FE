@@ -1,4 +1,4 @@
-import SelectedEventModal from "@/app/components/reservation/SelectedEventModal";
+import SelectedEventModal from "@/app/components/reservation/reservationModal/SelectedEventModal";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +7,6 @@ import {
 } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Calendar } from "@fullcalendar/core";
-import { useCallback, useMemo } from "react";
 
 interface ReservationModalProps {
   selectedEvent: any;
@@ -20,11 +19,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({
   onClose,
   calendarInstance,
 }) => {
-  const eventDate = useMemo(() => {
-    if (!selectedEvent || !selectedEvent.startStr) return null;
-    return selectedEvent.startStr.split("T")[0];
-  }, [selectedEvent]);
-
   return (
     <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && onClose()}>
       <DialogOverlay className="fixed inset-0 bg-black bg-opacity-50 z-40" />

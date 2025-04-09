@@ -2,8 +2,8 @@
 import { useRef, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
 import SideBar from "../components/SideBar";
-import TimeTable from "../components/reservation/TimeTable";
-import ReservationModal from "../components/reservation/ReservationModal";
+import Reservation from "../components/reservation/Reservation";
+import ReservationModal from "../components/reservation/reservationModal/ReservationModal";
 import { SelectedEvent } from "@/types/eventType";
 
 export default function Page() {
@@ -22,9 +22,9 @@ export default function Page() {
         <SideBar />
       </div>
 
-      {/* TimeTable */}
+      {/* Reservation */}
       <div className="h-full flex-[95_0_0] self-center mr-[130px] py-10 overflow-hidden">
-        <TimeTable
+        <Reservation
           setSelectedEvent={setSelectedEvent}
           calendarRef={calendarRef}
           calendarInstance={calendarInstance}

@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
-import { calendarSetup } from "../../../utils/calendar/calendarSetup";
-import MiniCalendarPopup from "./MiniCalendarPopup";
+import { calendarSetup } from "@/utils/calendar/calendarSetup";
+import MiniCalendarPopup from "./miniCalendar/MiniCalendarPopup";
 import { loadReservation } from "@/api/reservation/loadReservation";
 import dayjs from "dayjs";
 import { SelectedEvent } from "@/types/eventType";
 
-function TimeTable({
+function Reservation({
   setSelectedEvent,
   calendarRef,
   calendarInstance,
@@ -66,4 +66,4 @@ function TimeTable({
   );
 }
 
-export default TimeTable;
+export default Reservation;
