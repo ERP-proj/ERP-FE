@@ -1,6 +1,7 @@
 import apiClient from "@/api/core/apiClient";
 import errorHandler from "@/api/core/errorHandler";
 import dayjs from "dayjs";
+import { reverseTimeMapping } from "./timeMapping";
 
 export default async function getReservationCustomerDetails(
   reservationId: number
@@ -9,19 +10,15 @@ export default async function getReservationCustomerDetails(
     const response = await apiClient.get(
       `/api/reservation/getReservationCustomerDetails/${reservationId}`
     );
-    const data = response.data;
+    const data = response.data.data;
 
-    if (data?.data) {
+    if (data) {
       return {
         ...data,
         data: {
-          ...data.data,
-          formattedStartTime: data.data.startTime
-            ? dayjs(data.data.startTime).format("HH:mm")
-            : "",
-          formattedEndTime: data.data.endTime
-            ? dayjs(data.data.endTime).format("HH:mm")
-            : "",
+          ...data,
+          formattedStartTime: reverseTimeMapping[data?.startIndex],
+          formattedEndTime: reverseTimeMapping[data?.endIndex],
           mode: "edit",
         },
       };

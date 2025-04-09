@@ -12,10 +12,7 @@ import { debounce } from "lodash";
 import { memberAPI } from "@/api/member";
 import { loadReservation } from "@/api/reservation/loadReservation";
 import { Calendar } from "@fullcalendar/core";
-import {
-  reverseTimeMapping,
-  timeMapping,
-} from "@/utils/reservation/timeMapping";
+import { handleTimeInputChange } from "@/utils/reservation/handleTimeInputChange";
 import BasicButton from "../ui/BasicButton";
 
 interface EventProps {
@@ -27,6 +24,8 @@ interface EventProps {
     seatNumber: number;
     reservationId: number;
     attendanceStatus: string;
+    formattedStartTime: string;
+    formattedEndTime: string;
     mode: "add" | "edit";
   } | null;
   calendarInstance: React.MutableRefObject<Calendar | null>;
@@ -40,6 +39,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
 }) => {
   const [userInfo, setUserInfo] = useState<any>(null);
 
+  // mode case
   useEffect(() => {
     if (event?.mode == "add") {
       setUserInfo({ ...event, progressList: [] });
@@ -52,8 +52,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
             progressList: Array.isArray(data.data.progressList)
               ? data.data.progressList
               : data.data.progressList
-                ? [data.data.progressList]
-                : [],
+              ? [data.data.progressList]
+              : [],
           });
         }
       };
@@ -115,14 +115,11 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }
   };
 
-  console.log("event", event);
-
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [progressContent, setProgressContent] = useState("");
   const currentDate = new Date().toISOString().split("T")[0];
 
   const handleAddIcon = () => {
-    console.log("handleAddIcon");
     setShowProgressModal(true);
   };
 
@@ -143,7 +140,6 @@ const SelectedEventModal: React.FC<EventProps> = ({
       progressList: [
         ...(prev?.progressList || []),
         {
-          progressId: 0,
           date: currentDate,
           content: progressContent,
           deleted: false,
@@ -164,8 +160,8 @@ const SelectedEventModal: React.FC<EventProps> = ({
       ...prev,
       progressList: prev.progressList.map((p: any) =>
         p.progressId === progress.progressId &&
-          p.date === progress.date &&
-          p.content === progress.content
+        p.date === progress.date &&
+        p.content === progress.content
           ? { ...p, deleted: true }
           : p
       ),
@@ -228,27 +224,12 @@ const SelectedEventModal: React.FC<EventProps> = ({
     }
   };
 
-  const [startTimeInput, setStartTimeInput] = useState("");
-  const [endTimeInput, setEndTimeInput] = useState("");
-
-  useEffect(() => {
-    if (userInfo?.startIndex !== undefined) {
-      setStartTimeInput(reverseTimeMapping[userInfo.startIndex] || "");
-    }
-  }, [userInfo?.startIndex]);
-
-  useEffect(() => {
-    if (userInfo?.endIndex !== undefined) {
-      setEndTimeInput(reverseTimeMapping[userInfo.endIndex] || "");
-    }
-  }, [userInfo?.endIndex]);
-
   useEffect(() => {
     console.log("🔄 userInfo 변경됨:", userInfo);
   }, [userInfo]);
 
   useEffect(() => {
-    console.log("⚠️ event 변경됨:", userInfo);
+    console.log("⚠️ event 변경됨:", event);
   }, [event]);
 
   return (
@@ -349,35 +330,11 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
                 type="text"
                 maxLength={5}
-                value={startTimeInput}
-                placeholder="00:00"
+                value={userInfo?.formattedStartTime || ""}
+                placeholder="--:--"
                 readOnly={event?.mode === "add"}
                 onChange={(e) => {
-                  const input = e.target.value;
-                  const numericOnly = input.replace(/[^0-9]/g, "");
-                  let formattedTime = input;
-
-                  if (numericOnly.length <= 4) {
-                    if (numericOnly.length > 2) {
-                      formattedTime = `${numericOnly.slice(
-                        0,
-                        2
-                      )}:${numericOnly.slice(2)}`;
-                    } else {
-                      formattedTime = numericOnly;
-                    }
-
-                    setStartTimeInput(formattedTime);
-
-                    const updatedEndIndex = timeMapping[formattedTime];
-
-                    if (updatedEndIndex !== undefined) {
-                      setUserInfo((prev: any) => ({
-                        ...prev,
-                        startIndex: updatedEndIndex,
-                      }));
-                    }
-                  }
+                  handleTimeInputChange(e.target.value, "start", setUserInfo);
                 }}
               />
               {/* ~ */}
@@ -387,34 +344,11 @@ const SelectedEventModal: React.FC<EventProps> = ({
                 className="flex-1 font-light bg-[#F6F6F6] border-[#D1D1D1] border-2 p-2 rounded-lg text-[#888888] min-h-7 min-w-0"
                 type="text"
                 maxLength={5}
-                value={endTimeInput}
-                placeholder="00:00"
+                value={userInfo?.formattedEndTime || ""}
+                placeholder="--:--"
+                readOnly={event?.mode === "add"}
                 onChange={(e) => {
-                  const input = e.target.value;
-                  const numericOnly = input.replace(/[^0-9]/g, "");
-                  let formattedTime = input;
-
-                  if (numericOnly.length <= 4) {
-                    if (numericOnly.length > 2) {
-                      formattedTime = `${numericOnly.slice(
-                        0,
-                        2
-                      )}:${numericOnly.slice(2)}`;
-                    } else {
-                      formattedTime = numericOnly;
-                    }
-
-                    setEndTimeInput(formattedTime);
-
-                    const updatedEndIndex = timeMapping[formattedTime];
-
-                    if (updatedEndIndex !== undefined) {
-                      setUserInfo((prev: any) => ({
-                        ...prev,
-                        endIndex: updatedEndIndex,
-                      }));
-                    }
-                  }
+                  handleTimeInputChange(e.target.value, "end", setUserInfo);
                 }}
               />
             </div>
@@ -561,7 +495,7 @@ const SelectedEventModal: React.FC<EventProps> = ({
 
             <div className="flex-1 font-light bg-[#FFFFFF] p-2 rounded-lg border-[#D1D1D1] border-2 text-[#3C6229] overflow-y-auto max-h-40">
               {Array.isArray(userInfo?.progressList) &&
-                userInfo.progressList.length > 0 ? (
+              userInfo.progressList.length > 0 ? (
                 userInfo.progressList
                   .filter((p: any) => !p.deleted)
                   .map(

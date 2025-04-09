@@ -35,7 +35,9 @@ export const calendarSetup = ({
     selectable: true,
 
     // default basic setting
-    timeZone: "Asia/Seoul",
+    // timeZone: "Asia/Seoul",
+    // 개발 시에만 local
+    timeZone: 'local',
     allDaySlot: false,
     slotMinWidth: 5,
     height: "100%",
