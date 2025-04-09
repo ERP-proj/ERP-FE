@@ -1,34 +1,36 @@
 "use client";
-
-import "../../app/globals.css";
 import React, { useEffect, useState } from "react";
 import { Calendar } from "@fullcalendar/core";
-import { calendarSetup } from "../../utils/calendar/calendarSetup";
-import MiniCalendarPopup from "../components/calendar/MiniCalendarPopup";
+import { calendarSetup } from "@/utils/calendar/calendarSetup";
+import MiniCalendarPopup from "./miniCalendar/MiniCalendarPopup";
 import { loadReservation } from "@/api/reservation/loadReservation";
 import dayjs from "dayjs";
+import { SelectedEvent } from "@/types/eventType";
 
-function TimeTable({
+function Reservation({
   setSelectedEvent,
   calendarRef,
   calendarInstance,
 }: {
-  setSelectedEvent: (event: any) => void;
+  setSelectedEvent: React.Dispatch<React.SetStateAction<SelectedEvent | null>>;
   calendarRef: React.MutableRefObject<HTMLDivElement | null>;
   calendarInstance: React.MutableRefObject<Calendar | null>;
 }) {
-  const now = dayjs().format("YYYY-MM-DD");
+  const now = dayjs();
   const [showMiniCalendar, setShowMiniCalendar] = useState(false);
-  const [clickedDate, setClickedDate] = useState<string>("");
+  const [clickedDate, setClickedDate] = useState<dayjs.Dayjs>(now);
+  const nowDate = clickedDate?.format("YYYY-MM-DD");
 
   useEffect(() => {
     if (calendarRef.current) {
-      calendarInstance.current = calendarSetup(
+      calendarInstance.current = calendarSetup({
         calendarRef,
+        clickedDate,
         setClickedDate,
         setShowMiniCalendar,
-        setSelectedEvent
-      );
+        setSelectedEvent,
+        now,
+      });
     }
 
     return () => {
@@ -41,23 +43,22 @@ function TimeTable({
 
   useEffect(() => {
     if (calendarInstance.current) {
-      // (now, calendarInstance);
+      console.log("calendarInstance", calendarInstance.current);
+      loadReservation(nowDate, calendarInstance);
     }
-  }, [calendarInstance]);
+  }, [calendarInstance?.current, nowDate]);
 
   const handleMiniCalendarDateClick = (date: string) => {
-    if (calendarInstance.current) {
-      calendarInstance.current.gotoDate(date);
-    }
-    setClickedDate(date);
+    const selected = dayjs(date);
+    setClickedDate(selected);
     setShowMiniCalendar(false);
+    calendarInstance.current?.gotoDate(date);
   };
 
   return (
-    <div className="relative bg-white py-2 px-5 rounded-3xl ">
-      <div ref={calendarRef} id="calendar" />
+    <div className="h-full bg-white py-2 px-5 rounded-3xl ">
+      <div ref={calendarRef} id="calendar" className="h-full" />
 
-      {/* 미니 캘린더 팝업 */}
       {showMiniCalendar && (
         <MiniCalendarPopup onDateClick={handleMiniCalendarDateClick} />
       )}
@@ -65,4 +66,4 @@ function TimeTable({
   );
 }
 
-export default TimeTable;
+export default Reservation;

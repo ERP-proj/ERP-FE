@@ -1,4 +1,4 @@
-const timeMapping: Record<string, number> = {
+export const timeMapping: Record<string, number> = {
   "00:00": 0,
   "00:30": 1,
   "01:00": 2,
@@ -49,4 +49,9 @@ const timeMapping: Record<string, number> = {
   "23:30": 47,
 };
 
-export default timeMapping;
+export const reverseTimeMapping: Record<number, string> = Object.entries(
+  timeMapping
+).reduce((acc, [timeStr, index]) => {
+  acc[index] = timeStr;
+  return acc;
+}, {} as Record<number, string>);

@@ -1,27 +1,32 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
-import timeMapping from "@/utils/reservation/timeMapping";
+import { timeMapping } from "@/utils/reservation/timeMapping";
 
 export const putUpdateReservations = async (data: {
   reservationId: number;
-  startTime: string;
-  endTime: string;
+  reservationDate: string;
+  startIndex: number;
+  endIndex: number;
   memo: string;
   seatNumber: number;
   attendanceStatus: string;
   progressList: {
-    addProgresses: { date: string; content: string }[];
-    updateProgresses: { progressId: number; date: string; content: string };
-    deleteProgresses: { progressId: number };
+    progressId: number;
+    date: string;
+    content: string;
+    deleted: boolean;
   };
 }) => {
+  console.log("data", data);
   try {
+    console.log(data);
     const response = await apiClient.put(
       "/api/reservation/updatedReservation",
       {
         reservationId: data?.reservationId,
-        startIndex: timeMapping[`${data?.startTime.split("T")[1].slice(0, 5)}`],
-        endIndex: timeMapping[`${data?.endTime.split("T")[1].slice(0, 5)}`],
+        reservationDate: data?.reservationDate,
+        startIndex: data?.startIndex,
+        endIndex: data?.endIndex,
         memo: data?.memo,
         seatNumber: data?.seatNumber,
         attendanceStatus: data?.attendanceStatus,

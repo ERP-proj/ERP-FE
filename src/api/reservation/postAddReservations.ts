@@ -1,6 +1,6 @@
 import apiClient from "../core/apiClient";
 import errorHandler from "../core/errorHandler";
-import timeMapping from "@/utils/reservation/timeMapping";
+import { timeMapping } from "@/utils/reservation/timeMapping";
 
 export const postAddReservations = async (userInfo: {
   startStr: string;
@@ -10,6 +10,7 @@ export const postAddReservations = async (userInfo: {
   customerId: number;
 }) => {
   try {
+    console.log(userInfo);
     const response = await apiClient.post("/api/reservation/addReservation", {
       customerId: userInfo.customerId,
       reservationDate: userInfo.startStr.split("T")[0],
