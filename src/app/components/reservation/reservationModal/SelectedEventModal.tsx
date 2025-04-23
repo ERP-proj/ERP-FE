@@ -84,7 +84,10 @@ const SelectedEventModal: React.FC<EventProps> = ({
         ...userInfo,
         customerId: userInfo.customerId,
       });
-      await refreshCalendar();
+      setTimeout(async () => {
+        await refreshCalendar();
+      }, 1000);
+      
       onClose();
       return response;
     }
