@@ -184,50 +184,47 @@ const DetailForm: React.FC<DetailFormProps> = ({ customer, onModify }) => {
                 <th className="border p-2 text-center">삭제</th>
               </tr>
             </thead>
-            <tbody>
-              {progressList
-                .filter((row) => !row.deleted) // 삭제된 진도 숨김
-                .sort(
-                  (a, b) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime()
-                ) // 최신순 정렬
-                .map((row, index, sortedList) => (
-                  <tr key={row.progressId ?? `temp-${index}`}>
-                    <td className="border text-center">
-                      {sortedList.length - index}
-                    </td>
-                    <td className="border">
-                      <input
-                        type="date"
-                        value={row.date}
-                        onChange={(e) =>
-                          updateRow(index, "date", e.target.value)
-                        }
-                        className="input-content w-full border-gray-300"
-                      />
-                    </td>
-                    <td className="border p-0">
-                      <input
-                        type="text"
-                        value={row.content}
-                        placeholder="내용 입력"
-                        onChange={(e) =>
-                          updateRow(index, "content", e.target.value)
-                        }
-                        className="input-content w-full border-gray-300"
-                      />
-                    </td>
-                    <td className="border text-center">
-                      <button
-                        onClick={() => deleteRow(index)}
-                        className="text-gray-500 hover:text-red-600"
-                      >
-                        <FaTrashAlt className="w-5 h-5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
+         <tbody>
+  {progressList
+    .filter((row) => !row.deleted) // 삭제된 진도 숨김
+    .map((row, index) => (
+      <tr key={row.progressId ?? `temp-${index}`}>
+        <td className="border text-center">
+          {progressList.length - index}
+        </td>
+        <td className="border">
+          <input
+            type="date"
+            value={row.date}
+            onChange={(e) =>
+              updateRow(index, "date", e.target.value)
+            }
+            className="input-content w-full border-gray-300"
+          />
+        </td>
+        <td className="border p-0">
+          <input
+            type="text"
+            value={row.content}
+            placeholder="내용 입력"
+            onChange={(e) =>
+              updateRow(index, "content", e.target.value)
+            }
+            className="input-content w-full border-gray-300"
+          />
+        </td>
+        <td className="border text-center">
+          <button
+            onClick={() => deleteRow(index)}
+            className="text-gray-500 hover:text-red-600"
+          >
+            <FaTrashAlt className="w-5 h-5" />
+          </button>
+        </td>
+      </tr>
+    ))}
+</tbody>
+
           </table>
 
           {/* ✅ 진도 추가 버튼 */}
